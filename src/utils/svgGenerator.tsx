@@ -2,7 +2,7 @@ import React from 'react';
 import { WorkoutData } from '../types/workout';
 import { UserProfile } from '../types/user';
 
-const getColorByType = (type: string, intensity: number): string => {
+const getColorByType = (type: string): string => {
     switch (type) {
         case 'NM':
             return '#FF1493'; // Pink/magenta for Neuromuscular Power
@@ -13,6 +13,20 @@ const getColorByType = (type: string, intensity: number): string => {
         case 'FTP':
         default:
             return '#0BBEEB'; // Blue for Functional Threshold Power
+    }
+};
+
+const getPowerZoneMultiplier = (type: string): number => {
+    switch (type) {
+        case 'NM':
+            return 3; // NM is typically 300% of FTP
+        case 'AC':
+            return 1.75; // AC is typically 175% of FTP
+        case 'MAP':
+            return 1.25; // MAP is typically 106% of FTP
+        case 'FTP':
+        default:
+            return 1.0; // FTP is 100% baseline
     }
 };
 
@@ -38,6 +52,15 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
         })
     );
     
+    // Calculate max power for scaling (find the highest power zone)
+    let maxPowerMultiplier = 1.0;
+    for (let i = 0; i < type.length; i++) {
+        const multiplier = getPowerZoneMultiplier(type[i]) * value[i];
+        if (multiplier > maxPowerMultiplier) {
+            maxPowerMultiplier = multiplier;
+        }
+    }
+    
     // Generate workout bars
     for (let i = 0; i < time.length - 1; i++) {
         const startTime = time[i];
@@ -49,12 +72,16 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
         const x = (startTime / maxTime) * svgWidth;
         const rectWidth = Math.max(1, ((endTime - startTime) / maxTime) * svgWidth);
         
-        // Calculate height based on intensity
-        const rectHeight = intensity * chartHeight;
+        // Calculate actual power multiplier for this segment
+        const powerZoneMultiplier = getPowerZoneMultiplier(workoutType);
+        const actualPowerRatio = (powerZoneMultiplier * intensity) / maxPowerMultiplier;
+        
+        // Calculate height based on the actual power ratio
+        const rectHeight = actualPowerRatio * chartHeight;
         const y = chartTop + chartHeight - rectHeight;
         
         // Get color based on workout type
-        const fillColor = getColorByType(workoutType, intensity);
+        const fillColor = getColorByType(workoutType);
         
         elements.push(
             React.createElement('rect', {
@@ -84,8 +111,9 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
     if (userProfile) {
         const ftp = userProfile.ftp;
         
-        // Add FTP reference line
-        const ftpY = chartTop + chartHeight - (chartHeight * 1.0); // FTP at 100%
+        // Add FTP reference line (100% line)
+        const ftpRatio = 1.0 / maxPowerMultiplier;
+        const ftpY = chartTop + chartHeight - (chartHeight * ftpRatio);
         elements.push(
             React.createElement('line', {
                 key: 'ftp-line',
@@ -95,19 +123,35 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
                 y2: ftpY,
                 stroke: '#0BBEEB',
                 strokeWidth: 1,
-                strokeDasharray: '5,5'
+                strokeDasharray: '5,5',
+                opacity: 0.7
             })
         );
         
-        // Add power text
+        // Add FTP power annotation with background
+        elements.push(
+            React.createElement('rect', {
+                key: 'ftp-annotation-bg',
+                x: 20,
+                y: ftpY - 25,
+                width: 80,
+                height: 20,
+                fill: '#444',
+                rx: 10,
+                ry: 10
+            })
+        );
+        
         elements.push(
             React.createElement('text', {
-                key: 'power-text',
-                x: 50,
-                y: chartTop + chartHeight + 30,
+                key: 'ftp-annotation',
+                x: 60,
+                y: ftpY - 10,
                 fill: '#fff',
-                fontSize: '24',
-                fontFamily: 'Arial, sans-serif'
+                fontSize: '14',
+                fontWeight: 'bold',
+                fontFamily: 'Arial, sans-serif',
+                textAnchor: 'middle'
             }, `${ftp} W`)
         );
     }
@@ -117,7 +161,7 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
 
 export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile) => {
     const maxTime = Math.max(...workoutData.time);
-    const duration = Math.floor(maxTime / 60); // Convert to minutes
+    const duration = Math.floor(maxTime); // Keep in seconds for now
     const avgIntensity = workoutData.value.reduce((a, b) => a + b, 0) / workoutData.value.length;
     
     const headerElements = [];
@@ -134,6 +178,8 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
         }, 'Duration')
     );
     
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
     headerElements.push(
         React.createElement('text', {
             key: 'duration-value',
@@ -143,7 +189,7 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
             fontSize: '24',
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`)
+        }, `${minutes}:${seconds.toString().padStart(2, '0')}`)
     );
     
     // TSS (Training Stress Score) - approximated
