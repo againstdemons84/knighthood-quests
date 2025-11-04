@@ -40,18 +40,6 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
     
     const elements = [];
     
-    // Add dark background
-    elements.push(
-        React.createElement('rect', {
-            key: 'background',
-            x: 0,
-            y: 0,
-            width: svgWidth,
-            height: svgHeight,
-            fill: '#2a2a2a'
-        })
-    );
-    
     // Calculate max power for scaling (find the highest power zone)
     let maxPowerMultiplier = 1.0;
     for (let i = 0; i < type.length; i++) {
@@ -161,46 +149,64 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
 
 export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile) => {
     const maxTime = Math.max(...workoutData.time);
-    const duration = Math.floor(maxTime); // Keep in seconds for now
-    const avgIntensity = workoutData.value.reduce((a, b) => a + b, 0) / workoutData.value.length;
+    const duration = Math.floor(maxTime);
     
     const headerElements = [];
+    
+    // Calculate duration formatting
+    const totalSeconds = duration;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    let durationText;
+    if (hours > 0) {
+        durationText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else {
+        durationText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // Font sizes for the header text (scaled for SVG coordinates)
+    const labelFontSize = '24';
+    const valueFontSize = '36';
+    const legendFontSize = '20';
+    
+    // Left side metrics - positioned above the chart area with better spacing
+    const metricsY = 30;
+    const valuesY = 65;
     
     // Duration
     headerElements.push(
         React.createElement('text', {
             key: 'duration-label',
-            x: 50,
-            y: 30,
+            x: 30,
+            y: metricsY,
             fill: '#999',
-            fontSize: '14',
+            fontSize: labelFontSize,
             fontFamily: 'Arial, sans-serif'
         }, 'Duration')
     );
     
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
     headerElements.push(
         React.createElement('text', {
             key: 'duration-value',
-            x: 50,
-            y: 50,
+            x: 30,
+            y: valuesY,
             fill: '#fff',
-            fontSize: '24',
+            fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, `${minutes}:${seconds.toString().padStart(2, '0')}`)
+        }, durationText)
     );
     
-    // TSS (Training Stress Score) - approximated
-    const tss = Math.round(avgIntensity * 100);
+    // TSS (Training Stress Score) - placeholder for now
     headerElements.push(
         React.createElement('text', {
             key: 'tss-label',
             x: 200,
-            y: 30,
+            y: metricsY,
             fill: '#999',
-            fontSize: '14',
+            fontSize: labelFontSize,
             fontFamily: 'Arial, sans-serif'
         }, 'TSS®')
     );
@@ -209,22 +215,22 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
         React.createElement('text', {
             key: 'tss-value',
             x: 200,
-            y: 50,
+            y: valuesY,
             fill: '#fff',
-            fontSize: '24',
+            fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, tss.toString())
+        }, '89') // Placeholder value
     );
     
-    // IF (Intensity Factor)
+    // IF (Intensity Factor) - placeholder for now
     headerElements.push(
         React.createElement('text', {
             key: 'if-label',
-            x: 350,
-            y: 30,
+            x: 320,
+            y: metricsY,
             fill: '#999',
-            fontSize: '14',
+            fontSize: labelFontSize,
             fontFamily: 'Arial, sans-serif'
         }, 'IF®')
     );
@@ -232,14 +238,58 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
     headerElements.push(
         React.createElement('text', {
             key: 'if-value',
-            x: 350,
-            y: 50,
+            x: 320,
+            y: valuesY,
             fill: '#fff',
-            fontSize: '24',
+            fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, avgIntensity.toFixed(2))
+        }, '0.95') // Placeholder value
     );
+    
+    // Right side power zone legend
+    const legendStartX = 2200;
+    const legendSpacing = 200;
+    const circleRadius = 8;
+    const circleY = 40;
+    
+    // Power zone legend items
+    const powerZones = [
+        { label: 'NM', color: '#FF1493' },
+        { label: 'AC', color: '#FFA500' },
+        { label: 'MAP', color: '#FFD700' },
+        { label: 'FTP', color: '#0BBEEB' }
+    ];
+    
+    powerZones.forEach((zone, index) => {
+        const xPos = legendStartX + (index * legendSpacing);
+        
+        // Zone label
+        headerElements.push(
+            React.createElement('text', {
+                key: `legend-${zone.label}`,
+                x: xPos,
+                y: 25,
+                fill: '#999',
+                fontSize: legendFontSize,
+                fontFamily: 'Arial, sans-serif',
+                textAnchor: 'middle'
+            }, zone.label)
+        );
+        
+        // Create 5 circles for each zone
+        for (let i = 0; i < 5; i++) {
+            headerElements.push(
+                React.createElement('circle', {
+                    key: `circle-${zone.label}-${i}`,
+                    cx: xPos - 40 + (i * 20),
+                    cy: circleY,
+                    r: circleRadius,
+                    fill: zone.color
+                })
+            );
+        }
+    });
     
     return headerElements;
 };

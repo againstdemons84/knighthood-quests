@@ -16,6 +16,9 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
     width = 800, 
     height = 200 
 }) => {
+    const svgWidth = 3057;
+    const svgHeight = 370.7;
+    
     return (
         <div style={{ width: '100%', height: height, backgroundColor: '#2a2a2a' }}>
             <svg
@@ -24,8 +27,18 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
                 preserveAspectRatio="xMidYMid meet"
                 style={{ width: '100%', height: '100%' }}
             >
-                {generateWorkoutHeader(workoutData, userProfile)}
+                {/* Background first */}
+                <rect
+                    x={0}
+                    y={0}
+                    width={svgWidth}
+                    height={svgHeight}
+                    fill="#2a2a2a"
+                />
+                {/* Chart elements (without background) */}
                 {generateSVG(workoutData, userProfile)}
+                {/* Header elements on top */}
+                {generateWorkoutHeader(workoutData, userProfile)}
             </svg>
         </div>
     );
