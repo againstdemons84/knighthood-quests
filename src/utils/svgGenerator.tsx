@@ -152,6 +152,56 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
     return elements;
 };
 
+const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?: UserProfile): number => {
+    const { time, value, type } = workoutData;
+    
+    if (!userProfile) {
+        return 0; // Can't calculate without user profile
+    }
+    
+    // Step 1: Create a second-by-second power array
+    const maxTime = Math.max(...time);
+    const powerBySecond: number[] = [];
+    
+    // Fill the power array with actual power values for each second
+    for (let second = 0; second < maxTime; second++) {
+        // Find which segment this second belongs to
+        let segmentIndex = 0;
+        for (let i = 0; i < time.length - 1; i++) {
+            if (second >= time[i] && second < time[i + 1]) {
+                segmentIndex = i;
+                break;
+            }
+        }
+        
+        const actualPower = getPowerValue(type[segmentIndex], value[segmentIndex], userProfile);
+        powerBySecond.push(actualPower);
+    }
+    
+    // Step 2: Calculate 30-second rolling averages
+    const rollingAverages: number[] = [];
+    for (let i = 0; i <= powerBySecond.length - 30; i++) {
+        const thirtySecondSlice = powerBySecond.slice(i, i + 30);
+        const average = thirtySecondSlice.reduce((sum, power) => sum + power, 0) / 30;
+        rollingAverages.push(average);
+    }
+    
+    if (rollingAverages.length === 0) {
+        return 0; // Not enough data
+    }
+    
+    // Step 3: Raise each rolling average to the 4th power
+    const fourthPowers = rollingAverages.map(avg => Math.pow(avg, 4));
+    
+    // Step 4: Calculate the average of the 4th powers
+    const averageOfFourthPowers = fourthPowers.reduce((sum, power) => sum + power, 0) / fourthPowers.length;
+    
+    // Step 5: Take the 4th root to get Normalized Power
+    const normalizedPower = Math.pow(averageOfFourthPowers, 1/4);
+    
+    return Math.round(normalizedPower);
+};
+
 export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile) => {
     const maxTime = Math.max(...workoutData.time);
     const duration = Math.floor(maxTime);
@@ -252,8 +302,8 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
         }, '0.95') // Placeholder value
     );
     
-    // NP (Normalised Power) - placeholder for now
-    let np = 100; // Placeholder Normalized Power value
+    // NP (Normalised Power) - calculated value
+    const np = calculateNormalizedPower(workoutData, userProfile);
     headerElements.push(
         React.createElement('text', {
             key: 'np-label',
@@ -262,7 +312,7 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
             fill: '#999',
             fontSize: labelFontSize,
             fontFamily: 'Arial, sans-serif'
-        }, 'NP')
+        }, 'NP®')
     );
     
     headerElements.push(
@@ -274,7 +324,7 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
             fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, np) // Placeholder value
+        }, `${np}`)
     );
     
     // Right side power zone legend
