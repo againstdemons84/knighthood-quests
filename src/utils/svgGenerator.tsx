@@ -16,17 +16,21 @@ const getColorByType = (type: string): string => {
     }
 };
 
-const getPowerZoneMultiplier = (type: string): number => {
+const getPowerValue = (type: string, intensity: number, userProfile?: UserProfile): number => {
+    if (!userProfile) {
+        return intensity; // Fallback if no user profile
+    }
+    
     switch (type) {
         case 'NM':
-            return 3; // NM is typically 300% of FTP
+            return intensity * userProfile.nm;
         case 'AC':
-            return 1.75; // AC is typically 175% of FTP
+            return intensity * userProfile.ac;
         case 'MAP':
-            return 1.25; // MAP is typically 106% of FTP
+            return intensity * userProfile.map;
         case 'FTP':
         default:
-            return 1.0; // FTP is 100% baseline
+            return intensity * userProfile.ftp;
     }
 };
 
@@ -40,12 +44,12 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
     
     const elements = [];
     
-    // Calculate max power for scaling (find the highest power zone)
-    let maxPowerMultiplier = 1.0;
+    // Calculate max power for scaling (find the highest actual power value)
+    let maxPower = 1.0;
     for (let i = 0; i < type.length; i++) {
-        const multiplier = getPowerZoneMultiplier(type[i]) * value[i];
-        if (multiplier > maxPowerMultiplier) {
-            maxPowerMultiplier = multiplier;
+        const actualPower = getPowerValue(type[i], value[i], userProfile);
+        if (actualPower > maxPower) {
+            maxPower = actualPower;
         }
     }
     
@@ -60,9 +64,9 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
         const x = (startTime / maxTime) * svgWidth;
         const rectWidth = Math.max(1, ((endTime - startTime) / maxTime) * svgWidth);
         
-        // Calculate actual power multiplier for this segment
-        const powerZoneMultiplier = getPowerZoneMultiplier(workoutType);
-        const actualPowerRatio = (powerZoneMultiplier * intensity) / maxPowerMultiplier;
+        // Calculate actual power for this segment
+        const actualPower = getPowerValue(workoutType, intensity, userProfile);
+        const actualPowerRatio = actualPower / maxPower;
         
         // Calculate height based on the actual power ratio
         const rectHeight = actualPowerRatio * chartHeight;
@@ -99,8 +103,9 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
     if (userProfile) {
         const ftp = userProfile.ftp;
         
-        // Add FTP reference line (100% line)
-        const ftpRatio = 1.0 / maxPowerMultiplier;
+        // Add FTP reference line (100% FTP line)
+        const ftpPower = userProfile.ftp; // 100% FTP intensity
+        const ftpRatio = ftpPower / maxPower;
         const ftpY = chartTop + chartHeight - (chartHeight * ftpRatio);
         elements.push(
             React.createElement('line', {
