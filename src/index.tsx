@@ -2,12 +2,20 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import WorkoutChart from './components/WorkoutChart';
 import sampleData from './examples/sample-data.json';
+import userData from './examples/user.json';
 
 const App = () => {
+    const workoutData = sampleData.data.workoutGraphTriggers.indoor;
+    const userProfile = userData.data.impersonateUser.user.profiles.riderProfile;
+    
     return (
-        <div>
-            <h1>Workout SVG Generator</h1>
-            <WorkoutChart data={sampleData.data.workoutGraphTriggers.indoor} />
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
+            <h1 style={{ color: 'white', marginBottom: '20px' }}>Workout SVG Generator</h1>
+            <WorkoutChart 
+                workoutData={workoutData} 
+                userProfile={userProfile}
+                height={300}
+            />
         </div>
     );
 };
