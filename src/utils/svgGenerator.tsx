@@ -252,6 +252,31 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
         }, '0.95') // Placeholder value
     );
     
+    // NP (Normalised Power) - placeholder for now
+    let np = 100; // Placeholder Normalized Power value
+    headerElements.push(
+        React.createElement('text', {
+            key: 'np-label',
+            x: 440,
+            y: metricsY,
+            fill: '#999',
+            fontSize: labelFontSize,
+            fontFamily: 'Arial, sans-serif'
+        }, 'NP')
+    );
+    
+    headerElements.push(
+        React.createElement('text', {
+            key: 'np-value',
+            x: 440,
+            y: valuesY,
+            fill: '#fff',
+            fontSize: valueFontSize,
+            fontWeight: 'bold',
+            fontFamily: 'Arial, sans-serif'
+        }, np) // Placeholder value
+    );
+    
     // Right side power zone legend
     const legendStartX = 2200;
     const legendSpacing = 200;
