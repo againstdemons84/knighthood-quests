@@ -202,6 +202,33 @@ const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?: UserPr
     return Math.round(normalizedPower);
 };
 
+const calculateIntensityFactor = (normalizedPower: number, userProfile?: UserProfile): number => {
+    if (!userProfile || userProfile.ftp === 0) {
+        return 0; // Can't calculate without user profile or valid FTP
+    }
+    
+    // IF = NP ÷ FTP
+    const intensityFactor = normalizedPower / userProfile.ftp;
+    
+    // Return rounded to 2 decimal places
+    return Math.round(intensityFactor * 100) / 100;
+};
+
+const calculateTrainingStressScore = (intensityFactor: number, durationInSeconds: number): number => {
+    if (intensityFactor === 0 || durationInSeconds === 0) {
+        return 0; // Can't calculate without valid inputs
+    }
+    
+    // Convert duration from seconds to hours
+    const durationInHours = durationInSeconds / 3600;
+    
+    // TSS = IF² × Duration in Hours × 100
+    const tss = Math.pow(intensityFactor, 2) * durationInHours * 100;
+    
+    // Return rounded to nearest whole number
+    return Math.round(tss);
+};
+
 export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile) => {
     const maxTime = Math.max(...workoutData.time);
     const duration = Math.floor(maxTime);
@@ -254,7 +281,14 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
         }, durationText)
     );
     
-    // TSS (Training Stress Score) - placeholder for now
+    // Calculate NP first as it's needed for IF and TSS calculations
+    const np = calculateNormalizedPower(workoutData, userProfile);
+    
+    // IF (Intensity Factor) - calculated value (needed for TSS)
+    const intensityFactor = calculateIntensityFactor(np, userProfile);
+    
+    // TSS (Training Stress Score) - calculated value
+    const tss = calculateTrainingStressScore(intensityFactor, duration);
     headerElements.push(
         React.createElement('text', {
             key: 'tss-label',
@@ -275,10 +309,8 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
             fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, '89') // Placeholder value
+        }, `${tss}`)
     );
-    
-    // IF (Intensity Factor) - placeholder for now
     headerElements.push(
         React.createElement('text', {
             key: 'if-label',
@@ -299,11 +331,10 @@ export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: Us
             fontSize: valueFontSize,
             fontWeight: 'bold',
             fontFamily: 'Arial, sans-serif'
-        }, '0.95') // Placeholder value
+        }, intensityFactor.toFixed(2))
     );
     
     // NP (Normalised Power) - calculated value
-    const np = calculateNormalizedPower(workoutData, userProfile);
     headerElements.push(
         React.createElement('text', {
             key: 'np-label',
