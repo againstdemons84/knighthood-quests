@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { WorkoutSelection, BasketState } from '../types/scenario';
 import { calculateCombinedMetrics, formatDuration } from '../utils/scenarioHelpers';
+import { generateOptimalSelections, convertToWorkoutSelections, SortedWorkout } from '../utils/optimalSelections';
 import knighthoodWorkouts from '../data/knighthood-workouts.json';
 import allWorkouts from '../data/workouts.json';
 import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
@@ -37,6 +38,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState<'name' | 'duration' | 'tss' | 'if'>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [optimalSelections, setOptimalSelections] = useState<any>(null);
 
     const MAX_WORKOUTS = 10;
 
@@ -94,6 +96,21 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
             setWorkoutRows(rows);
             setLoading(false);
+
+            // Generate optimal selections for quick picks
+            const sortedWorkouts: SortedWorkout[] = rows
+                .filter(row => row.metrics)
+                .map(row => ({
+                    id: row.id,
+                    name: row.name,
+                    tss: row.metrics!.tss,
+                    duration: row.metrics!.duration,
+                    intensityFactor: row.metrics!.intensityFactor,
+                    normalizedPower: row.metrics!.normalizedPower
+                }));
+
+            const optimal = generateOptimalSelections(sortedWorkouts);
+            setOptimalSelections(optimal);
         };
 
         loadAllWorkouts();
@@ -279,6 +296,131 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         </div>
                     )}
                 </div>
+
+                    {/* Quick Selection Options */}
+                    {optimalSelections && (
+                        <div style={{
+                            backgroundColor: '#333',
+                            padding: '15px',
+                            borderRadius: '8px',
+                            marginBottom: '15px',
+                            border: '1px solid #444'
+                        }}>
+                            <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
+                                QUICK PICKS (Auto-select 10 workouts):
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#2196F3',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    🏃‍♂️ Easiest (Lowest TSS)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.shortestDuration);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#FF9800',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    ⚡ Quickest (Shortest Duration)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.lowestIF);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    💚 Mildest (Lowest Intensity)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.balanced);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#9C27B0',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    ⚖️ Balanced (Mixed Challenge)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.highestTSS);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#d32f2f',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    🔥 Hardest (Highest TSS)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const selections = convertToWorkoutSelections(optimalSelections.longestDuration);
+                                        setBasket(selections);
+                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: '#795548',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    ⏰ Longest (Max Duration)
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Controls */}
                     <div style={{ 
