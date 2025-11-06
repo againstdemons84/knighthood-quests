@@ -188,23 +188,40 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     }
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                <h1 style={{ color: 'white', marginBottom: '10px' }}>
-                    Select Your Knighthood Challenge Workouts
-                </h1>
-                <p style={{ color: '#999', marginBottom: '30px' }}>
-                    Choose 10 workouts to complete back-to-back for your Knight of Sufferlandria challenge
-                </p>
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
+            {/* Header Section */}
+            <div style={{ padding: '20px 20px 0 20px' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <h1 style={{ color: 'white', marginBottom: '10px' }}>
+                        Select Your Knighthood Challenge Workouts
+                    </h1>
+                    <p style={{ color: '#999', marginBottom: '30px' }}>
+                        Choose 10 workouts to complete back-to-back for your Knight of Sufferlandria challenge
+                    </p>
+                </div>
+            </div>
 
-                {/* Basket Summary */}
-                <div style={{ 
-                    backgroundColor: '#2a2a2a', 
-                    padding: '20px', 
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    border: basket.length === MAX_WORKOUTS ? '2px solid #4CAF50' : '1px solid #333'
-                }}>
+            {/* Sticky Controls Container */}
+            <div style={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 100,
+                backgroundColor: '#1a1a1a',
+                borderBottom: '2px solid #333',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+            }}>
+                <div style={{ padding: '0 20px', maxWidth: '1400px', margin: '0 auto' }}>
+                    {/* Basket Summary */}
+                    <div style={{ 
+                        backgroundColor: basket.length === MAX_WORKOUTS ? '#1e3a1e' : '#2a2a2a', 
+                        padding: '20px', 
+                        borderRadius: '8px',
+                        marginBottom: '20px',
+                        border: basket.length === MAX_WORKOUTS ? '2px solid #4CAF50' : '1px solid #333',
+                        transition: 'all 0.3s ease'
+                    }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <h3 style={{ color: 'white', margin: '0 0 10px 0' }}>
@@ -262,28 +279,36 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     )}
                 </div>
 
-                {/* Controls */}
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '20px', 
-                    marginBottom: '20px',
-                    flexWrap: 'wrap',
-                    alignItems: 'center'
-                }}>
-                    <input
-                        type="text"
-                        placeholder="Search workouts..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            padding: '10px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '4px',
-                            minWidth: '250px'
-                        }}
-                    />
+                    {/* Controls */}
+                    <div style={{ 
+                        display: 'flex', 
+                        gap: '20px', 
+                        marginBottom: '20px',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        backgroundColor: '#333',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        border: '1px solid #444'
+                    }}>
+                        <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold' }}>
+                            SEARCH & FILTER:
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search workouts..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                padding: '10px',
+                                backgroundColor: '#444',
+                                color: 'white',
+                                border: '1px solid #555',
+                                borderRadius: '4px',
+                                minWidth: '250px',
+                                fontSize: '14px'
+                            }}
+                        />
                     
                     <select
                         value={sortBy}
@@ -315,10 +340,15 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     >
                         {sortOrder === 'asc' ? '↑' : '↓'}
                     </button>
+                    </div>
                 </div>
+            </div>
 
-                {/* Workout List */}
-                <div style={{ overflowX: 'auto' }}>
+            {/* Scrollable Content Area */}
+            <div style={{ padding: '0 20px 20px 20px' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    {/* Workout List */}
+                    <div style={{ overflowX: 'auto' }}>
                     <table style={{ 
                         width: '100%', 
                         borderCollapse: 'collapse',
@@ -381,11 +411,6 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                                 <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
                                                     ID: {row.id}
                                                 </div>
-                                                {isSelected && (
-                                                    <div style={{ color: '#4CAF50', fontSize: '12px', marginTop: '4px' }}>
-                                                        ✓ Selected for challenge
-                                                    </div>
-                                                )}
                                             </div>
                                         </td>
                                         <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
@@ -405,6 +430,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             })}
                         </tbody>
                     </table>
+                </div>
                 </div>
             </div>
         </div>
