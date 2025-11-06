@@ -18,6 +18,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         setScenarios(savedScenarios);
     }, []);
 
+    const handleSort = (column: 'name' | 'created' | 'duration' | 'tss' | 'if') => {
+        if (sortBy === column) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(column);
+            setSortOrder('asc');
+        }
+    };
+
+    const getSortIcon = (column: string) => {
+        if (sortBy !== column) return '↕️';
+        return sortOrder === 'asc' ? '↑' : '↓';
+    };
+
     const deleteScenario = (scenarioId: string) => {
         if (window.confirm('Are you sure you want to delete this scenario?')) {
             const updatedScenarios = scenarios.filter(s => s.id !== scenarioId);
@@ -261,20 +275,72 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                     <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', width: '60px' }}>
                                         Compare
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
-                                        Scenario
+                                    <th 
+                                        style={{ 
+                                            padding: '15px', 
+                                            color: 'white', 
+                                            textAlign: 'left', 
+                                            borderBottom: '2px solid #444',
+                                            cursor: 'pointer',
+                                            userSelect: 'none',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onClick={() => handleSort('name')}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                    >
+                                        Scenario {getSortIcon('name')}
                                     </th>
                                     <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
                                         Workouts
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                        Duration
+                                    <th 
+                                        style={{ 
+                                            padding: '15px', 
+                                            color: 'white', 
+                                            textAlign: 'center', 
+                                            borderBottom: '2px solid #444',
+                                            cursor: 'pointer',
+                                            userSelect: 'none',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onClick={() => handleSort('duration')}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                    >
+                                        Duration {getSortIcon('duration')}
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                        TSS®
+                                    <th 
+                                        style={{ 
+                                            padding: '15px', 
+                                            color: 'white', 
+                                            textAlign: 'center', 
+                                            borderBottom: '2px solid #444',
+                                            cursor: 'pointer',
+                                            userSelect: 'none',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onClick={() => handleSort('tss')}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                    >
+                                        TSS® {getSortIcon('tss')}
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                        Avg IF®
+                                    <th 
+                                        style={{ 
+                                            padding: '15px', 
+                                            color: 'white', 
+                                            textAlign: 'center', 
+                                            borderBottom: '2px solid #444',
+                                            cursor: 'pointer',
+                                            userSelect: 'none',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onClick={() => handleSort('if')}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                    >
+                                        Avg IF® {getSortIcon('if')}
                                     </th>
                                     <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
                                         Avg NP®

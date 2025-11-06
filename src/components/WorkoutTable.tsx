@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import WorkoutChart from './WorkoutChart';
 import { UserPowerProfile } from '../types/userProfile';
 
@@ -23,13 +23,80 @@ interface WorkoutTableProps {
     showWorkoutProfiles?: boolean;
 }
 
-const WorkoutTable: React.FC<WorkoutTableProps> = ({
-    workoutRows,
-    userProfile,
-    title = "Workouts",
+const WorkoutTable: React.FC<WorkoutTableProps> = ({ 
+    workoutRows, 
+    userProfile, 
+    title = "", 
     subtitle = "",
     showWorkoutProfiles = true
 }) => {
+    const [sortBy, setSortBy] = useState<'name' | 'duration' | 'tss' | 'if' | 'np'>('name');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+    const convertDurationToMinutes = (duration: string): number => {
+        // Handle formats like "1:30:00" (1h 30m) or "45:00" (45m)
+        const parts = duration.split(':').map(p => parseInt(p, 10));
+        if (parts.length === 3) {
+            // HH:MM:SS format
+            return parts[0] * 60 + parts[1] + parts[2] / 60;
+        } else if (parts.length === 2) {
+            // MM:SS format
+            return parts[0] + parts[1] / 60;
+        }
+        return 0;
+    };
+
+    const handleSort = (column: 'name' | 'duration' | 'tss' | 'if' | 'np') => {
+        if (sortBy === column) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(column);
+            setSortOrder('asc');
+        }
+    };
+
+    const sortedWorkoutRows = useMemo(() => {
+        return [...workoutRows].sort((a, b) => {
+            let aValue: any, bValue: any;
+            
+            switch (sortBy) {
+                case 'name':
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                    break;
+                case 'duration':
+                    aValue = a.metrics ? convertDurationToMinutes(a.metrics.duration) : 0;
+                    bValue = b.metrics ? convertDurationToMinutes(b.metrics.duration) : 0;
+                    break;
+                case 'tss':
+                    aValue = a.metrics?.tss || 0;
+                    bValue = b.metrics?.tss || 0;
+                    break;
+                case 'if':
+                    aValue = a.metrics?.intensityFactor || 0;
+                    bValue = b.metrics?.intensityFactor || 0;
+                    break;
+                case 'np':
+                    aValue = a.metrics?.normalizedPower || 0;
+                    bValue = b.metrics?.normalizedPower || 0;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (typeof aValue === 'string') {
+                return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            } else {
+                return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+            }
+        });
+    }, [workoutRows, sortBy, sortOrder]);
+
+    const getSortIcon = (column: string) => {
+        if (sortBy !== column) return '↕️';
+        return sortOrder === 'asc' ? '↑' : '↓';
+    };
+
     return (
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
             <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>
@@ -51,34 +118,99 @@ const WorkoutTable: React.FC<WorkoutTableProps> = ({
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#333' }}>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
-                                Workout
+                            <th 
+                                style={{ 
+                                    padding: '15px', 
+                                    color: 'white', 
+                                    textAlign: 'left', 
+                                    borderBottom: '2px solid #444',
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onClick={() => handleSort('name')}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                            >
+                                Workout {getSortIcon('name')}
                             </th>
                             {showWorkoutProfiles && (
                                 <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', minWidth: '400px' }}>
                                     Workout Profile
                                 </th>
                             )}
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                Duration
+                            <th 
+                                style={{ 
+                                    padding: '15px', 
+                                    color: 'white', 
+                                    textAlign: 'center', 
+                                    borderBottom: '2px solid #444',
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onClick={() => handleSort('duration')}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                            >
+                                Duration {getSortIcon('duration')}
                             </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                TSS®
+                            <th 
+                                style={{ 
+                                    padding: '15px', 
+                                    color: 'white', 
+                                    textAlign: 'center', 
+                                    borderBottom: '2px solid #444',
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onClick={() => handleSort('tss')}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                            >
+                                TSS® {getSortIcon('tss')}
                             </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                IF®
+                            <th 
+                                style={{ 
+                                    padding: '15px', 
+                                    color: 'white', 
+                                    textAlign: 'center', 
+                                    borderBottom: '2px solid #444',
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onClick={() => handleSort('if')}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                            >
+                                IF® {getSortIcon('if')}
                             </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                NP®
+                            <th 
+                                style={{ 
+                                    padding: '15px', 
+                                    color: 'white', 
+                                    textAlign: 'center', 
+                                    borderBottom: '2px solid #444',
+                                    cursor: 'pointer',
+                                    userSelect: 'none',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onClick={() => handleSort('np')}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                            >
+                                NP® {getSortIcon('np')}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {workoutRows.map((row, index) => (
+                        {sortedWorkoutRows.map((row, index) => (
                             <tr 
                                 key={row.id}
                                 style={{ 
-                                    borderBottom: index < workoutRows.length - 1 ? '1px solid #333' : 'none',
+                                    borderBottom: index < sortedWorkoutRows.length - 1 ? '1px solid #333' : 'none',
                                     backgroundColor: index % 2 === 0 ? '#2a2a2a' : '#252525'
                                 }}
                             >

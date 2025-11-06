@@ -61,6 +61,20 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
         }
     };
 
+    const handleSort = (column: 'name' | 'duration' | 'tss' | 'if') => {
+        if (sortBy === column) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(column);
+            setSortOrder('asc');
+        }
+    };
+
+    const getSortIcon = (column: string) => {
+        if (sortBy !== column) return '↕️';
+        return sortOrder === 'asc' ? '↑' : '↓';
+    };
+
     useEffect(() => {
         const loadAllWorkouts = async () => {
             const rows: WorkoutRow[] = [];
@@ -504,17 +518,69 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', width: '60px' }}>
                                     Select
                                 </th>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
-                                    Workout
+                                <th 
+                                    style={{ 
+                                        padding: '15px', 
+                                        color: 'white', 
+                                        textAlign: 'left', 
+                                        borderBottom: '2px solid #444',
+                                        cursor: 'pointer',
+                                        userSelect: 'none',
+                                        transition: 'background-color 0.2s'
+                                    }}
+                                    onClick={() => handleSort('name')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                >
+                                    Workout {getSortIcon('name')}
                                 </th>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                    Duration
+                                <th 
+                                    style={{ 
+                                        padding: '15px', 
+                                        color: 'white', 
+                                        textAlign: 'center', 
+                                        borderBottom: '2px solid #444',
+                                        cursor: 'pointer',
+                                        userSelect: 'none',
+                                        transition: 'background-color 0.2s'
+                                    }}
+                                    onClick={() => handleSort('duration')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                >
+                                    Duration {getSortIcon('duration')}
                                 </th>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                    TSS®
+                                <th 
+                                    style={{ 
+                                        padding: '15px', 
+                                        color: 'white', 
+                                        textAlign: 'center', 
+                                        borderBottom: '2px solid #444',
+                                        cursor: 'pointer',
+                                        userSelect: 'none',
+                                        transition: 'background-color 0.2s'
+                                    }}
+                                    onClick={() => handleSort('tss')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                >
+                                    TSS® {getSortIcon('tss')}
                                 </th>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                    IF®
+                                <th 
+                                    style={{ 
+                                        padding: '15px', 
+                                        color: 'white', 
+                                        textAlign: 'center', 
+                                        borderBottom: '2px solid #444',
+                                        cursor: 'pointer',
+                                        userSelect: 'none',
+                                        transition: 'background-color 0.2s'
+                                    }}
+                                    onClick={() => handleSort('if')}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                >
+                                    IF® {getSortIcon('if')}
                                 </th>
                                 <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
                                     NP®
