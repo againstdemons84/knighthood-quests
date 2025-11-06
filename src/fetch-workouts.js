@@ -17,7 +17,7 @@ if (!bearerToken) {
 }
 
 // Create output directory if it doesn't exist
-const outputDir = path.join(__dirname, 'data', 'workouts');
+const outputDir = path.join(__dirname, '..', 'public', 'data', 'workouts');
 if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
 }
