@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
-import { formatDuration } from '../utils/scenarioHelpers';
+import { formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
 import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
 import { WorkoutData } from '../types/workout';
 import WorkoutTable from './WorkoutTable';
@@ -35,6 +35,13 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 }) => {
     const [workoutRows, setWorkoutRows] = useState<ScenarioWorkoutRow[]>([]);
     const [loading, setLoading] = useState(true);
+    const [dynamicMetrics, setDynamicMetrics] = useState({
+        totalDuration: 0,
+        totalElapsedDuration: 0,
+        totalTSS: 0,
+        averageIF: 0,
+        totalNP: 0
+    });
 
     const findWorkoutTitle = (contentId: string): string => {
         const workout = allWorkouts.data.library.content.find((item: any) => item.id === contentId);
@@ -105,6 +112,16 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
             }
 
             setWorkoutRows(rows);
+            
+            // Calculate dynamic metrics for the scenario
+            try {
+                const calculatedMetrics = await calculateCombinedMetricsDynamic(scenario.workouts, userProfile);
+                setDynamicMetrics(calculatedMetrics);
+            } catch (error) {
+                console.error('Error calculating dynamic metrics:', error);
+                // Keep default zero values on error
+            }
+            
             setLoading(false);
         };
 
@@ -173,7 +190,25 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             Total Duration
                         </div>
                         <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                            {formatDuration(scenario.combinedMetrics.totalDuration)}
+                            {formatDuration(dynamicMetrics.totalDuration)}
+                        </div>
+                    </div>
+
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        border: '2px solid #FF5722',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ color: '#FF5722', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Total Elapsed Duration
+                        </div>
+                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            {formatDuration(dynamicMetrics.totalElapsedDuration)}
+                        </div>
+                        <div style={{ color: '#999', fontSize: '12px', marginTop: '5px' }}>
+                            Includes rest periods
                         </div>
                     </div>
 
@@ -188,7 +223,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             Total TSS®
                         </div>
                         <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                            {Math.round(scenario.combinedMetrics.totalTSS)}
+                            {Math.round(dynamicMetrics.totalTSS)}
                         </div>
                     </div>
 
@@ -203,7 +238,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             Average IF®
                         </div>
                         <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                            {scenario.combinedMetrics.averageIF.toFixed(2)}
+                            {dynamicMetrics.averageIF.toFixed(2)}
                         </div>
                     </div>
 
@@ -218,7 +253,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             Average NP®
                         </div>
                         <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                            {Math.round(scenario.combinedMetrics.totalNP)}W
+                            {Math.round(dynamicMetrics.totalNP)}W
                         </div>
                     </div>
                 </div>

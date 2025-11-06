@@ -1,24 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { Scenario } from '../types/scenario';
-import { loadScenarios, saveScenarios, formatDuration } from '../utils/scenarioHelpers';
+import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
     onViewScenario?: (scenario: Scenario) => void;
 }
 
+interface ScenarioWithMetrics extends Scenario {
+    dynamicMetrics: {
+        totalDuration: number;
+        totalElapsedDuration: number;
+        totalTSS: number;
+        averageIF: number;
+        totalNP: number;
+    };
+}
+
 const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario }) => {
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
+    const [scenariosWithMetrics, setScenariosWithMetrics] = useState<ScenarioWithMetrics[]>([]);
+    const [isLoadingMetrics, setIsLoadingMetrics] = useState(false);
     const [selectedScenarios, setSelectedScenarios] = useState<Set<string>>(new Set());
-    const [sortBy, setSortBy] = useState<'name' | 'created' | 'duration' | 'tss' | 'if'>('created');
+    const [sortBy, setSortBy] = useState<'name' | 'created' | 'duration' | 'elapsed' | 'tss' | 'if'>('created');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
     useEffect(() => {
-        const savedScenarios = loadScenarios();
-        setScenarios(savedScenarios);
+        const loadScenariosWithDynamicMetrics = async () => {
+            setIsLoadingMetrics(true);
+            const savedScenarios = loadScenarios();
+            setScenarios(savedScenarios);
+            
+            // Calculate dynamic metrics for each scenario
+            const scenariosWithDynamics: ScenarioWithMetrics[] = [];
+            
+            for (const scenario of savedScenarios) {
+                try {
+                    const dynamicMetrics = await calculateCombinedMetricsDynamic(scenario.workouts);
+                    scenariosWithDynamics.push({
+                        ...scenario,
+                        dynamicMetrics
+                    });
+                } catch (error) {
+                    console.error(`Failed to calculate metrics for scenario ${scenario.id}:`, error);
+                    // Use zero metrics as fallback
+                    scenariosWithDynamics.push({
+                        ...scenario,
+                        dynamicMetrics: {
+                            totalDuration: 0,
+                            totalElapsedDuration: 0,
+                            totalTSS: 0,
+                            averageIF: 0,
+                            totalNP: 0
+                        }
+                    });
+                }
+            }
+            
+            setScenariosWithMetrics(scenariosWithDynamics);
+            setIsLoadingMetrics(false);
+        };
+        
+        loadScenariosWithDynamicMetrics();
     }, []);
 
-    const handleSort = (column: 'name' | 'created' | 'duration' | 'tss' | 'if') => {
+    const handleSort = (column: 'name' | 'created' | 'duration' | 'elapsed' | 'tss' | 'if') => {
         if (sortBy === column) {
             setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
         } else {
@@ -74,7 +120,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         setSelectedScenarios(new Set());
     };
 
-    const sortedScenarios = [...scenarios].sort((a, b) => {
+    const sortedScenarios = [...scenariosWithMetrics].sort((a, b) => {
         let aValue, bValue;
         
         switch (sortBy) {
@@ -87,16 +133,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                 bValue = new Date(b.createdAt).getTime();
                 break;
             case 'duration':
-                aValue = a.combinedMetrics.totalDuration;
-                bValue = b.combinedMetrics.totalDuration;
+                aValue = a.dynamicMetrics.totalDuration;
+                bValue = b.dynamicMetrics.totalDuration;
+                break;
+            case 'elapsed':
+                aValue = a.dynamicMetrics.totalElapsedDuration;
+                bValue = b.dynamicMetrics.totalElapsedDuration;
                 break;
             case 'tss':
-                aValue = a.combinedMetrics.totalTSS;
-                bValue = b.combinedMetrics.totalTSS;
+                aValue = a.dynamicMetrics.totalTSS;
+                bValue = b.dynamicMetrics.totalTSS;
                 break;
             case 'if':
-                aValue = a.combinedMetrics.averageIF;
-                bValue = b.combinedMetrics.averageIF;
+                aValue = a.dynamicMetrics.averageIF;
+                bValue = b.dynamicMetrics.averageIF;
                 break;
             default:
                 return 0;
@@ -113,7 +163,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         }
     });
 
-    const selectedScenariosList = scenarios.filter(s => selectedScenarios.has(s.id));
+    const selectedScenariosList = scenariosWithMetrics.filter(s => selectedScenarios.has(s.id));
 
     return (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
@@ -124,6 +174,24 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                 <p style={{ color: '#999', marginBottom: '30px' }}>
                     Manage and compare your different 10-workout combinations for the Knight of Sufferlandria challenge
                 </p>
+
+                {isLoadingMetrics && (
+                    <div style={{ 
+                        textAlign: 'center', 
+                        color: '#999', 
+                        padding: '40px',
+                        backgroundColor: '#2a2a2a',
+                        borderRadius: '8px',
+                        marginBottom: '20px'
+                    }}>
+                        <div style={{ fontSize: '18px', marginBottom: '10px' }}>
+                            📊 Calculating workout metrics dynamically...
+                        </div>
+                        <div style={{ fontSize: '14px' }}>
+                            Loading duration, TSS, and intensity data from workout files
+                        </div>
+                    </div>
+                )}
 
                 {/* Comparison Section */}
                 {selectedScenarios.size > 0 && (
@@ -181,17 +249,17 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                             <td style={{ padding: '12px', color: 'white' }}>
                                                 <strong>{scenario.name}</strong>
                                             </td>
-                                            <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
-                                                {formatDuration(scenario.combinedMetrics.totalDuration)}
+                                                                                        <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
+                                                {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                             </td>
                                             <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
-                                                {Math.round(scenario.combinedMetrics.totalTSS)}
+                                                {Math.round(scenario.dynamicMetrics.totalTSS)}
                                             </td>
                                             <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
-                                                {scenario.combinedMetrics.averageIF.toFixed(2)}
+                                                {scenario.dynamicMetrics.averageIF.toFixed(2)}
                                             </td>
                                             <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
-                                                {Math.round(scenario.combinedMetrics.totalNP)}W
+                                                {Math.round(scenario.dynamicMetrics.totalNP)}W
                                             </td>
                                         </tr>
                                     ))}
@@ -223,6 +291,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                         <option value="created">Sort by Created Date</option>
                         <option value="name">Sort by Name</option>
                         <option value="duration">Sort by Duration</option>
+                        <option value="elapsed">Sort by Elapsed Duration</option>
                         <option value="tss">Sort by TSS</option>
                         <option value="if">Sort by IF</option>
                     </select>
@@ -308,7 +377,23 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
-                                        Duration {getSortIcon('duration')}
+                                        Workout Duration {getSortIcon('duration')}
+                                    </th>
+                                    <th 
+                                        style={{ 
+                                            padding: '15px', 
+                                            color: 'white', 
+                                            textAlign: 'center', 
+                                            borderBottom: '2px solid #444',
+                                            cursor: 'pointer',
+                                            userSelect: 'none',
+                                            transition: 'background-color 0.2s'
+                                        }}
+                                        onClick={() => handleSort('elapsed')}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
+                                    >
+                                        Elapsed Duration {getSortIcon('elapsed')}
                                     </th>
                                     <th 
                                         style={{ 
@@ -385,16 +470,19 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                 {scenario.workouts.length}/10
                                             </td>
                                             <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {formatDuration(scenario.combinedMetrics.totalDuration)}
+                                                {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                             </td>
                                             <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {Math.round(scenario.combinedMetrics.totalTSS)}
+                                                {formatDuration(scenario.dynamicMetrics.totalElapsedDuration)}
                                             </td>
                                             <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {scenario.combinedMetrics.averageIF.toFixed(2)}
+                                                {Math.round(scenario.dynamicMetrics.totalTSS)}
                                             </td>
                                             <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {Math.round(scenario.combinedMetrics.totalNP)}W
+                                                {scenario.dynamicMetrics.averageIF.toFixed(2)}
+                                            </td>
+                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                {Math.round(scenario.dynamicMetrics.totalNP)}W
                                             </td>
                                             <td style={{ padding: '15px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>

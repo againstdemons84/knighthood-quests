@@ -291,9 +291,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     {basket.length > 0 && (
                         <div style={{ marginTop: '15px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                             <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Total Duration</div>
+                                <div style={{ color: '#999', fontSize: '14px' }}>Workout Duration</div>
                                 <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
                                     {formatDuration(combinedMetrics.totalDuration)}
+                                </div>
+                            </div>
+                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
+                                <div style={{ color: '#999', fontSize: '14px' }}>Elapsed Duration</div>
+                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                                    {formatDuration(combinedMetrics.totalElapsedDuration)}
+                                </div>
+                                <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+                                    +{Math.max(0, basket.length - 1) * 10}min rest
                                 </div>
                             </div>
                             <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>

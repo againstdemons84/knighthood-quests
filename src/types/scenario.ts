@@ -14,8 +14,9 @@ export interface Scenario {
     name: string;
     createdAt: string;
     workouts: WorkoutSelection[];
-    combinedMetrics: {
-        totalDuration: number; // in seconds
+    combinedMetrics?: {
+        totalDuration: number; // in seconds (workout time only)
+        totalElapsedDuration: number; // in seconds (workout time + rest periods)
         totalTSS: number;
         averageIF: number;
         totalNP: number; // average weighted by duration

@@ -16,8 +16,9 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
     existingScenario 
 }) => {
     const [scenarioName, setScenarioName] = useState(existingScenario?.name || '');
-    const [error, setError] = useState<string | null>(null);
-
+    const [error, setError] = useState('');
+    
+    // Calculate metrics for display purposes only (not stored)
     const combinedMetrics = calculateCombinedMetrics(basketState.selectedWorkouts);
 
     const handleSave = () => {
@@ -35,8 +36,8 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
             id: existingScenario?.id || generateScenarioId(),
             name: scenarioName.trim(),
             createdAt: existingScenario?.createdAt || new Date().toISOString(),
-            workouts: basketState.selectedWorkouts,
-            combinedMetrics
+            workouts: basketState.selectedWorkouts
+            // No longer storing combinedMetrics - calculated dynamically
         };
 
         onSave(scenario);
@@ -96,7 +97,7 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                         value={scenarioName}
                         onChange={(e) => {
                             setScenarioName(e.target.value);
-                            setError(null);
+                            setError('');
                         }}
                         onKeyPress={handleKeyPress}
                         placeholder="Enter a name for your Knighthood challenge scenario..."
