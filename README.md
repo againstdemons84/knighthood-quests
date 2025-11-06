@@ -22,7 +22,7 @@ workout-svg-generator
 │   │   ├── svgGenerator.ts          # Utility functions for SVG generation
 │   │   └── chartHelpers.ts          # Helper functions for data processing
 │   └── index.ts                     # Entry point for the application
-├── examples
+├── data
 │   └── sample-data.json             # Sample workout data for testing
 ├── package.json                      # NPM configuration file
 ├── tsconfig.json                    # TypeScript configuration file
@@ -52,7 +52,7 @@ To use the WorkoutChart component, import it into your desired file and pass the
 ### Example
 ```tsx
 import WorkoutChart from './components/WorkoutChart';
-import sampleData from '../examples/sample-data.json';
+import sampleData from '../data/sample-data.json';
 
 const App = () => {
     return (

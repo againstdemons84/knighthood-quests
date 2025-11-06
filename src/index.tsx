@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import WorkoutChart from './components/WorkoutChart';
-import sampleData from './examples/sample-data.json';
-import userData from './examples/user.json';
+import sampleData from './data/sample-data.json';
+import userData from './data/user.json';
 
 const App = () => {
     const workoutData = sampleData.data.workoutGraphTriggers.indoor;
