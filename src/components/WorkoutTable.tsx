@@ -13,6 +13,7 @@ interface WorkoutTableRow {
         normalizedPower: number;
     } | null;
     error?: string;
+    usedOutdoorData?: boolean;
 }
 
 interface WorkoutTableProps {
@@ -236,6 +237,19 @@ const WorkoutTable: React.FC<WorkoutTableProps> = ({
                                             >
                                                 {row.name}
                                             </a>
+                                            {row.usedOutdoorData && (
+                                                <span 
+                                                    style={{ 
+                                                        marginLeft: '8px',
+                                                        color: '#FFA726',
+                                                        fontSize: '16px',
+                                                        cursor: 'help'
+                                                    }}
+                                                    title="Indoor power profile data unavailable, using outdoor power profile."
+                                                >
+                                                    ⚠️
+                                                </span>
+                                            )}
                                         </strong>
                                         <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
                                             ID: {row.id}

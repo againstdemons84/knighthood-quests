@@ -13,6 +13,7 @@ import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
 import { WorkoutData } from './types/workout';
 import { Scenario, BasketState } from './types/scenario';
+import { getBestWorkoutData } from './utils/workoutDataHelpers';
 import { UserPowerProfile } from './types/userProfile';
 import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
 import { getUserProfile, saveUserProfile, hasUserProfile } from './utils/userProfileHelpers';
@@ -33,6 +34,7 @@ interface WorkoutTableRow {
         normalizedPower: number;
     } | null;
     error?: string;
+    usedOutdoorData?: boolean;
 }
 
 type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile';
@@ -67,18 +69,22 @@ const App = () => {
         return workout?.name || 'Unknown Workout';
     };
 
-    const loadWorkoutData = async (workoutId: string): Promise<WorkoutData | null> => {
+    const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
             // Try to load the workout data from the public directory
             const response = await fetch(`/data/workouts/${workoutId}.json`);
             if (!response.ok) {
                 throw new Error(`Failed to load workout data for ${workoutId}`);
             }
-            const data = await response.json();
-            return data.data?.workoutGraphTriggers?.indoor || null;
+            const rawData = await response.json();
+            const result = getBestWorkoutData(rawData);
+            return {
+                data: result.data,
+                usedOutdoor: result.usedOutdoor
+            };
         } catch (error) {
             console.error(`Error loading workout ${workoutId}:`, error);
-            return null;
+            return { data: null, usedOutdoor: false };
         }
     };
 
@@ -101,12 +107,12 @@ const App = () => {
 
             for (const workout of knighthoodWorkouts.workouts) {
                 const title = findWorkoutTitle(workout.id);
-                const workoutData = await loadWorkoutData(workout.id);
+                const workoutResult = await loadWorkoutData(workout.id);
                 
                 let metrics = null;
-                if (workoutData) {
+                if (workoutResult.data) {
                     try {
-                        const calculatedMetrics = calculateAllTrainingMetrics(workoutData, userProfile);
+                        const calculatedMetrics = calculateAllTrainingMetrics(workoutResult.data, userProfile);
                         metrics = {
                             duration: formatDuration(calculatedMetrics.duration),
                             tss: calculatedMetrics.trainingStressScore,
@@ -121,9 +127,10 @@ const App = () => {
                 rows.push({
                     id: workout.id,
                     name: title,
-                    workoutData,
+                    workoutData: workoutResult.data,
                     metrics,
-                    error: !workoutData ? 'Workout data not available' : undefined
+                    error: !workoutResult.data ? 'Workout data not available' : undefined,
+                    usedOutdoorData: workoutResult.usedOutdoor
                 });
             }
 

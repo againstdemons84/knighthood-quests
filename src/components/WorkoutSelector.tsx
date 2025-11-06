@@ -7,6 +7,7 @@ import allWorkouts from '../data/workouts.json';
 import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
 import { WorkoutData } from '../types/workout';
 import { UserPowerProfile } from '../types/userProfile';
+import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 
 interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
@@ -25,6 +26,7 @@ interface WorkoutRow {
     } | null;
     error?: string;
     isSelected: boolean;
+    usedOutdoorData?: boolean;
 }
 
 const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({ 
@@ -47,17 +49,21 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
         return workout?.name || 'Unknown Workout';
     };
 
-    const loadWorkoutData = async (workoutId: string): Promise<WorkoutData | null> => {
+    const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
             const response = await fetch(`/data/workouts/${workoutId}.json`);
             if (!response.ok) {
                 throw new Error(`Failed to load workout data for ${workoutId}`);
             }
-            const data = await response.json();
-            return data.data?.workoutGraphTriggers?.indoor || null;
+            const rawData = await response.json();
+            const result = getBestWorkoutData(rawData);
+            return {
+                data: result.data,
+                usedOutdoor: result.usedOutdoor
+            };
         } catch (error) {
             console.error(`Error loading workout ${workoutId}:`, error);
-            return null;
+            return { data: null, usedOutdoor: false };
         }
     };
 
@@ -82,12 +88,12 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
             for (const workout of knighthoodWorkouts.workouts) {
                 const title = findWorkoutTitle(workout.id);
-                const workoutData = await loadWorkoutData(workout.id);
+                const workoutResult = await loadWorkoutData(workout.id);
                 
                 let metrics = null;
-                if (workoutData) {
+                if (workoutResult.data) {
                     try {
-                        const calculatedMetrics = calculateAllTrainingMetrics(workoutData, userProfile);
+                        const calculatedMetrics = calculateAllTrainingMetrics(workoutResult.data, userProfile);
                         metrics = {
                             duration: calculatedMetrics.duration,
                             tss: calculatedMetrics.trainingStressScore,
@@ -103,8 +109,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     id: workout.id,
                     name: title,
                     metrics,
-                    error: !workoutData ? 'Workout data not available' : undefined,
-                    isSelected: basketIds.has(workout.id)
+                    error: !workoutResult.data ? 'Workout data not available' : undefined,
+                    isSelected: basketIds.has(workout.id),
+                    usedOutdoorData: workoutResult.usedOutdoor
                 });
             }
 
@@ -618,6 +625,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                             <div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     <strong>{row.name}</strong>
+                                                    {row.usedOutdoorData && (
+                                                        <span 
+                                                            style={{ 
+                                                                color: '#FFA726',
+                                                                fontSize: '16px',
+                                                                cursor: 'help'
+                                                            }}
+                                                            title="Indoor power profile data unavailable, using outdoor power profile."
+                                                        >
+                                                            ⚠️
+                                                        </span>
+                                                    )}
                                                     <a 
                                                         href={`https://systm.wahoofitness.com/content-details/${row.id}`}
                                                         target="_blank"

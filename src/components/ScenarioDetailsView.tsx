@@ -6,6 +6,7 @@ import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
 import { WorkoutData } from '../types/workout';
 import WorkoutTable from './WorkoutTable';
 import allWorkouts from '../data/workouts.json';
+import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
@@ -24,6 +25,7 @@ interface ScenarioWorkoutRow {
         normalizedPower: number;
     } | null;
     error?: string;
+    usedOutdoorData?: boolean;
 }
 
 const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
@@ -39,17 +41,21 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
         return workout?.name || 'Unknown Workout';
     };
 
-    const loadWorkoutData = async (workoutId: string): Promise<WorkoutData | null> => {
+    const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
             const response = await fetch(`/data/workouts/${workoutId}.json`);
             if (!response.ok) {
                 throw new Error(`Failed to load workout data for ${workoutId}`);
             }
-            const data = await response.json();
-            return data.data?.workoutGraphTriggers?.indoor || null;
+            const rawData = await response.json();
+            const result = getBestWorkoutData(rawData);
+            return {
+                data: result.data,
+                usedOutdoor: result.usedOutdoor
+            };
         } catch (error) {
             console.error(`Error loading workout ${workoutId}:`, error);
-            return null;
+            return { data: null, usedOutdoor: false };
         }
     };
 
@@ -71,12 +77,12 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
             for (const workout of scenario.workouts) {
                 const title = findWorkoutTitle(workout.id);
-                const workoutData = await loadWorkoutData(workout.id);
+                const workoutResult = await loadWorkoutData(workout.id);
                 
                 let metrics = null;
-                if (workoutData) {
+                if (workoutResult.data) {
                     try {
-                        const calculatedMetrics = calculateAllTrainingMetrics(workoutData, userProfile);
+                        const calculatedMetrics = calculateAllTrainingMetrics(workoutResult.data, userProfile);
                         metrics = {
                             duration: formatDurationFromSeconds(calculatedMetrics.duration),
                             tss: calculatedMetrics.trainingStressScore,
@@ -91,9 +97,10 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 rows.push({
                     id: workout.id,
                     name: title,
-                    workoutData,
+                    workoutData: workoutResult.data,
                     metrics,
-                    error: !workoutData ? 'Workout data not available' : undefined
+                    error: !workoutResult.data ? 'Workout data not available' : undefined,
+                    usedOutdoorData: workoutResult.usedOutdoor
                 });
             }
 

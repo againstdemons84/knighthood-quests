@@ -67,6 +67,12 @@ const query = `query workoutGraphTriggers($workoutId: ID!) {
       type
       __typename
     }
+    outdoor {
+      time
+      value
+      type
+      __typename
+    }
     __typename
   }
 }`;
