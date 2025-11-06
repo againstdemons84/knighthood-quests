@@ -550,7 +550,33 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         </td>
                                         <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
                                             <div>
-                                                <strong>{row.name}</strong>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <strong>{row.name}</strong>
+                                                    <a 
+                                                        href={`https://systm.wahoofitness.com/content-details/${row.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            color: '#4CAF50',
+                                                            textDecoration: 'none',
+                                                            fontSize: '14px',
+                                                            padding: '2px 4px',
+                                                            borderRadius: '3px',
+                                                            transition: 'background-color 0.2s',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                                        }}
+                                                        title={`View ${row.name} on SYSTM`}
+                                                    >
+                                                        ↗
+                                                    </a>
+                                                </div>
                                                 <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
                                                     ID: {row.id}
                                                 </div>

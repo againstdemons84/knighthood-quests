@@ -84,7 +84,27 @@ const WorkoutTable: React.FC<WorkoutTableProps> = ({
                             >
                                 <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
                                     <div>
-                                        <strong>{row.name}</strong>
+                                        <strong>
+                                            <a 
+                                                href={`https://systm.wahoofitness.com/content-details/${row.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    color: '#4CAF50',
+                                                    textDecoration: 'none',
+                                                    borderBottom: '1px solid transparent',
+                                                    transition: 'border-bottom-color 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.borderBottomColor = '#4CAF50';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.borderBottomColor = 'transparent';
+                                                }}
+                                            >
+                                                {row.name}
+                                            </a>
+                                        </strong>
                                         <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
                                             ID: {row.id}
                                         </div>
