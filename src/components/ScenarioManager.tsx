@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Scenario } from '../types/scenario';
+import { UserPowerProfile } from '../types/userProfile';
 import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
     onViewScenario?: (scenario: Scenario) => void;
+    userProfile: UserPowerProfile;
 }
 
 interface ScenarioWithMetrics extends Scenario {
@@ -17,7 +19,7 @@ interface ScenarioWithMetrics extends Scenario {
     };
 }
 
-const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario }) => {
+const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario, userProfile }) => {
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [scenariosWithMetrics, setScenariosWithMetrics] = useState<ScenarioWithMetrics[]>([]);
     const [isLoadingMetrics, setIsLoadingMetrics] = useState(false);
@@ -36,7 +38,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
             
             for (const scenario of savedScenarios) {
                 try {
-                    const dynamicMetrics = await calculateCombinedMetricsDynamic(scenario.workouts);
+                    const dynamicMetrics = await calculateCombinedMetricsDynamic(scenario.workouts, userProfile);
                     scenariosWithDynamics.push({
                         ...scenario,
                         dynamicMetrics
@@ -62,7 +64,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         };
         
         loadScenariosWithDynamicMetrics();
-    }, []);
+    }, [userProfile]);
 
     const handleSort = (column: 'name' | 'created' | 'duration' | 'elapsed' | 'tss' | 'if') => {
         if (sortBy === column) {

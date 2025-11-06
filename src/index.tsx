@@ -326,15 +326,16 @@ const App = () => {
                 ) : null;
             
             case 'scenarios':
-                return (
+                return userProfile ? (
                     <ScenarioManager
                         onEditScenario={handleEditScenario}
                         onViewScenario={(scenario) => {
                             setSelectedScenario(scenario);
                             setCurrentPage('scenario-detail');
                         }}
+                        userProfile={userProfile}
                     />
-                );
+                ) : null;
             
             case 'profile':
                 return userProfile ? (
