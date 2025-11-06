@@ -6,6 +6,8 @@ import ScenarioManager from './components/ScenarioManager';
 import SaveScenarioModal from './components/SaveScenarioModal';
 import UserProfileSetup from './components/UserProfileSetup';
 import UserProfileManager from './components/UserProfileManager';
+import WorkoutTable from './components/WorkoutTable';
+import ScenarioDetailsView from './components/ScenarioDetailsView';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
@@ -33,10 +35,10 @@ interface WorkoutTableRow {
     error?: string;
 }
 
-type AppPage = 'browse' | 'selector' | 'scenarios' | 'profile';
+type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile';
 
 const App = () => {
-    const [currentPage, setCurrentPage] = useState<AppPage>('browse');
+      const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile'>('browse');
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
@@ -46,6 +48,7 @@ const App = () => {
     const [userProfile, setUserProfile] = useState<UserPowerProfile | null>(null);
     const [showProfileSetup, setShowProfileSetup] = useState(false);
     const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
+    const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
 
     const formatDuration = (seconds: number): string => {
         const hours = Math.floor(seconds / 3600);
@@ -319,6 +322,10 @@ const App = () => {
                 return (
                     <ScenarioManager
                         onEditScenario={handleEditScenario}
+                        onViewScenario={(scenario) => {
+                            setSelectedScenario(scenario);
+                            setCurrentPage('scenario-detail');
+                        }}
                     />
                 );
             
@@ -327,6 +334,15 @@ const App = () => {
                     <UserProfileManager
                         currentProfile={userProfile}
                         onProfileUpdate={handleProfileUpdate}
+                    />
+                ) : null;
+            
+            case 'scenario-detail':
+                return selectedScenario && userProfile ? (
+                    <ScenarioDetailsView
+                        scenario={selectedScenario}
+                        userProfile={userProfile}
+                        onBack={() => setCurrentPage('scenarios')}
                     />
                 ) : null;
             
@@ -361,88 +377,11 @@ const App = () => {
                             Browse all available Knighthood workouts and their training metrics
                         </p>
                         
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ 
-                                width: '100%', 
-                                borderCollapse: 'collapse',
-                                backgroundColor: '#2a2a2a',
-                                borderRadius: '8px',
-                                overflow: 'hidden'
-                            }}>
-                                <thead>
-                                    <tr style={{ backgroundColor: '#333' }}>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
-                                            Workout
-                                        </th>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', minWidth: '400px' }}>
-                                            Workout Profile
-                                        </th>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                            Duration
-                                        </th>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                            TSS®
-                                        </th>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                            IF®
-                                        </th>
-                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                            NP®
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {workoutRows.map((row, index) => (
-                                        <tr 
-                                            key={row.id}
-                                            style={{ 
-                                                borderBottom: index < workoutRows.length - 1 ? '1px solid #333' : 'none',
-                                                backgroundColor: index % 2 === 0 ? '#2a2a2a' : '#252525'
-                                            }}
-                                        >
-                                            <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
-                                                <div>
-                                                    <strong>{row.name}</strong>
-                                                    <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-                                                        ID: {row.id}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td style={{ padding: '15px', verticalAlign: 'middle' }}>
-                                                {row.workoutData && userProfile ? (
-                                                    <WorkoutChart
-                                                        workoutData={row.workoutData}
-                                                        userProfile={userProfile}
-                                                        height={120}
-                                                    />
-                                                ) : (
-                                                    <div style={{ 
-                                                        color: '#999', 
-                                                        textAlign: 'center',
-                                                        padding: '40px',
-                                                        fontStyle: 'italic'
-                                                    }}>
-                                                        {row.error || 'No workout data available'}
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {row.metrics?.duration || 'N/A'}
-                                            </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {row.metrics?.tss || 'N/A'}
-                                            </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {row.metrics ? row.metrics.intensityFactor.toFixed(2) : 'N/A'}
-                                            </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {row.metrics?.normalizedPower || 'N/A'}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <WorkoutTable 
+                            workoutRows={workoutRows}
+                            userProfile={userProfile}
+                            showWorkoutProfiles={true}
+                        />
 
                         <div style={{ 
                             marginTop: '30px', 

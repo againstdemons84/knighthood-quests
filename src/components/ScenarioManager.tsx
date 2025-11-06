@@ -4,9 +4,10 @@ import { loadScenarios, saveScenarios, formatDuration } from '../utils/scenarioH
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
+    onViewScenario?: (scenario: Scenario) => void;
 }
 
-const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario }) => {
+const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario }) => {
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [selectedScenarios, setSelectedScenarios] = useState<Set<string>>(new Set());
     const [sortBy, setSortBy] = useState<'name' | 'created' | 'duration' | 'tss' | 'if'>('created');
@@ -331,6 +332,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario }) => 
                                             </td>
                                             <td style={{ padding: '15px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                                    <button
+                                                        onClick={() => onViewScenario?.(scenario)}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            backgroundColor: '#4CAF50',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '12px'
+                                                        }}
+                                                    >
+                                                        View
+                                                    </button>
                                                     <button
                                                         onClick={() => onEditScenario(scenario)}
                                                         style={{
