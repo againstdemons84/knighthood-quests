@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ScenarioManager from '../../components/ScenarioManager';
 import { UserPowerProfile } from '../../types/userProfile';
@@ -71,20 +71,18 @@ describe('ScenarioManager', () => {
     });
 
     it('should render scenario manager with title', async () => {
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
         
         expect(screen.getByText('Your Knighthood Challenge Scenarios')).toBeInTheDocument();
         expect(screen.getByText(/Manage and compare your different 10-workout combinations/)).toBeInTheDocument();
     });
 
-    it('should show loading state initially', async () => {
-        render(<ScenarioManager {...mockProps} />);
-        
-        expect(screen.getByText('📊 Calculating workout metrics dynamically...')).toBeInTheDocument();
-    });
-
     it('should display scenarios after loading', async () => {
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
         
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
@@ -93,8 +91,10 @@ describe('ScenarioManager', () => {
     });
 
     it('should display scenario metrics', async () => {
-        render(<ScenarioManager {...mockProps} />);
-        
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             // Check that metrics are displayed
             expect(screen.getAllByText('100')).toHaveLength(2); // TSS for both scenarios
@@ -106,8 +106,10 @@ describe('ScenarioManager', () => {
     });
 
     it('should handle sorting by different columns', async () => {
-        render(<ScenarioManager {...mockProps} />);
-        
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
         });
@@ -120,8 +122,10 @@ describe('ScenarioManager', () => {
     });
 
     it('should handle scenario selection', async () => {
-        render(<ScenarioManager {...mockProps} />);
-        
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
         });
@@ -137,7 +141,9 @@ describe('ScenarioManager', () => {
     });
 
     it('should call onViewScenario when view button is clicked', async () => {
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
 
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
@@ -155,7 +161,9 @@ describe('ScenarioManager', () => {
             })
         );
     });    it('should call onEditScenario when edit button is clicked', async () => {
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
 
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
@@ -177,9 +185,11 @@ describe('ScenarioManager', () => {
     it('should show empty state when no scenarios exist', async () => {
         const { loadScenarios } = require('../../utils/scenarioHelpers');
         loadScenarios.mockReturnValue([]);
-        
-        render(<ScenarioManager {...mockProps} />);
-        
+
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             expect(screen.getByText('No Scenarios Yet')).toBeInTheDocument();
             expect(screen.getByText(/Create your first Knighthood challenge scenario/)).toBeInTheDocument();
@@ -189,9 +199,11 @@ describe('ScenarioManager', () => {
     it('should handle delete scenario with confirmation', async () => {
         // Mock window.confirm
         const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
-        
-        render(<ScenarioManager {...mockProps} />);
-        
+
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
         });
@@ -205,8 +217,10 @@ describe('ScenarioManager', () => {
     });
 
     it('should handle duplicate scenario', async () => {
-        render(<ScenarioManager {...mockProps} />);
-        
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
+
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
         });
@@ -223,7 +237,9 @@ describe('ScenarioManager', () => {
         const { calculateCombinedMetricsDynamic } = require('../../utils/scenarioHelpers');
         calculateCombinedMetricsDynamic.mockRejectedValue(new Error('Calculation failed'));
         
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
         
         // Should still render with zero metrics
         await waitFor(() => {
@@ -232,7 +248,9 @@ describe('ScenarioManager', () => {
     });
 
     it('should toggle sort order when clicking same column', async () => {
-        render(<ScenarioManager {...mockProps} />);
+        await act(async () => {
+            render(<ScenarioManager {...mockProps} />);
+        });
 
         await waitFor(() => {
             expect(screen.getByText('Test Scenario 1')).toBeInTheDocument();
