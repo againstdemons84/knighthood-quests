@@ -8,13 +8,15 @@ interface WorkoutChartProps {
     userProfile?: UserProfile;
     width?: number;
     height?: number;
+    showMetrics?: boolean;
 }
 
 const WorkoutChart: React.FC<WorkoutChartProps> = ({ 
     workoutData, 
     userProfile,
     width = 800, 
-    height = 200 
+    height = 200,
+    showMetrics = false
 }) => {
     const svgWidth = 3057;
     const svgHeight = 370.7;
@@ -36,9 +38,9 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
                     fill="#2a2a2a"
                 />
                 {/* Chart elements (without background) */}
-                {generateSVG(workoutData, userProfile)}
+                {generateSVG(workoutData, userProfile, showMetrics)}
                 {/* Header elements on top */}
-                {generateWorkoutHeader(workoutData, userProfile)}
+                {generateWorkoutHeader(workoutData, userProfile, showMetrics)}
             </svg>
         </div>
     );

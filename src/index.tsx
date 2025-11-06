@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import WorkoutChart from './components/WorkoutChart';
+import WorkoutSelector from './components/WorkoutSelector';
+import ScenarioManager from './components/ScenarioManager';
+import SaveScenarioModal from './components/SaveScenarioModal';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import userData from './data/user.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
 import { WorkoutData } from './types/workout';
+import { Scenario, BasketState } from './types/scenario';
+import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
 
 interface KnighthoodWorkout {
     id: string;
@@ -25,9 +30,16 @@ interface WorkoutTableRow {
     error?: string;
 }
 
+type AppPage = 'browse' | 'selector' | 'scenarios';
+
 const App = () => {
+    const [currentPage, setCurrentPage] = useState<AppPage>('browse');
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
+    const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
+    const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const userProfile = userData.data.impersonateUser.user.profiles.riderProfile;
 
     const formatDuration = (seconds: number): string => {
@@ -101,122 +113,305 @@ const App = () => {
         loadAllWorkouts();
     }, [userProfile]);
 
-    if (loading) {
-        return (
-            <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                <h1 style={{ color: 'white', marginBottom: '20px' }}>Loading Knighthood Workouts...</h1>
-                <p style={{ color: '#999' }}>Loading workout data and calculating metrics...</p>
+    useEffect(() => {
+        const savedScenarios = loadScenarios();
+        setScenarios(savedScenarios);
+    }, []);
+
+    const handleSaveScenario = (scenario: Scenario) => {
+        const existingIndex = scenarios.findIndex(s => s.id === scenario.id);
+        let updatedScenarios;
+        
+        if (existingIndex >= 0) {
+            updatedScenarios = [...scenarios];
+            updatedScenarios[existingIndex] = scenario;
+        } else {
+            updatedScenarios = [...scenarios, scenario];
+        }
+        
+        setScenarios(updatedScenarios);
+        saveScenarios(updatedScenarios);
+        setShowSaveModal(false);
+        setEditingScenario(null);
+        
+        // Clear basket after saving
+        setBasketState({ selectedWorkouts: [], isComplete: false });
+    };
+
+    const handleEditScenario = (scenario: Scenario) => {
+        setEditingScenario(scenario);
+        setBasketState({
+            selectedWorkouts: scenario.workouts,
+            isComplete: scenario.workouts.length === 10
+        });
+        setCurrentPage('selector');
+    };
+
+    const handleBasketChange = (newBasketState: BasketState) => {
+        setBasketState(newBasketState);
+    };
+
+    const renderNavigation = () => (
+        <div style={{ 
+            backgroundColor: '#2a2a2a', 
+            padding: '15px 20px',
+            marginBottom: '20px',
+            borderRadius: '8px',
+            display: 'flex',
+            gap: '15px',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap'
+        }}>
+            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <h2 style={{ color: 'white', margin: 0 }}>Knight of Sufferlandria Challenge</h2>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                        onClick={() => setCurrentPage('browse')}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: currentPage === 'browse' ? '#4CAF50' : '#555',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Browse Workouts
+                    </button>
+                    <button
+                        onClick={() => {
+                            setCurrentPage('selector');
+                            setEditingScenario(null);
+                        }}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: currentPage === 'selector' ? '#4CAF50' : '#555',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Plan Challenge ({basketState.selectedWorkouts.length}/10)
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage('scenarios')}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: currentPage === 'scenarios' ? '#4CAF50' : '#555',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        My Scenarios ({scenarios.length})
+                    </button>
+                </div>
             </div>
-        );
-    }
+            
+            {currentPage === 'selector' && (
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    {basketState.isComplete && (
+                        <button
+                            onClick={() => setShowSaveModal(true)}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#4CAF50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                        </button>
+                    )}
+                    {editingScenario && (
+                        <button
+                            onClick={() => {
+                                setEditingScenario(null);
+                                setBasketState({ selectedWorkouts: [], isComplete: false });
+                            }}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#666',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
+    const renderContent = () => {
+        switch (currentPage) {
+            case 'selector':
+                return (
+                    <WorkoutSelector
+                        onBasketChange={handleBasketChange}
+                        initialBasket={basketState.selectedWorkouts}
+                    />
+                );
+            
+            case 'scenarios':
+                return (
+                    <ScenarioManager
+                        onEditScenario={handleEditScenario}
+                    />
+                );
+            
+            case 'browse':
+            default:
+                if (loading) {
+                    return (
+                        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
+                            <h1 style={{ color: 'white', marginBottom: '20px' }}>Loading Knighthood Workouts...</h1>
+                            <p style={{ color: '#999' }}>Loading workout data and calculating metrics...</p>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                        <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>
+                            All Knighthood Workouts ({workoutRows.length} Total)
+                        </h1>
+                        <p style={{ color: '#999', marginBottom: '30px', textAlign: 'center' }}>
+                            Browse all available Knighthood workouts and their training metrics
+                        </p>
+                        
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ 
+                                width: '100%', 
+                                borderCollapse: 'collapse',
+                                backgroundColor: '#2a2a2a',
+                                borderRadius: '8px',
+                                overflow: 'hidden'
+                            }}>
+                                <thead>
+                                    <tr style={{ backgroundColor: '#333' }}>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
+                                            Workout
+                                        </th>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', minWidth: '400px' }}>
+                                            Workout Profile
+                                        </th>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                            Duration
+                                        </th>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                            TSS®
+                                        </th>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                            IF®
+                                        </th>
+                                        <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                            NP®
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {workoutRows.map((row, index) => (
+                                        <tr 
+                                            key={row.id}
+                                            style={{ 
+                                                borderBottom: index < workoutRows.length - 1 ? '1px solid #333' : 'none',
+                                                backgroundColor: index % 2 === 0 ? '#2a2a2a' : '#252525'
+                                            }}
+                                        >
+                                            <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
+                                                <div>
+                                                    <strong>{row.name}</strong>
+                                                    <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+                                                        ID: {row.id}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '15px', verticalAlign: 'middle' }}>
+                                                {row.workoutData ? (
+                                                    <WorkoutChart
+                                                        workoutData={row.workoutData}
+                                                        userProfile={userProfile}
+                                                        height={120}
+                                                    />
+                                                ) : (
+                                                    <div style={{ 
+                                                        color: '#999', 
+                                                        textAlign: 'center',
+                                                        padding: '40px',
+                                                        fontStyle: 'italic'
+                                                    }}>
+                                                        {row.error || 'No workout data available'}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                {row.metrics?.duration || 'N/A'}
+                                            </td>
+                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                {row.metrics?.tss || 'N/A'}
+                                            </td>
+                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                {row.metrics ? row.metrics.intensityFactor.toFixed(2) : 'N/A'}
+                                            </td>
+                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                                {row.metrics?.normalizedPower || 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style={{ 
+                            marginTop: '30px', 
+                            padding: '20px', 
+                            backgroundColor: '#2a2a2a', 
+                            borderRadius: '8px',
+                            color: '#999'
+                        }}>
+                            <h3 style={{ color: 'white', marginBottom: '10px' }}>About Knighthood Workouts</h3>
+                            <p>
+                                These are the official Knighthood workouts from Wahoo SYSTM. Each workout has been analyzed 
+                                using your rider profile (FTP: {userProfile.ftp}W, MAP: {userProfile.map}W, 
+                                AC: {userProfile.ac}W, NM: {userProfile.nm}W) to calculate Training Stress Score (TSS®), 
+                                Intensity Factor (IF®), and Normalized Power (NP®).
+                            </p>
+                            <p style={{ marginTop: '10px', fontSize: '14px' }}>
+                                <strong>Knight of Sufferlandria Challenge:</strong> Choose 10 of these workouts to complete back-to-back. 
+                                Use the "Plan Challenge" tab to select your workouts and save different scenarios for comparison.
+                            </p>
+                        </div>
+                    </div>
+                );
+        }
+    };
 
     return (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-            <h1 style={{ color: 'white', marginBottom: '30px', textAlign: 'center' }}>
-                Knighthood Workouts ({workoutRows.length} Total)
-            </h1>
+            {renderNavigation()}
+            {renderContent()}
             
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ 
-                    width: '100%', 
-                    borderCollapse: 'collapse',
-                    backgroundColor: '#2a2a2a',
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                }}>
-                    <thead>
-                        <tr style={{ backgroundColor: '#333' }}>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'left', borderBottom: '2px solid #444' }}>
-                                Workout
-                            </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', minWidth: '400px' }}>
-                                Workout Profile
-                            </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                Duration
-                            </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                TSS®
-                            </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                IF®
-                            </th>
-                            <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
-                                NP®
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {workoutRows.map((row, index) => (
-                            <tr 
-                                key={row.id}
-                                style={{ 
-                                    borderBottom: index < workoutRows.length - 1 ? '1px solid #333' : 'none',
-                                    backgroundColor: index % 2 === 0 ? '#2a2a2a' : '#252525'
-                                }}
-                            >
-                                <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
-                                    <div>
-                                        <strong>{row.name}</strong>
-                                        <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-                                            ID: {row.id}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style={{ padding: '15px', verticalAlign: 'middle' }}>
-                                    {row.workoutData ? (
-                                        <WorkoutChart
-                                            workoutData={row.workoutData}
-                                            userProfile={userProfile}
-                                            height={120}
-                                        />
-                                    ) : (
-                                        <div style={{ 
-                                            color: '#999', 
-                                            textAlign: 'center',
-                                            padding: '40px',
-                                            fontStyle: 'italic'
-                                        }}>
-                                            {row.error || 'No workout data available'}
-                                        </div>
-                                    )}
-                                </td>
-                                <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    {row.metrics?.duration || 'N/A'}
-                                </td>
-                                <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    {row.metrics?.tss || 'N/A'}
-                                </td>
-                                <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    {row.metrics ? row.metrics.intensityFactor.toFixed(2) : 'N/A'}
-                                </td>
-                                <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                    {row.metrics?.normalizedPower || 'N/A'}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            <div style={{ 
-                marginTop: '30px', 
-                padding: '20px', 
-                backgroundColor: '#2a2a2a', 
-                borderRadius: '8px',
-                color: '#999'
-            }}>
-                <h3 style={{ color: 'white', marginBottom: '10px' }}>About Knighthood Workouts</h3>
-                <p>
-                    These are the official Knighthood workouts from Wahoo SYSTM. Each workout has been analyzed 
-                    using your rider profile (FTP: {userProfile.ftp}W, MAP: {userProfile.map}W, 
-                    AC: {userProfile.ac}W, NM: {userProfile.nm}W) to calculate Training Stress Score (TSS®), 
-                    Intensity Factor (IF®), and Normalized Power (NP®).
-                </p>
-                <p style={{ marginTop: '10px', fontSize: '14px' }}>
-                    <strong>Note:</strong> Workouts without data have not been fetched yet. Run the fetch-workouts script to download workout profiles.
-                </p>
-            </div>
+            {showSaveModal && (
+                <SaveScenarioModal
+                    basketState={basketState}
+                    onSave={handleSaveScenario}
+                    onCancel={() => {
+                        setShowSaveModal(false);
+                        setEditingScenario(null);
+                    }}
+                    existingScenario={editingScenario}
+                />
+            )}
         </div>
     );
 };

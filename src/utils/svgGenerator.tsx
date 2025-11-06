@@ -22,7 +22,7 @@ const getColorByType = (type: string): string => {
 
 
 
-export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile) => {
+export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile, showMetrics: boolean = false) => {
     const { time, value, type } = workoutData;
     const maxTime = Math.max(...time);
     const svgWidth = 3057;
@@ -142,9 +142,14 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile)
 
 
 
-export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile) => {
+export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile, showMetrics: boolean = false) => {
     const maxTime = Math.max(...workoutData.time);
     const duration = Math.floor(maxTime);
+    
+    // Return empty array if metrics are disabled
+    if (!showMetrics) {
+        return [];
+    }
     
     const headerElements = [];
     
