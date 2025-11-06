@@ -3,13 +3,14 @@ import { WorkoutSelection, BasketState } from '../types/scenario';
 import { calculateCombinedMetrics, formatDuration } from '../utils/scenarioHelpers';
 import knighthoodWorkouts from '../data/knighthood-workouts.json';
 import allWorkouts from '../data/workouts.json';
-import userData from '../data/user.json';
 import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
 import { WorkoutData } from '../types/workout';
+import { UserPowerProfile } from '../types/userProfile';
 
 interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
     initialBasket?: WorkoutSelection[];
+    userProfile: UserPowerProfile;
 }
 
 interface WorkoutRow {
@@ -27,7 +28,8 @@ interface WorkoutRow {
 
 const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({ 
     onBasketChange, 
-    initialBasket = [] 
+    initialBasket = [],
+    userProfile
 }) => {
     const [workoutRows, setWorkoutRows] = useState<WorkoutRow[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,7 +38,6 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     const [sortBy, setSortBy] = useState<'name' | 'duration' | 'tss' | 'if'>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-    const userProfile = userData.data.impersonateUser.user.profiles.riderProfile;
     const MAX_WORKOUTS = 10;
 
     const findWorkoutTitle = (contentId: string): string => {

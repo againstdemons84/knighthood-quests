@@ -1,11 +1,12 @@
 import React from 'react';
 import { WorkoutData } from '../types/workout';
 import { UserProfile } from '../types/user';
+import { UserPowerProfile } from '../types/userProfile';
 import { generateSVG, generateWorkoutHeader } from '../utils/svgGenerator';
 
 interface WorkoutChartProps {
     workoutData: WorkoutData;
-    userProfile?: UserProfile;
+    userProfile?: UserProfile | UserPowerProfile;
     width?: number;
     height?: number;
     showMetrics?: boolean;

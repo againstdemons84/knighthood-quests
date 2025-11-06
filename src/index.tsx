@@ -4,13 +4,16 @@ import WorkoutChart from './components/WorkoutChart';
 import WorkoutSelector from './components/WorkoutSelector';
 import ScenarioManager from './components/ScenarioManager';
 import SaveScenarioModal from './components/SaveScenarioModal';
+import UserProfileSetup from './components/UserProfileSetup';
+import UserProfileManager from './components/UserProfileManager';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
-import userData from './data/user.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
 import { WorkoutData } from './types/workout';
 import { Scenario, BasketState } from './types/scenario';
+import { UserPowerProfile } from './types/userProfile';
 import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
+import { getUserProfile, saveUserProfile, hasUserProfile } from './utils/userProfileHelpers';
 
 interface KnighthoodWorkout {
     id: string;
@@ -30,7 +33,7 @@ interface WorkoutTableRow {
     error?: string;
 }
 
-type AppPage = 'browse' | 'selector' | 'scenarios';
+type AppPage = 'browse' | 'selector' | 'scenarios' | 'profile';
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState<AppPage>('browse');
@@ -40,7 +43,9 @@ const App = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
-    const userProfile = userData.data.impersonateUser.user.profiles.riderProfile;
+    const [userProfile, setUserProfile] = useState<UserPowerProfile | null>(null);
+    const [showProfileSetup, setShowProfileSetup] = useState(false);
+    const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
 
     const formatDuration = (seconds: number): string => {
         const hours = Math.floor(seconds / 3600);
@@ -74,8 +79,21 @@ const App = () => {
         }
     };
 
+    // Initialize user profile on app load
+    useEffect(() => {
+        const profile = getUserProfile();
+        if (profile && hasUserProfile()) {
+            setUserProfile(profile.powerProfile);
+        } else {
+            setIsFirstTimeSetup(true);
+            setShowProfileSetup(true);
+        }
+    }, []);
+
     useEffect(() => {
         const loadAllWorkouts = async () => {
+            if (!userProfile) return; // Don't load workouts until profile is available
+
             const rows: WorkoutTableRow[] = [];
 
             for (const workout of knighthoodWorkouts.workouts) {
@@ -151,6 +169,20 @@ const App = () => {
         setBasketState(newBasketState);
     };
 
+    const handleProfileSave = (profile: UserPowerProfile) => {
+        saveUserProfile(profile);
+        setUserProfile(profile);
+        setShowProfileSetup(false);
+        setIsFirstTimeSetup(false);
+        setLoading(true); // Trigger reload of workouts with new profile
+    };
+
+    const handleProfileUpdate = (profile: UserPowerProfile) => {
+        saveUserProfile(profile);
+        setUserProfile(profile);
+        setLoading(true); // Trigger reload of workouts with new profile
+    };
+
     const renderNavigation = () => (
         <div style={{ 
             backgroundColor: '#2a2a2a', 
@@ -164,7 +196,14 @@ const App = () => {
             flexWrap: 'wrap'
         }}>
             <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <h2 style={{ color: 'white', margin: 0 }}>Knight of Sufferlandria Challenge</h2>
+                <div>
+                    <h2 style={{ color: 'white', margin: 0 }}>Knight of Sufferlandria Challenge</h2>
+                    {userProfile && (
+                        <div style={{ color: '#999', fontSize: '12px', marginTop: '2px' }}>
+                            FTP: {userProfile.ftp}W | MAP: {userProfile.map}W | AC: {userProfile.ac}W | NM: {userProfile.nm}W
+                        </div>
+                    )}
+                </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button
                         onClick={() => setCurrentPage('browse')}
@@ -207,6 +246,19 @@ const App = () => {
                         }}
                     >
                         My Scenarios ({scenarios.length})
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage('profile')}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: currentPage === 'profile' ? '#4CAF50' : '#555',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ⚙️ Profile
                     </button>
                 </div>
             </div>
@@ -255,12 +307,13 @@ const App = () => {
     const renderContent = () => {
         switch (currentPage) {
             case 'selector':
-                return (
+                return userProfile ? (
                     <WorkoutSelector
                         onBasketChange={handleBasketChange}
                         initialBasket={basketState.selectedWorkouts}
+                        userProfile={userProfile}
                     />
-                );
+                ) : null;
             
             case 'scenarios':
                 return (
@@ -269,13 +322,32 @@ const App = () => {
                     />
                 );
             
+            case 'profile':
+                return userProfile ? (
+                    <UserProfileManager
+                        currentProfile={userProfile}
+                        onProfileUpdate={handleProfileUpdate}
+                    />
+                ) : null;
+            
             case 'browse':
             default:
+                if (!userProfile) {
+                    return (
+                        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
+                            <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '100px' }}>
+                                <h1 style={{ color: 'white', marginBottom: '20px' }}>Setting up your Power Profile...</h1>
+                                <p style={{ color: '#999' }}>Please complete your power profile setup to continue.</p>
+                            </div>
+                        </div>
+                    );
+                }
+                
                 if (loading) {
                     return (
                         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
                             <h1 style={{ color: 'white', marginBottom: '20px' }}>Loading Knighthood Workouts...</h1>
-                            <p style={{ color: '#999' }}>Loading workout data and calculating metrics...</p>
+                            <p style={{ color: '#999' }}>Loading workout data and calculating metrics with your power profile...</p>
                         </div>
                     );
                 }
@@ -337,7 +409,7 @@ const App = () => {
                                                 </div>
                                             </td>
                                             <td style={{ padding: '15px', verticalAlign: 'middle' }}>
-                                                {row.workoutData ? (
+                                                {row.workoutData && userProfile ? (
                                                     <WorkoutChart
                                                         workoutData={row.workoutData}
                                                         userProfile={userProfile}
@@ -382,8 +454,8 @@ const App = () => {
                             <h3 style={{ color: 'white', marginBottom: '10px' }}>About Knighthood Workouts</h3>
                             <p>
                                 These are the official Knighthood workouts from Wahoo SYSTM. Each workout has been analyzed 
-                                using your rider profile (FTP: {userProfile.ftp}W, MAP: {userProfile.map}W, 
-                                AC: {userProfile.ac}W, NM: {userProfile.nm}W) to calculate Training Stress Score (TSS®), 
+                                using your power profile (FTP: {userProfile?.ftp}W, MAP: {userProfile?.map}W, 
+                                AC: {userProfile?.ac}W, NM: {userProfile?.nm}W) to calculate Training Stress Score (TSS®), 
                                 Intensity Factor (IF®), and Normalized Power (NP®).
                             </p>
                             <p style={{ marginTop: '10px', fontSize: '14px' }}>
@@ -410,6 +482,13 @@ const App = () => {
                         setEditingScenario(null);
                     }}
                     existingScenario={editingScenario}
+                />
+            )}
+            
+            {showProfileSetup && (
+                <UserProfileSetup
+                    onProfileSave={handleProfileSave}
+                    isFirstTime={isFirstTimeSetup}
                 />
             )}
         </div>

@@ -1,10 +1,11 @@
 import { WorkoutData } from '../types/workout';
 import { UserProfile } from '../types/user';
+import { UserPowerProfile } from '../types/userProfile';
 
 /**
  * Get the actual power value for a workout segment based on type, intensity, and user profile
  */
-const getPowerValue = (type: string, intensity: number, userProfile?: UserProfile): number => {
+export const getPowerValue = (type: string, intensity: number, userProfile?: UserProfile | UserPowerProfile): number => {
     if (!userProfile) {
         return intensity; // Fallback if no user profile
     }
@@ -29,7 +30,7 @@ const getPowerValue = (type: string, intensity: number, userProfile?: UserProfil
  * 3. Average the 4th powers
  * 4. Take the 4th root of the average
  */
-export const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?: UserProfile): number => {
+export const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?: UserProfile | UserPowerProfile): number => {
     const { time, value, type } = workoutData;
     
     if (!userProfile) {
@@ -83,7 +84,7 @@ export const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?:
  * Calculate Intensity Factor (IF)
  * Formula: IF = NP ÷ FTP
  */
-export const calculateIntensityFactor = (normalizedPower: number, userProfile?: UserProfile): number => {
+export const calculateIntensityFactor = (normalizedPower: number, userProfile?: UserProfile | UserPowerProfile): number => {
     if (!userProfile || userProfile.ftp === 0) {
         return 0; // Can't calculate without user profile or valid FTP
     }
@@ -117,7 +118,7 @@ export const calculateTrainingStressScore = (intensityFactor: number, durationIn
 /**
  * Calculate all training metrics at once for convenience
  */
-export const calculateAllTrainingMetrics = (workoutData: WorkoutData, userProfile?: UserProfile) => {
+export const calculateAllTrainingMetrics = (workoutData: WorkoutData, userProfile?: UserProfile | UserPowerProfile) => {
     const maxTime = Math.max(...workoutData.time);
     const duration = Math.floor(maxTime);
     
@@ -134,6 +135,5 @@ export const calculateAllTrainingMetrics = (workoutData: WorkoutData, userProfil
 };
 
 /**
- * Export getPowerValue for use in other modules (like svgGenerator)
+ * getPowerValue is now exported above as part of the function declaration
  */
-export { getPowerValue };

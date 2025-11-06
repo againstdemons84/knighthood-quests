@@ -1,6 +1,7 @@
 import React from 'react';
 import { WorkoutData } from '../types/workout';
 import { UserProfile } from '../types/user';
+import { UserPowerProfile } from '../types/userProfile';
 import { 
     calculateAllTrainingMetrics, 
     getPowerValue 
@@ -22,7 +23,7 @@ const getColorByType = (type: string): string => {
 
 
 
-export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile, showMetrics: boolean = false) => {
+export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile | UserPowerProfile, showMetrics: boolean = false) => {
     const { time, value, type } = workoutData;
     const maxTime = Math.max(...time);
     const svgWidth = 3057;
@@ -142,7 +143,7 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile,
 
 
 
-export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile, showMetrics: boolean = false) => {
+export const generateWorkoutHeader = (workoutData: WorkoutData, userProfile?: UserProfile | UserPowerProfile, showMetrics: boolean = false) => {
     const maxTime = Math.max(...workoutData.time);
     const duration = Math.floor(maxTime);
     
