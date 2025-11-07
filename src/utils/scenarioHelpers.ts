@@ -1,6 +1,7 @@
 import { Scenario, WorkoutSelection } from '../types/scenario';
 import { getBestWorkoutData } from './workoutDataHelpers';
 import { calculateAllTrainingMetrics } from './trainingMetrics';
+import { getWorkoutData } from '../data/workout-data';
 
 const SCENARIOS_STORAGE_KEY = 'knighthood_scenarios';
 
@@ -9,11 +10,11 @@ const SCENARIOS_STORAGE_KEY = 'knighthood_scenarios';
  */
 export const loadWorkoutMetrics = async (workoutId: string, userProfile?: any) => {
     try {
-        const response = await fetch(`/data/workouts/${workoutId}.json`);
-        if (!response.ok) {
-            throw new Error(`Failed to load workout data for ${workoutId}`);
+        const rawData = getWorkoutData(workoutId);
+        if (!rawData) {
+            throw new Error(`Workout data not found for ${workoutId}`);
         }
-        const rawData = await response.json();
+        
         const result = getBestWorkoutData(rawData);
         
         if (!result.data) {

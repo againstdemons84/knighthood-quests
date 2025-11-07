@@ -6,6 +6,7 @@ import { WorkoutData } from '../types/workout';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import WorkoutChart from './WorkoutChart';
 import allWorkouts from '../data/workouts.json';
+import { getWorkoutData } from '../data/workout-data';
 
 interface ReorderableWorkoutListProps {
     workouts: WorkoutSelection[];
@@ -48,11 +49,10 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
     const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
-            const response = await fetch(`/data/workouts/${workoutId}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load workout data for ${workoutId}`);
+            const rawData = getWorkoutData(workoutId);
+            if (!rawData) {
+                throw new Error(`Workout data not found for ${workoutId}`);
             }
-            const rawData = await response.json();
             const result = getBestWorkoutData(rawData);
             return {
                 data: result.data,

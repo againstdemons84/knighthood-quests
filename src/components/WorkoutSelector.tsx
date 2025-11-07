@@ -5,6 +5,7 @@ import { generateOptimalSelections, convertToWorkoutSelections, SortedWorkout } 
 import knighthoodWorkouts from '../data/knighthood-workouts.json';
 import allWorkouts from '../data/workouts.json';
 import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
+import { getWorkoutData } from '../data/workout-data';
 import { WorkoutData } from '../types/workout';
 import { UserPowerProfile } from '../types/userProfile';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
@@ -51,11 +52,10 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
     const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
-            const response = await fetch(`/data/workouts/${workoutId}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load workout data for ${workoutId}`);
+            const rawData = getWorkoutData(workoutId);
+            if (!rawData) {
+                throw new Error(`Workout data not found for ${workoutId}`);
             }
-            const rawData = await response.json();
             const result = getBestWorkoutData(rawData);
             return {
                 data: result.data,

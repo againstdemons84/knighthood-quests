@@ -11,6 +11,7 @@ import ScenarioDetailsView from './components/ScenarioDetailsView';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
+import { getWorkoutData } from './data/workout-data';
 import { WorkoutData } from './types/workout';
 import { Scenario, BasketState } from './types/scenario';
 import { getBestWorkoutData } from './utils/workoutDataHelpers';
@@ -71,12 +72,11 @@ const App = () => {
 
     const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
         try {
-            // Try to load the workout data from the public directory
-            const response = await fetch(`/data/workouts/${workoutId}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load workout data for ${workoutId}`);
+            // Load the workout data from imported modules
+            const rawData = getWorkoutData(workoutId);
+            if (!rawData) {
+                throw new Error(`Workout data not found for ${workoutId}`);
             }
-            const rawData = await response.json();
             const result = getBestWorkoutData(rawData);
             return {
                 data: result.data,
