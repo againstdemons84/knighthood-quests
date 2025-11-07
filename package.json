@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A React application that generates SVG visualizations based on workout data from an API.",
   "main": "src/index.ts",
+  "homepage": "https://againstdemons84.github.io/knighthood-quests/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
