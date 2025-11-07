@@ -614,10 +614,29 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 return (
                                     <tr 
                                         key={row.id}
+                                        onClick={(e) => {
+                                            // Only trigger selection if clicking outside of interactive elements
+                                            const target = e.target as HTMLElement;
+                                            if (!target.closest('input') && !target.closest('a')) {
+                                                toggleWorkoutSelection(row.id);
+                                            }
+                                        }}
                                         style={{ 
                                             borderBottom: index < sortedWorkouts.length - 1 ? '1px solid #333' : 'none',
                                             backgroundColor: isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525'),
-                                            opacity: row.metrics ? 1 : 0.6
+                                            opacity: row.metrics ? 1 : 0.6,
+                                            cursor: (canSelect || canDeselect) ? 'pointer' : 'not-allowed',
+                                            transition: 'background-color 0.2s ease',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (canSelect || canDeselect) {
+                                                const currentBg = isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525');
+                                                e.currentTarget.style.backgroundColor = isSelected ? '#2a5a2a' : '#333333';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            const originalBg = isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525');
+                                            e.currentTarget.style.backgroundColor = originalBg;
                                         }}
                                     >
                                         <td style={{ padding: '15px', textAlign: 'center' }}>
