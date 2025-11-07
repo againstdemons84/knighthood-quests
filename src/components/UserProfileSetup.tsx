@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserPowerProfile } from '../types/userProfile';
 import { validatePowerProfile } from '../utils/userProfileHelpers';
+import { useViewport } from '../hooks/useViewport';
 
 interface UserProfileSetupProps {
     onProfileSave: (profile: UserPowerProfile) => void;
@@ -13,6 +14,7 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
     initialProfile,
     isFirstTime = false 
 }) => {
+    const viewport = useViewport();
     const [profile, setProfile] = useState<UserPowerProfile>(
         initialProfile || { nm: 0, ac: 0, map: 0, ftp: 0 }
     );
@@ -51,25 +53,47 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
             backgroundColor: 'rgba(0, 0, 0, 0.95)',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
+            alignItems: viewport.isMobile ? 'flex-start' : 'center',
+            zIndex: 1000,
+            padding: viewport.isMobile ? '20px 16px' : '20px',
+            overflowY: 'auto'
         }}>
             <div style={{
                 backgroundColor: '#2a2a2a',
-                padding: '40px',
+                padding: viewport.isMobile ? '24px 20px' : '40px',
                 borderRadius: '12px',
-                maxWidth: '600px',
-                width: '90%',
-                maxHeight: '90vh',
-                overflowY: 'auto'
+                maxWidth: viewport.isMobile ? '100%' : '600px',
+                width: viewport.isMobile ? '100%' : '90%',
+                maxHeight: viewport.isMobile ? 'none' : '90vh',
+                overflowY: viewport.isMobile ? 'visible' : 'auto',
+                marginTop: viewport.isMobile ? '10px' : '0'
             }}>
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <h1 style={{ color: 'white', margin: '0 0 10px 0', fontSize: '28px' }}>
-                        {isFirstTime ? '🏰 Welcome to Knight of Sufferlandria!' : '⚙️ Power Profile Settings'}
+                <div style={{ 
+                    textAlign: 'center', 
+                    marginBottom: viewport.isMobile ? '24px' : '30px'
+                }}>
+                    <h1 style={{ 
+                        color: 'white', 
+                        margin: '0 0 10px 0', 
+                        fontSize: viewport.isMobile ? '20px' : '28px',
+                        lineHeight: '1.2'
+                    }}>
+                        {isFirstTime ? 
+                            (viewport.isMobile ? '🏰 Welcome!' : '🏰 Welcome to Knight of Sufferlandria!') : 
+                            '⚙️ Power Profile Settings'
+                        }
                     </h1>
-                    <p style={{ color: '#999', margin: 0, fontSize: '16px', lineHeight: '1.5' }}>
+                    <p style={{ 
+                        color: '#999', 
+                        margin: 0, 
+                        fontSize: viewport.isMobile ? '14px' : '16px', 
+                        lineHeight: '1.5' 
+                    }}>
                         {isFirstTime 
-                            ? 'To calculate accurate training metrics for your Knighthood challenge, we need your power profile values. These are typically determined through a 4DP (Four Dimensional Power) test in Wahoo SYSTM.'
+                            ? (viewport.isMobile 
+                                ? 'Enter your power profile values to calculate accurate training metrics.'
+                                : 'To calculate accurate training metrics for your Knighthood challenge, we need your power profile values. These are typically determined through a 4DP (Four Dimensional Power) test in Wahoo SYSTM.'
+                              )
                             : 'Update your power profile values to recalculate training metrics.'
                         }
                     </p>

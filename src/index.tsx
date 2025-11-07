@@ -18,6 +18,7 @@ import { getBestWorkoutData } from './utils/workoutDataHelpers';
 import { UserPowerProfile } from './types/userProfile';
 import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
 import { getUserProfile, saveUserProfile, hasUserProfile } from './utils/userProfileHelpers';
+import { useViewport } from './hooks/useViewport';
 
 interface KnighthoodWorkout {
     id: string;
@@ -41,7 +42,8 @@ interface WorkoutTableRow {
 type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile';
 
 const App = () => {
-      const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile'>('browse');
+    const viewport = useViewport();
+    const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile'>('browse');
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
@@ -196,37 +198,64 @@ const App = () => {
     const renderNavigation = () => (
         <div style={{ 
             backgroundColor: '#2a2a2a', 
-            padding: '15px 20px',
-            marginBottom: '20px',
+            padding: viewport.isMobile ? '12px 16px' : '15px 20px',
+            marginBottom: viewport.isMobile ? '16px' : '20px',
             borderRadius: '8px',
             display: 'flex',
-            gap: '15px',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap'
+            flexDirection: viewport.isMobile ? 'column' : 'row',
+            gap: viewport.isMobile ? '12px' : '15px',
+            alignItems: viewport.isMobile ? 'stretch' : 'center',
+            justifyContent: 'space-between'
         }}>
-            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <div style={{ 
+                display: 'flex', 
+                flexDirection: viewport.isMobile ? 'column' : 'row',
+                gap: viewport.isMobile ? '8px' : '15px', 
+                alignItems: viewport.isMobile ? 'center' : 'center',
+                textAlign: viewport.isMobile ? 'center' : 'left'
+            }}>
                 <div>
-                    <h2 style={{ color: 'white', margin: 0 }}>Knight of Sufferlandria Challenge</h2>
+                    <h2 style={{ 
+                        color: 'white', 
+                        margin: 0,
+                        fontSize: viewport.isMobile ? '18px' : '24px'
+                    }}>
+                        {viewport.isMobile ? 'Knighthood Challenge' : 'Knight of Sufferlandria Challenge'}
+                    </h2>
                     {userProfile && (
-                        <div style={{ color: '#999', fontSize: '12px', marginTop: '2px' }}>
-                            FTP: {userProfile.ftp}W | MAP: {userProfile.map}W | AC: {userProfile.ac}W | NM: {userProfile.nm}W
+                        <div style={{ 
+                            color: '#999', 
+                            fontSize: viewport.isMobile ? '10px' : '12px', 
+                            marginTop: '2px'
+                        }}>
+                            {viewport.isMobile ? 
+                                `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W` :
+                                `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W | AC: ${userProfile.ac}W | NM: ${userProfile.nm}W`
+                            }
                         </div>
                     )}
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    gap: viewport.isMobile ? '8px' : '10px',
+                    flexWrap: 'wrap',
+                    justifyContent: viewport.isMobile ? 'center' : 'flex-start'
+                }}>
                     <button
                         onClick={() => setCurrentPage('browse')}
                         style={{
-                            padding: '8px 16px',
+                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'browse' ? '#4CAF50' : '#555',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontSize: viewport.isMobile ? '14px' : '13px',
+                            minHeight: viewport.isMobile ? '44px' : 'auto',
+                            flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        Browse Workouts
+                        {viewport.isMobile ? 'Browse' : 'Browse Workouts'}
                     </button>
                     <button
                         onClick={() => {
@@ -234,58 +263,76 @@ const App = () => {
                             setEditingScenario(null);
                         }}
                         style={{
-                            padding: '8px 16px',
+                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'selector' ? '#4CAF50' : '#555',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontSize: viewport.isMobile ? '14px' : '13px',
+                            minHeight: viewport.isMobile ? '44px' : 'auto',
+                            flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        Plan Challenge ({basketState.selectedWorkouts.length}/10)
+                        {viewport.isMobile ? `Plan (${basketState.selectedWorkouts.length}/10)` : `Plan Challenge (${basketState.selectedWorkouts.length}/10)`}
                     </button>
                     <button
                         onClick={() => setCurrentPage('scenarios')}
                         style={{
-                            padding: '8px 16px',
+                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'scenarios' ? '#4CAF50' : '#555',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontSize: viewport.isMobile ? '14px' : '13px',
+                            minHeight: viewport.isMobile ? '44px' : 'auto',
+                            flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        My Scenarios ({scenarios.length})
+                        {viewport.isMobile ? `Saved (${scenarios.length})` : `My Scenarios (${scenarios.length})`}
                     </button>
                     <button
                         onClick={() => setCurrentPage('profile')}
                         style={{
-                            padding: '8px 16px',
+                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'profile' ? '#4CAF50' : '#555',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontSize: viewport.isMobile ? '14px' : '13px',
+                            minHeight: viewport.isMobile ? '44px' : 'auto',
+                            flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        ⚙️ Profile
+                        {viewport.isMobile ? '⚙️' : '⚙️ Profile'}
                     </button>
                 </div>
             </div>
             
             {currentPage === 'selector' && (
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    gap: viewport.isMobile ? '8px' : '10px', 
+                    alignItems: 'center',
+                    justifyContent: viewport.isMobile ? 'center' : 'flex-start',
+                    width: viewport.isMobile ? '100%' : 'auto'
+                }}>
                     {basketState.isComplete && (
                         <button
                             onClick={() => setShowSaveModal(true)}
                             style={{
-                                padding: '10px 20px',
+                                padding: viewport.isMobile ? '14px 24px' : '10px 20px',
                                 backgroundColor: '#4CAF50',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                fontSize: viewport.isMobile ? '16px' : '14px',
+                                minHeight: viewport.isMobile ? '48px' : 'auto',
+                                flex: viewport.isMobile ? '1' : 'none'
                             }}
                         >
                             {editingScenario ? 'Update Scenario' : 'Save Scenario'}

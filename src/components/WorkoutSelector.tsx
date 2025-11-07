@@ -9,6 +9,7 @@ import { getWorkoutData } from '../data/workout-data';
 import { WorkoutData } from '../types/workout';
 import { UserPowerProfile } from '../types/userProfile';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
+import { useViewport } from '../hooks/useViewport';
 
 interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
@@ -35,6 +36,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     initialBasket = [],
     userProfile
 }) => {
+    const viewport = useViewport();
     const [workoutRows, setWorkoutRows] = useState<WorkoutRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basket, setBasket] = useState<WorkoutSelection[]>(initialBasket);
@@ -242,12 +244,12 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
             {/* Sticky Controls Container */}
             <div style={{
-                position: 'sticky',
-                top: 0,
+                position: viewport.isMobile ? 'relative' : 'sticky',
+                top: viewport.isMobile ? 'auto' : 0,
                 zIndex: 100,
                 backgroundColor: '#1a1a1a',
                 borderBottom: '2px solid #333',
-                paddingTop: '10px',
+                paddingTop: viewport.isMobile ? '0' : '10px',
                 paddingBottom: '10px',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
             }}>
