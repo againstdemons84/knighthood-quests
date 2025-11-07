@@ -6,3 +6,4 @@ export { default as UserProfileSetup } from './UserProfileSetup';
 export { default as UserProfileManager } from './UserProfileManager';
 export { default as WorkoutTable } from './WorkoutTable';
 export { default as ScenarioDetailsView } from './ScenarioDetailsView';
+export { default as ReorderableWorkoutList } from './ReorderableWorkoutList';

@@ -351,6 +351,14 @@ const App = () => {
                         scenario={selectedScenario}
                         userProfile={userProfile}
                         onBack={() => setCurrentPage('scenarios')}
+                        onScenarioUpdate={(updatedScenario) => {
+                            setSelectedScenario(updatedScenario);
+                            // Also update the scenarios list in case we go back
+                            const updatedScenarios = scenarios.map(s => 
+                                s.id === updatedScenario.id ? updatedScenario : s
+                            );
+                            setScenarios(updatedScenarios);
+                        }}
                     />
                 ) : null;
             

@@ -1,39 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Scenario } from '../types/scenario';
+import { Scenario, WorkoutSelection } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
-import { formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
-import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
-import { WorkoutData } from '../types/workout';
-import WorkoutTable from './WorkoutTable';
-import allWorkouts from '../data/workouts.json';
-import { getBestWorkoutData } from '../utils/workoutDataHelpers';
+import { formatDuration, calculateCombinedMetricsDynamic, loadScenarios, saveScenarios } from '../utils/scenarioHelpers';
+import ReorderableWorkoutList from './ReorderableWorkoutList';
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
     userProfile: UserPowerProfile;
     onBack: () => void;
+    onScenarioUpdate?: (updatedScenario: Scenario) => void;
 }
 
-interface ScenarioWorkoutRow {
-    id: string;
-    name: string;
-    workoutData: WorkoutData | null;
-    metrics: {
-        duration: string;
-        tss: number;
-        intensityFactor: number;
-        normalizedPower: number;
-    } | null;
-    error?: string;
-    usedOutdoorData?: boolean;
-}
+
 
 const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     scenario,
     userProfile,
-    onBack
+    onBack,
+    onScenarioUpdate
 }) => {
-    const [workoutRows, setWorkoutRows] = useState<ScenarioWorkoutRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [dynamicMetrics, setDynamicMetrics] = useState({
         totalDuration: 0,
@@ -43,76 +28,31 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
         totalNP: 0
     });
 
-    const findWorkoutTitle = (contentId: string): string => {
-        const workout = allWorkouts.data.library.content.find((item: any) => item.id === contentId);
-        return workout?.name || 'Unknown Workout';
-    };
 
-    const loadWorkoutData = async (workoutId: string): Promise<{ data: WorkoutData | null; usedOutdoor: boolean }> => {
-        try {
-            const response = await fetch(`/data/workouts/${workoutId}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load workout data for ${workoutId}`);
-            }
-            const rawData = await response.json();
-            const result = getBestWorkoutData(rawData);
-            return {
-                data: result.data,
-                usedOutdoor: result.usedOutdoor
-            };
-        } catch (error) {
-            console.error(`Error loading workout ${workoutId}:`, error);
-            return { data: null, usedOutdoor: false };
-        }
-    };
 
-    const formatDurationFromSeconds = (seconds: number): string => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
+    const handleWorkoutReorder = (reorderedWorkouts: WorkoutSelection[]) => {
+        const updatedScenario: Scenario = {
+            ...scenario,
+            workouts: reorderedWorkouts
+        };
+
+        // Save to localStorage
+        const allScenarios = loadScenarios();
+        const scenarioIndex = allScenarios.findIndex(s => s.id === scenario.id);
         
-        if (hours > 0) {
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        } else {
-            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        if (scenarioIndex >= 0) {
+            allScenarios[scenarioIndex] = updatedScenario;
+            saveScenarios(allScenarios);
+            
+            // Notify parent component if callback provided
+            if (onScenarioUpdate) {
+                onScenarioUpdate(updatedScenario);
+            }
         }
     };
 
     useEffect(() => {
-        const loadScenarioWorkouts = async () => {
-            const rows: ScenarioWorkoutRow[] = [];
-
-            for (const workout of scenario.workouts) {
-                const title = findWorkoutTitle(workout.id);
-                const workoutResult = await loadWorkoutData(workout.id);
-                
-                let metrics = null;
-                if (workoutResult.data) {
-                    try {
-                        const calculatedMetrics = calculateAllTrainingMetrics(workoutResult.data, userProfile);
-                        metrics = {
-                            duration: formatDurationFromSeconds(calculatedMetrics.duration),
-                            tss: calculatedMetrics.trainingStressScore,
-                            intensityFactor: calculatedMetrics.intensityFactor,
-                            normalizedPower: calculatedMetrics.normalizedPower
-                        };
-                    } catch (error) {
-                        console.error(`Error calculating metrics for ${workout.id}:`, error);
-                    }
-                }
-
-                rows.push({
-                    id: workout.id,
-                    name: title,
-                    workoutData: workoutResult.data,
-                    metrics,
-                    error: !workoutResult.data ? 'Workout data not available' : undefined,
-                    usedOutdoorData: workoutResult.usedOutdoor
-                });
-            }
-
-            setWorkoutRows(rows);
-            
+        const loadScenarioMetrics = async () => {
             // Calculate dynamic metrics for the scenario
             try {
                 const calculatedMetrics = await calculateCombinedMetricsDynamic(scenario.workouts, userProfile);
@@ -125,7 +65,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
             setLoading(false);
         };
 
-        loadScenarioWorkouts();
+        loadScenarioMetrics();
     }, [scenario, userProfile]);
 
     if (loading) {
@@ -259,13 +199,13 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 </div>
             </div>
 
-            {/* Workout Table */}
-            <WorkoutTable
-                workoutRows={workoutRows}
+            {/* Reorderable Workout List */}
+            <ReorderableWorkoutList
+                workouts={scenario.workouts}
                 userProfile={userProfile}
+                onReorder={handleWorkoutReorder}
                 title={`${scenario.name} - Challenge Workouts`}
-                subtitle={`${scenario.workouts.length} workouts selected for your Knight of Sufferlandria challenge`}
-                showWorkoutProfiles={true}
+                subtitle={`Drag and drop to reorder your ${scenario.workouts.length} Knight of Sufferlandria challenge workouts`}
             />
         </div>
     );
