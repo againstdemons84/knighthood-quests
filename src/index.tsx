@@ -105,7 +105,7 @@ const App = () => {
                     name: decodeURIComponent(sharedScenarioName),
                     workoutIds: workoutIds
                 });
-                setCurrentPage('shared-scenario');
+                // Don't set page yet - let profile setup determine the flow
             }
         }
     }, []);
@@ -115,11 +115,16 @@ const App = () => {
         const profile = getUserProfile();
         if (profile && hasUserProfile()) {
             setUserProfile(profile.powerProfile);
+            // If user has profile and there's shared scenario data, go to shared view
+            if (sharedScenarioData) {
+                setCurrentPage('shared-scenario');
+            }
         } else {
             setIsFirstTimeSetup(true);
             setShowProfileSetup(true);
+            // Keep current page as 'browse' - profile save will handle redirect if needed
         }
-    }, []);
+    }, [sharedScenarioData]); // Add dependency on sharedScenarioData
 
     useEffect(() => {
         const loadAllWorkouts = async () => {
@@ -206,7 +211,13 @@ const App = () => {
         setUserProfile(profile);
         setShowProfileSetup(false);
         setIsFirstTimeSetup(false);
-        setLoading(true); // Trigger reload of workouts with new profile
+        
+        // If user came from a shared link, redirect back to shared scenario
+        if (sharedScenarioData) {
+            setCurrentPage('shared-scenario');
+        } else {
+            setLoading(true); // Trigger reload of workouts with new profile
+        }
     };
 
     const handleProfileUpdate = (profile: UserPowerProfile) => {
