@@ -106,6 +106,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         saveScenarios(updatedScenarios);
     };
 
+    const shareScenario = (scenario: Scenario) => {
+        const workoutIds = scenario.workouts.map(w => w.id).join(',');
+        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodeURIComponent(scenario.name)}&workouts=${workoutIds}`;
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            // Show temporary success message
+            alert(`Share link copied to clipboard!\n\nAnyone with this link can view and save "${scenario.name}" to their own scenarios.`);
+        }).catch(() => {
+            // Fallback: show the URL in a prompt for manual copying
+            prompt('Copy this link to share your scenario:', shareUrl);
+        });
+    };
+
     const toggleScenarioSelection = (scenarioId: string) => {
         setSelectedScenarios(prev => {
             const newSet = new Set(prev);
@@ -529,6 +543,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                         }}
                                                     >
                                                         Copy
+                                                    </button>
+                                                    <button
+                                                        onClick={() => shareScenario(scenario)}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            backgroundColor: '#9C27B0',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '12px'
+                                                        }}
+                                                    >
+                                                        Share
                                                     </button>
                                                     <button
                                                         onClick={() => deleteScenario(scenario.id)}

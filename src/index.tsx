@@ -8,6 +8,7 @@ import UserProfileSetup from './components/UserProfileSetup';
 import UserProfileManager from './components/UserProfileManager';
 import WorkoutTable from './components/WorkoutTable';
 import ScenarioDetailsView from './components/ScenarioDetailsView';
+import SharedScenarioView from './components/SharedScenarioView';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
@@ -39,11 +40,11 @@ interface WorkoutTableRow {
     usedOutdoorData?: boolean;
 }
 
-type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile';
+type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario';
 
 const App = () => {
     const viewport = useViewport();
-    const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile'>('browse');
+    const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario'>('browse');
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
@@ -54,6 +55,7 @@ const App = () => {
     const [showProfileSetup, setShowProfileSetup] = useState(false);
     const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
     const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+    const [sharedScenarioData, setSharedScenarioData] = useState<{ name: string; workoutIds: string[] } | null>(null);
 
     const formatDuration = (seconds: number): string => {
         const hours = Math.floor(seconds / 3600);
@@ -89,6 +91,24 @@ const App = () => {
             return { data: null, usedOutdoor: false };
         }
     };
+
+    // Check for shared scenario URL parameters on app load
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedScenarioName = urlParams.get('share');
+        const sharedWorkoutIds = urlParams.get('workouts');
+
+        if (sharedScenarioName && sharedWorkoutIds) {
+            const workoutIds = sharedWorkoutIds.split(',').filter(id => id.trim());
+            if (workoutIds.length > 0) {
+                setSharedScenarioData({
+                    name: decodeURIComponent(sharedScenarioName),
+                    workoutIds: workoutIds
+                });
+                setCurrentPage('shared-scenario');
+            }
+        }
+    }, []);
 
     // Initialize user profile on app load
     useEffect(() => {
@@ -193,6 +213,19 @@ const App = () => {
         saveUserProfile(profile);
         setUserProfile(profile);
         setLoading(true); // Trigger reload of workouts with new profile
+    };
+
+    const handleSaveSharedScenario = (scenario: Scenario) => {
+        const updatedScenarios = [...scenarios, scenario];
+        setScenarios(updatedScenarios);
+        saveScenarios(updatedScenarios);
+    };
+
+    const handleBackToAppFromShare = () => {
+        // Clear URL parameters and redirect to scenarios page
+        window.history.replaceState({}, '', window.location.pathname);
+        setSharedScenarioData(null);
+        setCurrentPage('scenarios');
     };
 
     const renderNavigation = () => (
@@ -409,6 +442,40 @@ const App = () => {
                     />
                 ) : null;
             
+            case 'shared-scenario':
+                return sharedScenarioData && userProfile ? (
+                    <SharedScenarioView
+                        workoutIds={sharedScenarioData.workoutIds}
+                        scenarioName={sharedScenarioData.name}
+                        userProfile={userProfile}
+                        onSaveAsScenario={handleSaveSharedScenario}
+                        onBackToApp={handleBackToAppFromShare}
+                    />
+                ) : sharedScenarioData && !userProfile ? (
+                    <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
+                        <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '100px' }}>
+                            <h1 style={{ color: 'white', marginBottom: '20px' }}>🔗 Shared Challenge Link</h1>
+                            <p style={{ color: '#999', marginBottom: '20px' }}>
+                                You've received a shared challenge link! Please set up your power profile first to view the challenge details and training metrics.
+                            </p>
+                            <button
+                                onClick={handleBackToAppFromShare}
+                                style={{
+                                    padding: '12px 24px',
+                                    backgroundColor: '#4CAF50',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontSize: '16px'
+                                }}
+                            >
+                                Set Up Profile & View Challenge
+                            </button>
+                        </div>
+                    </div>
+                ) : null;
+            
             case 'browse':
             default:
                 if (!userProfile) {
@@ -471,8 +538,8 @@ const App = () => {
     };
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-            {renderNavigation()}
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: currentPage === 'shared-scenario' ? '0' : '20px' }}>
+            {currentPage !== 'shared-scenario' && renderNavigation()}
             {renderContent()}
             
             {showSaveModal && (
