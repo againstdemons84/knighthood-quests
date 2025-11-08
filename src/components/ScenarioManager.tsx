@@ -283,30 +283,30 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                 {/* Metrics Grid */}
                                 <div style={{
                                     display: 'grid',
-                                    gridTemplateColumns: 'repeat(2, 1fr)',
-                                    gap: '12px',
+                                    gridTemplateColumns: 'repeat(4, 1fr)',
+                                    gap: '8px',
                                     marginBottom: '16px'
                                 }}>
                                     <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#4CAF50', fontSize: '12px', marginBottom: '4px' }}>Duration</div>
+                                        <div style={{ color: '#4CAF50', fontSize: '10px', marginBottom: '2px' }}>Duration</div>
                                         <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                             {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#2196F3', fontSize: '12px', marginBottom: '4px' }}>TSS®</div>
+                                        <div style={{ color: '#2196F3', fontSize: '10px', marginBottom: '2px' }}>TSS®</div>
                                         <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                             {Math.round(scenario.dynamicMetrics.totalTSS)}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#FF9800', fontSize: '12px', marginBottom: '4px' }}>Avg IF®</div>
+                                        <div style={{ color: '#FF9800', fontSize: '10px', marginBottom: '2px' }}>Avg IF®</div>
                                         <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                             {scenario.dynamicMetrics.averageIF.toFixed(2)}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#9C27B0', fontSize: '12px', marginBottom: '4px' }}>Workouts</div>
+                                        <div style={{ color: '#9C27B0', fontSize: '10px', marginBottom: '2px' }}>Workouts</div>
                                         <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                             {scenario.workouts.length}/10
                                         </div>

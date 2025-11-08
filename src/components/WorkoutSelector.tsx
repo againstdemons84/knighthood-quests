@@ -399,30 +399,30 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 {row.metrics && (
                                     <div style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(2, 1fr)',
-                                        gap: '12px'
+                                        gridTemplateColumns: 'repeat(4, 1fr)',
+                                        gap: '8px'
                                     }}>
                                         <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#4CAF50', fontSize: '12px', marginBottom: '4px' }}>Duration</div>
-                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                            <div style={{ color: '#4CAF50', fontSize: '10px', marginBottom: '2px' }}>Duration</div>
+                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                                 {formatDuration(row.metrics.duration)}
                                             </div>
                                         </div>
                                         <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#2196F3', fontSize: '12px', marginBottom: '4px' }}>TSS®</div>
-                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                            <div style={{ color: '#2196F3', fontSize: '10px', marginBottom: '2px' }}>TSS®</div>
+                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                                 {Math.round(row.metrics.tss)}
                                             </div>
                                         </div>
                                         <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#FF9800', fontSize: '12px', marginBottom: '4px' }}>IF®</div>
-                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                            <div style={{ color: '#FF9800', fontSize: '10px', marginBottom: '2px' }}>IF®</div>
+                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                                 {row.metrics.intensityFactor.toFixed(2)}
                                             </div>
                                         </div>
                                         <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#9C27B0', fontSize: '12px', marginBottom: '4px' }}>NP®</div>
-                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                            <div style={{ color: '#9C27B0', fontSize: '10px', marginBottom: '2px' }}>NP®</div>
+                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
                                                 {Math.round(row.metrics.normalizedPower)}W
                                             </div>
                                         </div>

@@ -265,40 +265,40 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             {/* Metrics Grid */}
                             <div style={{
                                 display: "grid",
-                                gridTemplateColumns: "repeat(2, 1fr)",
-                                gap: "12px",
+                                gridTemplateColumns: "repeat(4, 1fr)",
+                                gap: "8px",
                                 marginBottom: "16px"
                             }}>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
                                         {row.metrics?.duration || '-'}
                                     </div>
-                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
                                         Duration
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
                                         {row.metrics ? Math.round(row.metrics.tss) : '-'}
                                     </div>
-                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
                                         TSS
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
                                         {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}
                                     </div>
-                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
-                                        Norm Power
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                        NP®
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
                                         {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
                                     </div>
-                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
-                                        IF
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                        IF®
                                     </div>
                                 </div>
                             </div>
