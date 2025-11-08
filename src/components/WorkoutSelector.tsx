@@ -10,6 +10,7 @@ import { WorkoutData } from '../types/workout';
 import { UserPowerProfile } from '../types/userProfile';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import { useViewport } from '../hooks/useViewport';
+import WorkoutChart from './WorkoutChart';
 
 interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
@@ -20,6 +21,7 @@ interface WorkoutSelectorProps {
 interface WorkoutRow {
     id: string;
     name: string;
+    workoutData?: WorkoutData | null;
     metrics: {
         duration: number;
         tss: number;
@@ -110,6 +112,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 rows.push({
                     id: workout.id,
                     name: title,
+                    workoutData: workoutResult.data,
                     metrics,
                     error: !workoutResult.data ? 'Workout data not available' : undefined,
                     isSelected: basketIds.has(workout.id),
@@ -228,7 +231,239 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
         );
     }
 
-    return (
+    // Mobile card layout
+    const renderMobileLayout = () => (
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
+            {/* Header Section */}
+            <div style={{ padding: '16px' }}>
+                <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
+                    Plan Your Challenge
+                </h1>
+                <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
+                    Choose 10 workouts for your Knight of Sufferlandria challenge
+                </p>
+
+                {/* Basket Summary - Mobile */}
+                <div style={{ 
+                    backgroundColor: basket.length === MAX_WORKOUTS ? '#1e3a1e' : '#2a2a2a', 
+                    padding: '15px', 
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    border: basket.length === MAX_WORKOUTS ? '2px solid #4CAF50' : '1px solid #333'
+                }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <h3 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '16px' }}>
+                            Challenge Basket ({basket.length}/{MAX_WORKOUTS})
+                        </h3>
+                        {basket.length === MAX_WORKOUTS && (
+                            <div style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '14px' }}>
+                                ✓ Challenge Complete!
+                            </div>
+                        )}
+                        {basket.length > 0 && (
+                            <button
+                                onClick={clearBasket}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#666',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px',
+                                    marginTop: '8px'
+                                }}
+                            >
+                                Clear All ({basket.length})
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Search and Sort Controls */}
+                <div style={{ marginBottom: '16px' }}>
+                    <input
+                        type="text"
+                        placeholder="Search workouts..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            backgroundColor: '#333',
+                            color: 'white',
+                            border: '1px solid #555',
+                            borderRadius: '8px',
+                            marginBottom: '12px',
+                            fontSize: '16px'
+                        }}
+                    />
+                    
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        alignItems: 'center'
+                    }}>
+                        <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
+                        {(['name', 'duration', 'tss', 'if'] as const).map(col => (
+                            <button
+                                key={col}
+                                onClick={() => handleSort(col)}
+                                style={{
+                                    padding: '8px 12px',
+                                    backgroundColor: sortBy === col ? '#4CAF50' : '#555',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}
+                            >
+                                {col === 'name' ? 'Name' : 
+                                 col === 'duration' ? 'Duration' :
+                                 col === 'tss' ? 'TSS®' : 'IF®'}
+                                {sortBy === col && getSortIcon(col)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Workout Cards */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {sortedWorkouts.map((row, index) => {
+                        const isSelected = row.isSelected;
+                        const canSelect = !isSelected && basket.length < MAX_WORKOUTS && row.metrics;
+                        const canDeselect = isSelected;
+                        const isClickable = canSelect || canDeselect;
+
+                        return (
+                            <div 
+                                key={row.id}
+                                onClick={() => isClickable ? toggleWorkoutSelection(row.id) : undefined}
+                                style={{
+                                    backgroundColor: isSelected ? '#1e4d1e' : '#2a2a2a',
+                                    borderRadius: '8px',
+                                    padding: '15px',
+                                    border: isSelected ? '2px solid #4CAF50' : '1px solid #333',
+                                    opacity: row.metrics ? 1 : 0.6,
+                                    cursor: isClickable ? 'pointer' : 'not-allowed',
+                                    transition: 'all 0.2s ease',
+                                    position: 'relative'
+                                }}
+                            >
+                                {/* Selection Indicator */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '12px',
+                                    right: '12px',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '4px',
+                                    border: '2px solid #555',
+                                    backgroundColor: isSelected ? '#4CAF50' : 'transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    {isSelected && <span style={{ color: 'white', fontSize: '16px' }}>✓</span>}
+                                </div>
+
+                                {/* Workout Header */}
+                                <div style={{ marginBottom: '12px', paddingRight: '40px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                        <strong style={{ color: 'white', fontSize: '16px', flex: 1 }}>
+                                            {row.name}
+                                        </strong>
+                                        {row.usedOutdoorData && (
+                                            <span 
+                                                style={{ 
+                                                    color: '#FFA726',
+                                                    fontSize: '16px'
+                                                }}
+                                                title="Using outdoor power profile data"
+                                            >
+                                                ⚠️
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div style={{ color: '#999', fontSize: '12px' }}>
+                                        ID: {row.id}
+                                    </div>
+                                </div>
+
+                                {/* Metrics Grid */}
+                                {row.metrics && (
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(2, 1fr)',
+                                        gap: '12px'
+                                    }}>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ color: '#4CAF50', fontSize: '12px', marginBottom: '4px' }}>Duration</div>
+                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                                {formatDuration(row.metrics.duration)}
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ color: '#2196F3', fontSize: '12px', marginBottom: '4px' }}>TSS®</div>
+                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                                {Math.round(row.metrics.tss)}
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ color: '#FF9800', fontSize: '12px', marginBottom: '4px' }}>IF®</div>
+                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                                {row.metrics.intensityFactor.toFixed(2)}
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ color: '#9C27B0', fontSize: '12px', marginBottom: '4px' }}>NP®</div>
+                                            <div style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
+                                                {Math.round(row.metrics.normalizedPower)}W
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Workout Profile Chart */}
+                                {row.workoutData && row.metrics && (
+                                    <div style={{
+                                        backgroundColor: '#1a1a1a',
+                                        borderRadius: '6px',
+                                        padding: '8px',
+                                        marginTop: '12px'
+                                    }}>
+                                        <WorkoutChart
+                                            workoutData={row.workoutData}
+                                            userProfile={userProfile}
+                                            height={60}
+                                        />
+                                    </div>
+                                )}
+
+                                {!row.metrics && (
+                                    <div style={{ 
+                                        color: '#999', 
+                                        textAlign: 'center',
+                                        padding: '20px',
+                                        fontStyle: 'italic'
+                                    }}>
+                                        {row.error || 'No workout data available'}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+
+    return viewport.isMobile ? renderMobileLayout() : (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
             {/* Header Section */}
             <div style={{ padding: '20px 20px 0 20px' }}>
