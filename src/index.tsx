@@ -9,6 +9,7 @@ import UserProfileManager from './components/UserProfileManager';
 import WorkoutTable from './components/WorkoutTable';
 import ScenarioDetailsView from './components/ScenarioDetailsView';
 import SharedScenarioView from './components/SharedScenarioView';
+import IntroPage from './components/IntroPage';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
@@ -40,11 +41,11 @@ interface WorkoutTableRow {
     usedOutdoorData?: boolean;
 }
 
-type AppPage = 'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario';
+type AppPage = 'intro' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario';
 
 const App = () => {
     const viewport = useViewport();
-    const [currentPage, setCurrentPage] = useState<'browse' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario'>('browse');
+    const [currentPage, setCurrentPage] = useState<'intro' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario'>('intro');
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
@@ -286,10 +287,10 @@ const App = () => {
                     justifyContent: viewport.isMobile ? 'center' : 'flex-start'
                 }}>
                     <button
-                        onClick={() => setCurrentPage('browse')}
+                        onClick={() => setCurrentPage('intro')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'browse' ? '#4CAF50' : '#555',
+                            backgroundColor: currentPage === 'intro' ? '#4CAF50' : '#555',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
@@ -299,7 +300,7 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? 'Browse' : 'Browse Workouts'}
+                        {viewport.isMobile ? 'Home' : 'Home'}
                     </button>
                     <button
                         onClick={() => {
@@ -472,52 +473,12 @@ const App = () => {
                     />
                 ) : null;
             
-            case 'browse':
+            case 'intro':
             default:
-                if (loading) {
-                    return (
-                        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                            <h1 style={{ color: 'white', marginBottom: '20px' }}>Loading Knighthood Workouts...</h1>
-                            <p style={{ color: '#999' }}>Loading workout data and calculating metrics with your power profile...</p>
-                        </div>
-                    );
-                }
-
                 return userProfile ? wrapContent(
-                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                        <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>
-                            All Knighthood Workouts ({workoutRows.length} Total)
-                        </h1>
-                        <p style={{ color: '#999', marginBottom: '30px', textAlign: 'center' }}>
-                            Browse all available Knighthood workouts and their training metrics
-                        </p>
-                        
-                        <WorkoutTable 
-                            workoutRows={workoutRows}
-                            userProfile={userProfile}
-                            showWorkoutProfiles={true}
-                        />
-
-                        <div style={{ 
-                            marginTop: '30px', 
-                            padding: '20px', 
-                            backgroundColor: '#2a2a2a', 
-                            borderRadius: '8px',
-                            color: '#999'
-                        }}>
-                            <h3 style={{ color: 'white', marginBottom: '10px' }}>About Knighthood Workouts</h3>
-                            <p>
-                                These are the official Knighthood workouts from Wahoo SYSTM. Each workout has been analyzed 
-                                using your power profile (FTP: {userProfile?.ftp}W, MAP: {userProfile?.map}W, 
-                                AC: {userProfile?.ac}W, NM: {userProfile?.nm}W) to calculate Training Stress Score (TSS®), 
-                                Intensity Factor (IF®), and Normalized Power (NP®).
-                            </p>
-                            <p style={{ marginTop: '10px', fontSize: '14px' }}>
-                                <strong>Knight of Sufferlandria Challenge:</strong> Choose 10 of these workouts to complete back-to-back. 
-                                Use the "Plan Challenge" tab to select your workouts and save different scenarios for comparison.
-                            </p>
-                        </div>
-                    </div>
+                    <IntroPage 
+                        onGetStarted={() => setCurrentPage('selector')}
+                    />
                 ) : null;
         }
     };
