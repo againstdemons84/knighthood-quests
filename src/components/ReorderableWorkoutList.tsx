@@ -28,12 +28,10 @@ const getVarianceColor = (variance: number): string => {
     // Scale: 0% variance = white, higher variance = more intense color
     // Cap at 20% variance for color scaling
     const normalized = Math.min(absVariance / 20, 1);
-    
-    if (variance === 0) return '#FFFFFF'; // Perfect = white
-    
+        
     const intensity = Math.round(255 * normalized);
     
-    if (variance > 0) {
+    if (variance >= 0) {
         // Ahead of schedule = green spectrum (0, green, 0)
         return `rgb(0, ${255 - intensity + 128}, 0)`;
     } else {
@@ -360,22 +358,20 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     <div style={{ 
                                         fontSize: "14px", 
                                         fontWeight: "600", 
-                                        color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white"
-                                    }}>
-                                        {row.cumulativeTSSPercentage ? `${Math.round(row.cumulativeTSSPercentage)}%` : '-'}
-                                    </div>
-                                    <div style={{
-                                        fontSize: "8px",
-                                        color: row.cumulativeTSSPercentage ? (
-                                            (row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? "#4CAF50" : "#f44336"
-                                        ) : "#999",
-                                        marginTop: "1px",
-                                        fontWeight: "bold"
+                                        color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white",
+                                        whiteSpace: "nowrap"
                                     }}>
                                         {row.cumulativeTSSPercentage ? 
-                                            `${(row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(row.cumulativeTSSPercentage - (index + 1) * 10)}%` 
-                                            : 'Cum TSS%'
+                                            `${Math.round(row.cumulativeTSSPercentage)}% (${(row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(row.cumulativeTSSPercentage - (index + 1) * 10)}%)` 
+                                            : '-'
                                         }
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: "8px", 
+                                        color: "#999", 
+                                        marginTop: "2px" 
+                                    }}>
+                                        Cum TSS%
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
@@ -626,23 +622,14 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     textAlign: 'center',
                                     width: '80px',
                                     marginRight: '12px',
-                                    fontSize: '14px',
-                                    fontWeight: 'bold'
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    whiteSpace: 'nowrap'
                                 }}>
-                                    <div>{workout.cumulativeTSSPercentage ? `${Math.round(workout.cumulativeTSSPercentage)}%` : '-'}</div>
-                                    <div style={{
-                                        fontSize: '10px',
-                                        color: workout.cumulativeTSSPercentage ? (
-                                            (workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? "#4CAF50" : "#f44336"
-                                        ) : "#999",
-                                        marginTop: '2px',
-                                        fontWeight: 'bold'
-                                    }}>
-                                        {workout.cumulativeTSSPercentage ? 
-                                            `${(workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(workout.cumulativeTSSPercentage - (index + 1) * 10)}%` 
-                                            : ''
-                                        }
-                                    </div>
+                                    {workout.cumulativeTSSPercentage ? 
+                                        `${Math.round(workout.cumulativeTSSPercentage)}% (${(workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(workout.cumulativeTSSPercentage - (index + 1) * 10)}%)` 
+                                        : '-'
+                                    }
                                 </div>
                                 <div style={{ 
                                     color: 'white', 
