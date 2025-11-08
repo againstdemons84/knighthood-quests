@@ -78,6 +78,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const [minTSS, setMinTSS] = useState<number>(0);
     const [maxTSS, setMaxTSS] = useState<number>(0);
     const [totalTSS, setTotalTSS] = useState<number>(0);
+    const [combinedWorkoutData, setCombinedWorkoutData] = useState<WorkoutData | null>(null);
 
 
     const findWorkoutTitle = (contentId: string): string => {
@@ -112,6 +113,55 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
         } else {
             return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
+    };
+
+    const combineWorkoutDataWithRest = (workoutRows: WorkoutRowData[]): WorkoutData | null => {
+        const validWorkouts = workoutRows.filter(row => row.workoutData);
+        if (validWorkouts.length === 0) return null;
+
+        let combinedTime: number[] = [];
+        let combinedValue: number[] = [];
+        let combinedType: string[] = [];
+        let currentTime = 0;
+
+        validWorkouts.forEach((workout, index) => {
+            if (!workout.workoutData) return;
+
+            // Add the workout data, adjusting timestamps
+            const workoutData = workout.workoutData;
+            const adjustedTime = workoutData.time.map(t => t + currentTime);
+            
+            combinedTime = combinedTime.concat(adjustedTime);
+            combinedValue = combinedValue.concat(workoutData.value);
+            combinedType = combinedType.concat(workoutData.type);
+            
+            // Update current time to end of this workout
+            const lastTime = workoutData.time[workoutData.time.length - 1];
+            if (lastTime !== undefined) {
+                currentTime += lastTime;
+            }
+
+            // Add 10-minute rest period between workouts (except after the last one)
+            if (index < validWorkouts.length - 1) {
+                const restDuration = 10 * 60; // 10 minutes in seconds
+                
+                // Add rest period data points (every 30 seconds for efficiency)
+                for (let i = 0; i <= restDuration; i += 30) {
+                    combinedTime.push(currentTime + i);
+                    combinedValue.push(0); // Zero power during rest
+                    combinedType.push('power'); // Assume power type
+                }
+                
+                currentTime += restDuration;
+            }
+        });
+
+        return {
+            time: combinedTime,
+            value: combinedValue,
+            type: combinedType,
+            __typename: validWorkouts[0].workoutData?.__typename || 'WorkoutData'
+        };
     };
 
     useEffect(() => {
@@ -169,11 +219,24 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
             }
 
             setWorkoutRows(rows);
+            
+            // Generate combined workout data
+            const combined = combineWorkoutDataWithRest(rows);
+            setCombinedWorkoutData(combined);
+            
             setLoading(false);
         };
 
         loadWorkoutDetails();
     }, [workouts, userProfile]);
+
+    // Update combined workout data when rows change (for drag and drop reordering)
+    useEffect(() => {
+        if (workoutRows.length > 0) {
+            const combined = combineWorkoutDataWithRest(workoutRows);
+            setCombinedWorkoutData(combined);
+        }
+    }, [workoutRows]);
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
         setDraggedIndex(index);
@@ -242,8 +305,44 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     Loading workouts...
                 </div>
             ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {workoutRows.map((row, index) => (
+                <>
+                    {/* Combined Scenario Power Profile */}
+                    {combinedWorkoutData && (
+                        <div style={{
+                            backgroundColor: "#2a2a2a",
+                            border: "2px solid #4CAF50",
+                            borderRadius: "12px",
+                            padding: "16px",
+                            marginBottom: "20px"
+                        }}>
+                            <h3 style={{
+                                margin: "0 0 12px 0",
+                                fontSize: "18px",
+                                fontWeight: "600",
+                                color: "#4CAF50",
+                                textAlign: "center"
+                            }}>
+                                Complete Challenge Profile
+                            </h3>
+                            <p style={{
+                                margin: "0 0 12px 0",
+                                fontSize: "12px",
+                                color: "#999",
+                                textAlign: "center"
+                            }}>
+                                Full power profile with 10-minute rest periods between workouts
+                            </p>
+                            <WorkoutChart
+                                workoutData={combinedWorkoutData}
+                                userProfile={userProfile}
+                                width={viewport.width - 80}
+                                height={120}
+                            />
+                        </div>
+                    )}
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {workoutRows.map((row, index) => (
                         <div
                             key={`${row.name}-${index}`}
                             draggable
@@ -411,8 +510,9 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 </div>
                             )}
                         </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );
@@ -442,6 +542,40 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                 <h2 style={{ color: 'white', margin: '0 0 5px 0' }}>{title}</h2>
                 <p style={{ color: '#999', margin: 0, fontSize: '14px' }}>{subtitle}</p>
             </div>
+
+            {/* Combined Scenario Power Profile */}
+            {combinedWorkoutData && (
+                <div style={{
+                    backgroundColor: '#2a2a2a',
+                    border: '2px solid #4CAF50',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    marginBottom: '30px'
+                }}>
+                    <h3 style={{
+                        margin: '0 0 8px 0',
+                        fontSize: '20px',
+                        fontWeight: '600',
+                        color: '#4CAF50',
+                        textAlign: 'center'
+                    }}>
+                        Complete Challenge Profile
+                    </h3>
+                    <p style={{
+                        margin: '0 0 15px 0',
+                        fontSize: '14px',
+                        color: '#999',
+                        textAlign: 'center'
+                    }}>
+                        Full power profile showing all workouts in sequence with 10-minute rest periods between each workout
+                    </p>
+                    <WorkoutChart
+                        workoutData={combinedWorkoutData}
+                        userProfile={userProfile}
+                        height={150}
+                    />
+                </div>
+            )}
 
             {/* Reorderable Workout List */}
             <div style={{
