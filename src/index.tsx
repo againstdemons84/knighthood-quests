@@ -215,7 +215,7 @@ const App = () => {
         <div style={{ 
             backgroundColor: '#2a2a2a', 
             padding: viewport.isMobile ? '12px 12px' : '15px 20px',
-            marginTop: viewport.isMobile ? '0' : '20px',
+            marginTop: '0',
             marginLeft: viewport.isMobile ? '12px' : '20px',
             marginRight: viewport.isMobile ? '12px' : '20px',
             marginBottom: viewport.isMobile ? '12px' : '20px',
