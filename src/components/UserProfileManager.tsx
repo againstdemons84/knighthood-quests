@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserPowerProfile } from '../types/userProfile';
-import { getUserProfile, clearUserProfile } from '../utils/userProfileHelpers';
+import { getUserProfile, clearUserProfile, isUsingDefaultProfile } from '../utils/userProfileHelpers';
 import UserProfileSetup from './UserProfileSetup';
 
 interface UserProfileManagerProps {
@@ -36,9 +36,29 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                 <h1 style={{ color: 'white', marginBottom: '10px' }}>
                     Power Profile Settings
                 </h1>
-                <p style={{ color: '#999', marginBottom: '30px' }}>
+                <p style={{ color: '#999', marginBottom: isUsingDefaultProfile() ? '15px' : '30px' }}>
                     Manage your 4DP power profile values used for training metrics calculations
                 </p>
+                
+                {isUsingDefaultProfile() && (
+                    <div style={{
+                        backgroundColor: '#2a1a00',
+                        border: '2px solid #FF9800',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        marginBottom: '20px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <span style={{ fontSize: '18px' }}>⚡</span>
+                            <strong style={{ color: '#FF9800' }}>Using Default Power Profile</strong>
+                        </div>
+                        <p style={{ color: '#FFA726', margin: '0', fontSize: '14px', lineHeight: '1.4' }}>
+                            You're currently using default power values (FTP: 200W, MAP: 260W, AC: 340W, NM: 450W). 
+                            These are typical for recreational cyclists. For more accurate training metrics, 
+                            customize these values based on your actual power profile or 4DP test results.
+                        </p>
+                    </div>
+                )}
 
                 {/* Current Profile Display */}
                 <div style={{

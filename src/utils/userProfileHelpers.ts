@@ -42,6 +42,26 @@ export const clearUserProfile = (): void => {
     }
 };
 
+export const getDefaultPowerProfile = (): UserPowerProfile => {
+    // Realistic default values for an average recreational cyclist
+    return {
+        ftp: 200,   // Functional Threshold Power (base level)
+        map: 260,   // Maximum Aerobic Power (typically ~30% higher than FTP)
+        ac: 340,    // Anaerobic Capacity (typically ~30% higher than MAP)
+        nm: 450     // Neuromuscular Power (typically ~30% higher than AC)
+    };
+};
+
+export const getUserProfileWithDefaults = (): UserPowerProfile => {
+    const profile = getUserProfile();
+    return profile ? profile.powerProfile : getDefaultPowerProfile();
+};
+
+export const isUsingDefaultProfile = (): boolean => {
+    const profile = getUserProfile();
+    return profile === null || !hasUserProfile();
+};
+
 export const validatePowerProfile = (profile: UserPowerProfile): string[] => {
     const errors: string[] = [];
     

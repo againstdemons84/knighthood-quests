@@ -18,7 +18,7 @@ import { Scenario, BasketState } from './types/scenario';
 import { getBestWorkoutData } from './utils/workoutDataHelpers';
 import { UserPowerProfile } from './types/userProfile';
 import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
-import { getUserProfile, saveUserProfile, hasUserProfile } from './utils/userProfileHelpers';
+import { getUserProfile, saveUserProfile, hasUserProfile, getUserProfileWithDefaults, isUsingDefaultProfile } from './utils/userProfileHelpers';
 import { useViewport } from './hooks/useViewport';
 
 interface KnighthoodWorkout {
@@ -53,7 +53,6 @@ const App = () => {
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [userProfile, setUserProfile] = useState<UserPowerProfile | null>(null);
     const [showProfileSetup, setShowProfileSetup] = useState(false);
-    const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
     const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
     const [sharedScenarioData, setSharedScenarioData] = useState<{ name: string; workoutIds: string[] } | null>(null);
 
@@ -112,17 +111,13 @@ const App = () => {
 
     // Initialize user profile on app load
     useEffect(() => {
-        const profile = getUserProfile();
-        if (profile && hasUserProfile()) {
-            setUserProfile(profile.powerProfile);
-            // If user has profile and there's shared scenario data, go to shared view
-            if (sharedScenarioData) {
-                setCurrentPage('shared-scenario');
-            }
-        } else {
-            setIsFirstTimeSetup(true);
-            setShowProfileSetup(true);
-            // Keep current page as 'browse' - profile save will handle redirect if needed
+        // Always use profile with defaults - no setup required
+        const profile = getUserProfileWithDefaults();
+        setUserProfile(profile);
+        
+        // If there's shared scenario data, go to shared view
+        if (sharedScenarioData) {
+            setCurrentPage('shared-scenario');
         }
     }, [sharedScenarioData]); // Add dependency on sharedScenarioData
 
@@ -210,14 +205,7 @@ const App = () => {
         saveUserProfile(profile);
         setUserProfile(profile);
         setShowProfileSetup(false);
-        setIsFirstTimeSetup(false);
-        
-        // If user came from a shared link, redirect back to shared scenario
-        if (sharedScenarioData) {
-            setCurrentPage('shared-scenario');
-        } else {
-            setLoading(true); // Trigger reload of workouts with new profile
-        }
+        setLoading(true); // Trigger reload of workouts with new profile
     };
 
     const handleProfileUpdate = (profile: UserPowerProfile) => {
@@ -276,6 +264,15 @@ const App = () => {
                                 `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W` :
                                 `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W | AC: ${userProfile.ac}W | NM: ${userProfile.nm}W`
                             }
+                            {isUsingDefaultProfile() && (
+                                <span style={{ 
+                                    color: '#FFA726', 
+                                    marginLeft: '8px',
+                                    fontSize: viewport.isMobile ? '9px' : '11px'
+                                }}>
+                                    (Using defaults - customize in Profile)
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>
@@ -340,7 +337,7 @@ const App = () => {
                         onClick={() => setCurrentPage('profile')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'profile' ? '#4CAF50' : '#555',
+                            backgroundColor: currentPage === 'profile' ? '#4CAF50' : (isUsingDefaultProfile() ? '#FF9800' : '#555'),
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
@@ -350,7 +347,7 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? '⚙️' : '⚙️ Profile'}
+                        {viewport.isMobile ? (isUsingDefaultProfile() ? '⚙️!' : '⚙️') : (isUsingDefaultProfile() ? '⚙️ Profile!' : '⚙️ Profile')}
                     </button>
                 </div>
             </div>
@@ -462,44 +459,10 @@ const App = () => {
                         onSaveAsScenario={handleSaveSharedScenario}
                         onBackToApp={handleBackToAppFromShare}
                     />
-                ) : sharedScenarioData && !userProfile ? (
-                    <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                        <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '100px' }}>
-                            <h1 style={{ color: 'white', marginBottom: '20px' }}>🔗 Shared Challenge Link</h1>
-                            <p style={{ color: '#999', marginBottom: '20px' }}>
-                                You've received a shared challenge link! Please set up your power profile first to view the challenge details and training metrics.
-                            </p>
-                            <button
-                                onClick={handleBackToAppFromShare}
-                                style={{
-                                    padding: '12px 24px',
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '16px'
-                                }}
-                            >
-                                Set Up Profile & View Challenge
-                            </button>
-                        </div>
-                    </div>
                 ) : null;
             
             case 'browse':
             default:
-                if (!userProfile) {
-                    return (
-                        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                            <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '100px' }}>
-                                <h1 style={{ color: 'white', marginBottom: '20px' }}>Setting up your Power Profile...</h1>
-                                <p style={{ color: '#999' }}>Please complete your power profile setup to continue.</p>
-                            </div>
-                        </div>
-                    );
-                }
-                
                 if (loading) {
                     return (
                         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
@@ -509,7 +472,7 @@ const App = () => {
                     );
                 }
 
-                return (
+                return userProfile ? (
                     <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                         <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>
                             All Knighthood Workouts ({workoutRows.length} Total)
@@ -544,7 +507,7 @@ const App = () => {
                             </p>
                         </div>
                     </div>
-                );
+                ) : null;
         }
     };
 
@@ -568,7 +531,7 @@ const App = () => {
             {showProfileSetup && (
                 <UserProfileSetup
                     onProfileSave={handleProfileSave}
-                    isFirstTime={isFirstTimeSetup}
+                    isFirstTime={false}
                 />
             )}
         </div>
