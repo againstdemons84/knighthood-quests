@@ -6,8 +6,12 @@ import {
 } from '../../utils/scenarioHelpers';
 import { WorkoutSelection } from '../../types/scenario';
 
-// Mock fetch for testing
-global.fetch = jest.fn();
+// Mock getWorkoutData instead of fetch
+jest.mock('../../data/workout-data', () => ({
+    getWorkoutData: jest.fn()
+}));
+
+import { getWorkoutData } from '../../data/workout-data';
 
 describe('scenarioHelpers', () => {
     beforeEach(() => {
@@ -184,10 +188,7 @@ describe('scenarioHelpers', () => {
         };
 
         it('should load and calculate workout metrics successfully', async () => {
-            (global.fetch as jest.Mock).mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockWorkoutResponse
-            });
+            (getWorkoutData as jest.Mock).mockReturnValue(mockWorkoutResponse);
 
             const result = await loadWorkoutMetrics('test-workout', mockUserProfile);
 
@@ -203,19 +204,18 @@ describe('scenarioHelpers', () => {
             expect(typeof result!.normalizedPower).toBe('number');
         });
 
-        it('should handle fetch failure', async () => {
-            (global.fetch as jest.Mock).mockResolvedValueOnce({
-                ok: false,
-                status: 404
-            });
+        it('should handle missing workout data', async () => {
+            (getWorkoutData as jest.Mock).mockReturnValue(null);
 
             const result = await loadWorkoutMetrics('non-existent-workout', mockUserProfile);
 
             expect(result).toBeNull();
         });
 
-        it('should handle network error', async () => {
-            (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+        it('should handle data loading error', async () => {
+            (getWorkoutData as jest.Mock).mockImplementation(() => {
+                throw new Error('Data loading error');
+            });
 
             const result = await loadWorkoutMetrics('test-workout', mockUserProfile);
 
@@ -223,10 +223,7 @@ describe('scenarioHelpers', () => {
         });
 
         it('should work without user profile', async () => {
-            (global.fetch as jest.Mock).mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockWorkoutResponse
-            });
+            (getWorkoutData as jest.Mock).mockReturnValue(mockWorkoutResponse);
 
             const result = await loadWorkoutMetrics('test-workout');
 

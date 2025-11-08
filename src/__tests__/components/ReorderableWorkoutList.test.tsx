@@ -5,8 +5,10 @@ import ReorderableWorkoutList from '../../components/ReorderableWorkoutList';
 import { UserPowerProfile } from '../../types/userProfile';
 import { WorkoutSelection } from '../../types/scenario';
 
-// Mock fetch for workout data
-global.fetch = jest.fn();
+// Mock getWorkoutData
+jest.mock('../../data/workout-data', () => ({
+    getWorkoutData: jest.fn()
+}));
 
 // Mock the WorkoutChart component
 jest.mock('../../components/WorkoutChart', () => {
@@ -26,6 +28,8 @@ jest.mock('../../data/workouts.json', () => ({
         }
     }
 }));
+
+import { getWorkoutData } from '../../data/workout-data';
 
 const mockUserProfile: UserPowerProfile = {
     nm: 1000,
@@ -62,20 +66,31 @@ describe('ReorderableWorkoutList', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        (fetch as jest.Mock).mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve({
-                data: {
-                    workoutGraphTriggers: {
-                        indoor: {
-                            time: [0, 60, 120],
-                            value: [100, 200, 150],
-                            type: ['power', 'power', 'power'],
-                            __typename: 'FourDPWorkoutGraph'
+        
+        // Mock getWorkoutData to return valid workout data for our test workouts
+        (getWorkoutData as jest.Mock).mockImplementation((workoutId: string) => {
+            if (workoutId === 'workout1' || workoutId === 'workout2') {
+                return {
+                    data: {
+                        workoutGraphTriggers: {
+                            indoor: {
+                                time: [0, 60, 120],
+                                value: [100, 200, 150],
+                                type: ['FTP', 'FTP', 'FTP'],
+                                __typename: 'FourDPWorkoutGraph'
+                            },
+                            outdoor: {
+                                time: [0, 60, 120],
+                                value: [0, 0, 0],
+                                type: ['FTP', 'FTP', 'FTP'],
+                                __typename: 'FourDPWorkoutGraph'
+                            },
+                            __typename: 'WorkoutGraphTriggers'
                         }
                     }
-                }
-            })
+                };
+            }
+            return null;
         });
     });
 
@@ -106,8 +121,9 @@ describe('ReorderableWorkoutList', () => {
         expect(screen.getByText('Test Workout 1')).toBeInTheDocument();
         expect(screen.getByText('Test Workout 2')).toBeInTheDocument();
 
-        // Should show workout charts
-        expect(screen.getAllByTestId('workout-chart')).toHaveLength(2);
+        // Should show workout charts (individual workouts + combined visualization)
+        // The combined visualization now shows individual charts side-by-side
+        expect(screen.getAllByTestId('workout-chart').length).toBeGreaterThanOrEqual(2);
     });
 
     it('should show instructions for drag and drop', async () => {
