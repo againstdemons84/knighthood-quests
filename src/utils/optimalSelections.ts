@@ -50,7 +50,7 @@ export const generateOptimalSelections = (workouts: SortedWorkout[]) => {
         .sort((a, b) => b.intensityFactor - a.intensityFactor)
         .slice(0, 10);
     
-    // Balanced approach: normalize and score by multiple factors
+    // Balanced approach: select workouts with moderate values across all metrics
     const balanced = [...validWorkouts]
         .map(workout => {
             // Normalize values (0-1 scale)
@@ -58,16 +58,27 @@ export const generateOptimalSelections = (workouts: SortedWorkout[]) => {
             const maxDuration = Math.max(...validWorkouts.map(w => w.duration));
             const maxIF = Math.max(...validWorkouts.map(w => w.intensityFactor));
             
-            const normalizedTSS = workout.tss / maxTSS;
-            const normalizedDuration = workout.duration / maxDuration;
-            const normalizedIF = workout.intensityFactor / maxIF;
+            const minTSS = Math.min(...validWorkouts.map(w => w.tss));
+            const minDuration = Math.min(...validWorkouts.map(w => w.duration));
+            const minIF = Math.min(...validWorkouts.map(w => w.intensityFactor));
             
-            // Balanced score (lower is better for moderate challenge)
-            const score = (normalizedTSS + normalizedDuration + normalizedIF) / 3;
+            // Normalize to 0-1 scale using actual range
+            const normalizedTSS = (workout.tss - minTSS) / (maxTSS - minTSS);
+            const normalizedDuration = (workout.duration - minDuration) / (maxDuration - minDuration);
+            const normalizedIF = (workout.intensityFactor - minIF) / (maxIF - minIF);
             
-            return { ...workout, balanceScore: score };
+            // Balanced score: prefer workouts in the middle range (0.3-0.7) for each metric
+            // Calculate distance from ideal middle range
+            const tssDistance = Math.abs(normalizedTSS - 0.5);
+            const durationDistance = Math.abs(normalizedDuration - 0.5);
+            const ifDistance = Math.abs(normalizedIF - 0.5);
+            
+            // Balanced score (lower is better) - penalize extremes more
+            const balanceScore = (tssDistance + durationDistance + ifDistance) / 3;
+            
+            return { ...workout, balanceScore, normalizedTSS, normalizedDuration, normalizedIF };
         })
-        .sort((a, b) => Math.abs(a.balanceScore - 0.5) - Math.abs(b.balanceScore - 0.5)) // Closest to middle
+        .sort((a, b) => a.balanceScore - b.balanceScore) // Lower score = more balanced
         .slice(0, 10);
 
     return {
