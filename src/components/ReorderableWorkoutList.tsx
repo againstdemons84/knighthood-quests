@@ -7,6 +7,8 @@ import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import WorkoutChart from './WorkoutChart';
 import allWorkouts from '../data/workouts.json';
 import { getWorkoutData } from '../data/workout-data';
+import { useViewport } from '../hooks/useViewport';
+import { formatDuration } from '../utils/scenarioHelpers';
 
 interface ReorderableWorkoutListProps {
     workouts: WorkoutSelection[];
@@ -37,10 +39,12 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     title = "Challenge Workouts",
     subtitle = "Drag and drop to reorder workouts • Click charts to see detailed workout profiles"
 }) => {
+    const viewport = useViewport();
     const [workoutRows, setWorkoutRows] = useState<WorkoutRowData[]>([]);
     const [loading, setLoading] = useState(true);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
 
     const findWorkoutTitle = (contentId: string): string => {
         const workout = allWorkouts.data.library.content.find((item: any) => item.id === contentId);
@@ -160,6 +164,170 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
         setDragOverIndex(null);
     };
 
+    const handleChartClick = (workoutRow: WorkoutRowData) => {
+        // For now, just show an alert with workout info
+        if (workoutRow.workoutData) {
+            alert(`Workout: ${workoutRow.name}\nDuration: ${workoutRow.metrics?.duration || 'N/A'}\nTSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.tss) : 'N/A'}`);
+        }
+    };
+
+    const renderMobileLayout = () => (
+        <div style={{ margin: "20px 0" }}>
+            <div style={{ marginBottom: "16px" }}>
+                <h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "600", color: "white" }}>{title}</h2>
+                {subtitle && (
+                    <p style={{ margin: 0, color: "#999", fontSize: "14px" }}>
+                        Tap and hold to reorder • Tap charts to see detailed workout profiles
+                    </p>
+                )}
+            </div>
+            
+            {loading ? (
+                <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
+                    Loading workouts...
+                </div>
+            ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {workoutRows.map((row, index) => (
+                        <div
+                            key={`${row.name}-${index}`}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver}
+                            onDragEnter={(e) => handleDragEnter(e, index)}
+                            onDrop={(e) => handleDrop(e, index)}
+                            style={{
+                                backgroundColor: "#2a2a2a",
+                                border: "1px solid #444",
+                                borderRadius: "12px",
+                                padding: "16px",
+                                cursor: "grab",
+                                transform: draggedIndex === index ? "rotate(3deg)" : "none",
+                                opacity: draggedIndex === index ? 0.7 : 1,
+                                transition: "transform 0.2s ease, opacity 0.2s ease",
+                                touchAction: "manipulation"
+                            }}
+                        >
+                            {/* Order Number and Drag Handle */}
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginBottom: "12px"
+                            }}>
+                                <div style={{
+                                    backgroundColor: "#4CAF50",
+                                    color: "white",
+                                    borderRadius: "50%",
+                                    width: "32px",
+                                    height: "32px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "16px",
+                                    fontWeight: "bold"
+                                }}>
+                                    {index + 1}
+                                </div>
+                                <div style={{
+                                    color: "#999",
+                                    fontSize: "20px",
+                                    cursor: "grab"
+                                }}>
+                                    ⋮⋮
+                                </div>
+                            </div>
+
+                            {/* Workout Name */}
+                            <h3 style={{
+                                margin: "0 0 12px 0",
+                                fontSize: "18px",
+                                fontWeight: "600",
+                                color: "white",
+                                lineHeight: "1.3"
+                            }}>
+                                {row.name}
+                                {row.usedOutdoorData && (
+                                    <span style={{ 
+                                        color: '#FF9800',
+                                        fontSize: '10px',
+                                        marginLeft: '8px',
+                                        padding: '2px 6px',
+                                        backgroundColor: 'rgba(255,152,0,0.2)',
+                                        borderRadius: '4px'
+                                    }}>
+                                        OUTDOOR
+                                    </span>
+                                )}
+                            </h3>
+
+                            {/* Metrics Grid */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(2, 1fr)",
+                                gap: "12px",
+                                marginBottom: "16px"
+                            }}>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                        {row.metrics?.duration || '-'}
+                                    </div>
+                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                        Duration
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                        {row.metrics ? Math.round(row.metrics.tss) : '-'}
+                                    </div>
+                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                        TSS
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                        {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}
+                                    </div>
+                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                        Norm Power
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ fontSize: "20px", fontWeight: "600", color: "white" }}>
+                                        {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
+                                    </div>
+                                    <div style={{ fontSize: "12px", color: "#999", marginTop: "2px" }}>
+                                        IF
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Workout Chart */}
+                            {row.workoutData && (
+                                <div 
+                                    style={{ 
+                                        marginTop: "12px",
+                                        cursor: "pointer",
+                                        touchAction: "manipulation"
+                                    }}
+                                    onClick={() => handleChartClick(row)}
+                                >
+                                    <WorkoutChart
+                                        workoutData={row.workoutData}
+                                        userProfile={userProfile}
+                                        width={viewport.width - 80}
+                                        height={60}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+
     if (loading) {
         return (
             <div style={{ 
@@ -171,6 +339,11 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                 <div style={{ color: '#999' }}>Loading workout details...</div>
             </div>
         );
+    }
+
+    // Use mobile layout for mobile screens
+    if (viewport.isMobile || viewport.isTablet) {
+        return renderMobileLayout();
     }
 
     return (
@@ -308,11 +481,16 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 minWidth: '300px'
                             }}>
                                 {workout.workoutData ? (
-                                    <WorkoutChart 
-                                        workoutData={workout.workoutData}
-                                        userProfile={userProfile}
-                                        height={80}
-                                    />
+                                    <div 
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => handleChartClick(workout)}
+                                    >
+                                        <WorkoutChart 
+                                            workoutData={workout.workoutData}
+                                            userProfile={userProfile}
+                                            height={80}
+                                        />
+                                    </div>
                                 ) : (
                                     <div style={{
                                         height: '80px',
