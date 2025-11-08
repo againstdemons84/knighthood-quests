@@ -10,6 +10,38 @@ import { getWorkoutData } from '../data/workout-data';
 import { useViewport } from '../hooks/useViewport';
 import { formatDuration } from '../utils/scenarioHelpers';
 
+// Utility function to get color based on TSS value (red = high, green = low)
+const getTSSColor = (tss: number, minTSS: number, maxTSS: number): string => {
+    if (maxTSS === minTSS) return '#FFFFFF'; // All same TSS, use white
+    
+    const normalized = (tss - minTSS) / (maxTSS - minTSS);
+    const red = Math.round(255 * normalized);
+    const green = Math.round(255 * (1 - normalized));
+    return `rgb(${red}, ${green}, 0)`;
+};
+
+// Utility function to get color based on variance from ideal 10% progression
+const getVarianceColor = (variance: number): string => {
+    // Variance is the difference from ideal (e.g. -4%, +5%, etc.)
+    const absVariance = Math.abs(variance);
+    
+    // Scale: 0% variance = white, higher variance = more intense color
+    // Cap at 20% variance for color scaling
+    const normalized = Math.min(absVariance / 20, 1);
+    
+    if (variance === 0) return '#FFFFFF'; // Perfect = white
+    
+    const intensity = Math.round(255 * normalized);
+    
+    if (variance > 0) {
+        // Ahead of schedule = green spectrum (0, green, 0)
+        return `rgb(0, ${255 - intensity + 128}, 0)`;
+    } else {
+        // Behind schedule = red spectrum (red, 0, 0)
+        return `rgb(${255 - intensity + 128}, 0, 0)`;
+    }
+};
+
 interface ReorderableWorkoutListProps {
     workouts: WorkoutSelection[];
     userProfile: UserPowerProfile;
@@ -30,6 +62,7 @@ interface WorkoutRowData {
     } | null;
     error?: string;
     usedOutdoorData?: boolean;
+    cumulativeTSSPercentage?: number;
 }
 
 const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
@@ -44,6 +77,9 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const [loading, setLoading] = useState(true);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+    const [minTSS, setMinTSS] = useState<number>(0);
+    const [maxTSS, setMaxTSS] = useState<number>(0);
+    const [totalTSS, setTotalTSS] = useState<number>(0);
 
 
     const findWorkoutTitle = (contentId: string): string => {
@@ -110,6 +146,27 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     metrics,
                     error: !workoutResult.data ? 'Workout data not available' : undefined,
                     usedOutdoorData: workoutResult.usedOutdoor
+                });
+            }
+
+            // Calculate TSS statistics and cumulative percentages
+            const validTSSValues = rows.filter(row => row.metrics?.tss).map(row => row.metrics!.tss);
+            if (validTSSValues.length > 0) {
+                const minTSSValue = Math.min(...validTSSValues);
+                const maxTSSValue = Math.max(...validTSSValues);
+                const totalTSSValue = validTSSValues.reduce((sum, tss) => sum + tss, 0);
+                
+                setMinTSS(minTSSValue);
+                setMaxTSS(maxTSSValue);
+                setTotalTSS(totalTSSValue);
+
+                // Calculate cumulative TSS percentages
+                let cumulativeTSS = 0;
+                rows.forEach(row => {
+                    if (row.metrics?.tss) {
+                        cumulativeTSS += row.metrics.tss;
+                        row.cumulativeTSSPercentage = (cumulativeTSS / totalTSSValue) * 100;
+                    }
                 });
             }
 
@@ -263,11 +320,12 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             </h3>
 
                             {/* Metrics Grid */}
+                            {/* First Row: Duration and TSS */}
                             <div style={{
                                 display: "grid",
-                                gridTemplateColumns: "repeat(4, 1fr)",
+                                gridTemplateColumns: "repeat(2, 1fr)",
                                 gap: "8px",
-                                marginBottom: "16px"
+                                marginBottom: "12px"
                             }}>
                                 <div style={{ textAlign: "center" }}>
                                     <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
@@ -278,26 +336,61 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ 
+                                        fontSize: "16px", 
+                                        fontWeight: "600", 
+                                        color: row.metrics ? getTSSColor(row.metrics.tss, minTSS, maxTSS) : "white"
+                                    }}>
                                         {row.metrics ? Math.round(row.metrics.tss) : '-'}
                                     </div>
                                     <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
                                         TSS
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Second Row: Cumulative TSS and Power metrics */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(3, 1fr)",
+                                gap: "8px",
+                                marginBottom: "16px"
+                            }}>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ 
+                                        fontSize: "14px", 
+                                        fontWeight: "600", 
+                                        color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white"
+                                    }}>
+                                        {row.cumulativeTSSPercentage ? `${Math.round(row.cumulativeTSSPercentage)}%` : '-'}
+                                    </div>
+                                    <div style={{
+                                        fontSize: "8px",
+                                        color: row.cumulativeTSSPercentage ? (
+                                            (row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? "#4CAF50" : "#f44336"
+                                        ) : "#999",
+                                        marginTop: "1px",
+                                        fontWeight: "bold"
+                                    }}>
+                                        {row.cumulativeTSSPercentage ? 
+                                            `${(row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(row.cumulativeTSSPercentage - (index + 1) * 10)}%` 
+                                            : 'Cum TSS%'
+                                        }
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ fontSize: "14px", fontWeight: "600", color: "white" }}>
                                         {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "9px", color: "#999", marginTop: "2px" }}>
                                         NP®
                                     </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
+                                    <div style={{ fontSize: "14px", fontWeight: "600", color: "white" }}>
                                         {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "9px", color: "#999", marginTop: "2px" }}>
                                         IF®
                                     </div>
                                 </div>
@@ -374,12 +467,13 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                 }}>
                     <div style={{ width: '28px' }}></div> {/* Drag handle space */}
                     <div style={{ width: '44px', marginRight: '16px' }}>#</div>
-                    <div style={{ width: '300px', marginRight: '20px' }}>Workout</div>
+                    <div style={{ width: '280px', marginRight: '20px' }}>Workout</div>
                     <div style={{ flex: 1, marginRight: '20px' }}>Power Profile</div>
-                    <div style={{ width: '100px', textAlign: 'center', marginRight: '15px' }}>Duration</div>
-                    <div style={{ width: '80px', textAlign: 'center', marginRight: '15px' }}>TSS</div>
-                    <div style={{ width: '60px', textAlign: 'center', marginRight: '15px' }}>IF</div>
-                    <div style={{ width: '80px', textAlign: 'center' }}>NP</div>
+                    <div style={{ width: '90px', textAlign: 'center', marginRight: '12px' }}>Duration</div>
+                    <div style={{ width: '70px', textAlign: 'center', marginRight: '12px' }}>TSS</div>
+                    <div style={{ width: '80px', textAlign: 'center', marginRight: '12px' }}>Cum TSS%</div>
+                    <div style={{ width: '50px', textAlign: 'center', marginRight: '12px' }}>IF</div>
+                    <div style={{ width: '70px', textAlign: 'center' }}>NP</div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px' }}>
@@ -435,7 +529,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
                             {/* Workout Name and Info */}
                             <div style={{ 
-                                width: '300px', 
+                                width: '280px', 
                                 marginRight: '20px',
                                 overflow: 'hidden'
                             }}>
@@ -511,26 +605,50 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '100px',
-                                    marginRight: '15px',
+                                    width: '90px',
+                                    marginRight: '12px',
                                     fontSize: '14px'
                                 }}>
                                     {workout.metrics?.duration || '-'}
                                 </div>
                                 <div style={{ 
-                                    color: 'white', 
+                                    color: workout.metrics ? getTSSColor(workout.metrics.tss, minTSS, maxTSS) : 'white', 
                                     textAlign: 'center',
-                                    width: '80px',
-                                    marginRight: '15px',
-                                    fontSize: '14px'
+                                    width: '70px',
+                                    marginRight: '12px',
+                                    fontSize: '14px',
+                                    fontWeight: 'bold'
                                 }}>
                                     {workout.metrics ? Math.round(workout.metrics.tss) : '-'}
                                 </div>
                                 <div style={{ 
+                                    color: workout.cumulativeTSSPercentage ? getVarianceColor(workout.cumulativeTSSPercentage - (index + 1) * 10) : 'white', 
+                                    textAlign: 'center',
+                                    width: '80px',
+                                    marginRight: '12px',
+                                    fontSize: '14px',
+                                    fontWeight: 'bold'
+                                }}>
+                                    <div>{workout.cumulativeTSSPercentage ? `${Math.round(workout.cumulativeTSSPercentage)}%` : '-'}</div>
+                                    <div style={{
+                                        fontSize: '10px',
+                                        color: workout.cumulativeTSSPercentage ? (
+                                            (workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? "#4CAF50" : "#f44336"
+                                        ) : "#999",
+                                        marginTop: '2px',
+                                        fontWeight: 'bold'
+                                    }}>
+                                        {workout.cumulativeTSSPercentage ? 
+                                            `${(workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(workout.cumulativeTSSPercentage - (index + 1) * 10)}%` 
+                                            : ''
+                                        }
+                                    </div>
+                                </div>
+                                <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '60px',
-                                    marginRight: '15px',
+                                    width: '50px',
+                                    marginRight: '12px',
                                     fontSize: '14px'
                                 }}>
                                     {workout.metrics ? workout.metrics.intensityFactor.toFixed(2) : '-'}
@@ -538,7 +656,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '80px',
+                                    width: '70px',
                                     fontSize: '14px'
                                 }}>
                                     {workout.metrics ? `${Math.round(workout.metrics.normalizedPower)}W` : '-'}
