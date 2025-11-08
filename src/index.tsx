@@ -230,8 +230,11 @@ const App = () => {
     const renderNavigation = () => (
         <div style={{ 
             backgroundColor: '#2a2a2a', 
-            padding: viewport.isMobile ? '12px 16px' : '15px 20px',
-            marginBottom: viewport.isMobile ? '16px' : '20px',
+            padding: viewport.isMobile ? '12px 12px' : '15px 20px',
+            marginTop: viewport.isMobile ? '0' : '20px',
+            marginLeft: viewport.isMobile ? '12px' : '20px',
+            marginRight: viewport.isMobile ? '12px' : '20px',
+            marginBottom: viewport.isMobile ? '12px' : '20px',
             borderRadius: '8px',
             display: 'flex',
             flexDirection: viewport.isMobile ? 'column' : 'row',
@@ -403,9 +406,17 @@ const App = () => {
     );
 
     const renderContent = () => {
+        const wrapContent = (content: JSX.Element | null) => (
+            <div style={{ 
+                margin: viewport.isMobile ? '0 12px 12px 12px' : '0 20px 20px 20px'
+            }}>
+                {content}
+            </div>
+        );
+
         switch (currentPage) {
             case 'selector':
-                return userProfile ? (
+                return userProfile ? wrapContent(
                     <WorkoutSelector
                         onBasketChange={handleBasketChange}
                         initialBasket={basketState.selectedWorkouts}
@@ -414,7 +425,7 @@ const App = () => {
                 ) : null;
             
             case 'scenarios':
-                return userProfile ? (
+                return userProfile ? wrapContent(
                     <ScenarioManager
                         onEditScenario={handleEditScenario}
                         onViewScenario={(scenario) => {
@@ -426,7 +437,7 @@ const App = () => {
                 ) : null;
             
             case 'profile':
-                return userProfile ? (
+                return userProfile ? wrapContent(
                     <UserProfileManager
                         currentProfile={userProfile}
                         onProfileUpdate={handleProfileUpdate}
@@ -434,7 +445,7 @@ const App = () => {
                 ) : null;
             
             case 'scenario-detail':
-                return selectedScenario && userProfile ? (
+                return selectedScenario && userProfile ? wrapContent(
                     <ScenarioDetailsView
                         scenario={selectedScenario}
                         userProfile={userProfile}
@@ -472,7 +483,7 @@ const App = () => {
                     );
                 }
 
-                return userProfile ? (
+                return userProfile ? wrapContent(
                     <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                         <h1 style={{ color: 'white', marginBottom: '10px', textAlign: 'center' }}>
                             All Knighthood Workouts ({workoutRows.length} Total)
@@ -512,7 +523,7 @@ const App = () => {
     };
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: currentPage === 'shared-scenario' ? '0' : '20px' }}>
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '0', paddingTop: viewport.isMobile ? '12px' : '0' }}>
             {currentPage !== 'shared-scenario' && renderNavigation()}
             {renderContent()}
             
