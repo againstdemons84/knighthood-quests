@@ -368,6 +368,38 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                     >
                                         🔗 Share
                                     </button>
+                                    <button
+                                        onClick={() => duplicateScenario(scenario)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#2196F3',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        📋 Copy
+                                    </button>
+                                    <button
+                                        onClick={() => deleteScenario(scenario.id)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#d32f2f',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        🗑️ Delete
+                                    </button>
                                 </div>
                             </div>
                         ))}
