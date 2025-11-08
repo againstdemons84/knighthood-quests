@@ -110,7 +110,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
     const shareScenario = (scenario: Scenario) => {
         const workoutIds = scenario.workouts.map(w => w.id).join(',');
-        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodeURIComponent(scenario.name)}&workouts=${workoutIds}`;
+        const shareUrl = `${window.location.origin}${window.location.pathname}#shared/${workoutIds}/${encodeURIComponent(scenario.name)}`;
         
         // Copy to clipboard
         navigator.clipboard.writeText(shareUrl).then(() => {

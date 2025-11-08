@@ -21,6 +21,7 @@ import { UserPowerProfile } from './types/userProfile';
 import { loadScenarios, saveScenarios } from './utils/scenarioHelpers';
 import { getUserProfile, saveUserProfile, hasUserProfile, getUserProfileWithDefaults, isUsingDefaultProfile } from './utils/userProfileHelpers';
 import { useViewport } from './hooks/useViewport';
+import { useUrlFragment } from './hooks/useUrlFragment';
 
 interface KnighthoodWorkout {
     id: string;
@@ -41,11 +42,9 @@ interface WorkoutTableRow {
     usedOutdoorData?: boolean;
 }
 
-type AppPage = 'intro' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario';
-
 const App = () => {
     const viewport = useViewport();
-    const [currentPage, setCurrentPage] = useState<'intro' | 'selector' | 'scenarios' | 'scenario-detail' | 'profile-setup' | 'profile-manager' | 'profile' | 'shared-scenario'>('intro');
+    const { currentPage, scenarioId, sharedScenarioData, setPage } = useUrlFragment();
     const [workoutRows, setWorkoutRows] = useState<WorkoutTableRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [basketState, setBasketState] = useState<BasketState>({ selectedWorkouts: [], isComplete: false });
@@ -55,7 +54,6 @@ const App = () => {
     const [userProfile, setUserProfile] = useState<UserPowerProfile | null>(null);
     const [showProfileSetup, setShowProfileSetup] = useState(false);
     const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
-    const [sharedScenarioData, setSharedScenarioData] = useState<{ name: string; workoutIds: string[] } | null>(null);
 
     const formatDuration = (seconds: number): string => {
         const hours = Math.floor(seconds / 3600);
@@ -92,35 +90,22 @@ const App = () => {
         }
     };
 
-    // Check for shared scenario URL parameters on app load
+    // Load selected scenario based on URL fragment
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const sharedScenarioName = urlParams.get('share');
-        const sharedWorkoutIds = urlParams.get('workouts');
-
-        if (sharedScenarioName && sharedWorkoutIds) {
-            const workoutIds = sharedWorkoutIds.split(',').filter(id => id.trim());
-            if (workoutIds.length > 0) {
-                setSharedScenarioData({
-                    name: decodeURIComponent(sharedScenarioName),
-                    workoutIds: workoutIds
-                });
-                // Don't set page yet - let profile setup determine the flow
-            }
+        if (scenarioId && scenarios.length > 0) {
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            setSelectedScenario(scenario || null);
+        } else if (!scenarioId) {
+            setSelectedScenario(null);
         }
-    }, []);
+    }, [scenarioId, scenarios]);
 
     // Initialize user profile on app load
     useEffect(() => {
         // Always use profile with defaults - no setup required
         const profile = getUserProfileWithDefaults();
         setUserProfile(profile);
-        
-        // If there's shared scenario data, go to shared view
-        if (sharedScenarioData) {
-            setCurrentPage('shared-scenario');
-        }
-    }, [sharedScenarioData]); // Add dependency on sharedScenarioData
+    }, []); // Add dependency on sharedScenarioData
 
     useEffect(() => {
         const loadAllWorkouts = async () => {
@@ -195,7 +180,7 @@ const App = () => {
             selectedWorkouts: scenario.workouts,
             isComplete: scenario.workouts.length === 10
         });
-        setCurrentPage('selector');
+        setPage('selector');
     };
 
     const handleBasketChange = (newBasketState: BasketState) => {
@@ -222,10 +207,8 @@ const App = () => {
     };
 
     const handleBackToAppFromShare = () => {
-        // Clear URL parameters and redirect to scenarios page
-        window.history.replaceState({}, '', window.location.pathname);
-        setSharedScenarioData(null);
-        setCurrentPage('scenarios');
+        // Navigate to scenarios page (this will clear the shared scenario)
+        setPage('scenarios');
     };
 
     const renderNavigation = () => (
@@ -287,7 +270,7 @@ const App = () => {
                     justifyContent: viewport.isMobile ? 'center' : 'flex-start'
                 }}>
                     <button
-                        onClick={() => setCurrentPage('intro')}
+                        onClick={() => setPage('intro')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'intro' ? '#4CAF50' : '#555',
@@ -304,7 +287,7 @@ const App = () => {
                     </button>
                     <button
                         onClick={() => {
-                            setCurrentPage('selector');
+                            setPage('selector');
                             setEditingScenario(null);
                         }}
                         style={{
@@ -322,7 +305,7 @@ const App = () => {
                         {viewport.isMobile ? `Plan (${basketState.selectedWorkouts.length}/10)` : `Plan Challenge (${basketState.selectedWorkouts.length}/10)`}
                     </button>
                     <button
-                        onClick={() => setCurrentPage('scenarios')}
+                        onClick={() => setPage('scenarios')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'scenarios' ? '#4CAF50' : '#555',
@@ -338,7 +321,7 @@ const App = () => {
                         {viewport.isMobile ? `Saved (${scenarios.length})` : `My Scenarios (${scenarios.length})`}
                     </button>
                     <button
-                        onClick={() => setCurrentPage('profile')}
+                        onClick={() => setPage('profile')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             backgroundColor: currentPage === 'profile' ? '#4CAF50' : (isUsingDefaultProfile() ? '#FF9800' : '#555'),
@@ -430,8 +413,7 @@ const App = () => {
                     <ScenarioManager
                         onEditScenario={handleEditScenario}
                         onViewScenario={(scenario) => {
-                            setSelectedScenario(scenario);
-                            setCurrentPage('scenario-detail');
+                            setPage('scenario-detail', scenario.id);
                         }}
                         userProfile={userProfile}
                     />
@@ -450,7 +432,7 @@ const App = () => {
                     <ScenarioDetailsView
                         scenario={selectedScenario}
                         userProfile={userProfile}
-                        onBack={() => setCurrentPage('scenarios')}
+                        onBack={() => setPage('scenarios')}
                         onScenarioUpdate={(updatedScenario) => {
                             setSelectedScenario(updatedScenario);
                             // Also update the scenarios list in case we go back
@@ -477,7 +459,7 @@ const App = () => {
             default:
                 return userProfile ? wrapContent(
                     <IntroPage 
-                        onGetStarted={() => setCurrentPage('selector')}
+                        onGetStarted={() => setPage('selector')}
                     />
                 ) : null;
         }
