@@ -3,6 +3,7 @@ import { Scenario, WorkoutSelection } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { formatDuration, calculateCombinedMetricsDynamic, loadScenarios, saveScenarios } from '../utils/scenarioHelpers';
 import ReorderableWorkoutList from './ReorderableWorkoutList';
+import { useViewport } from '../hooks/useViewport';
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
@@ -19,6 +20,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     onBack,
     onScenarioUpdate
 }) => {
+    const viewport = useViewport();
     const [loading, setLoading] = useState(true);
     const [dynamicMetrics, setDynamicMetrics] = useState({
         totalDuration: 0,
@@ -80,14 +82,20 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     }
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: viewport.isMobile ? '16px' : '20px' }}>
             {/* Header with Back Button */}
-            <div style={{ maxWidth: '1400px', margin: '0 auto', marginBottom: '30px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ maxWidth: viewport.isMobile ? '100%' : '1400px', margin: '0 auto', marginBottom: viewport.isMobile ? '16px' : '30px' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: viewport.isMobile ? 'column' : 'row',
+                    alignItems: viewport.isMobile ? 'stretch' : 'center', 
+                    gap: viewport.isMobile ? '12px' : '20px', 
+                    marginBottom: viewport.isMobile ? '16px' : '20px' 
+                }}>
                     <button
                         onClick={onBack}
                         style={{
-                            padding: '10px 20px',
+                            padding: viewport.isMobile ? '12px 16px' : '10px 20px',
                             backgroundColor: '#555',
                             color: 'white',
                             border: 'none',
@@ -96,18 +104,19 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             fontSize: '14px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            justifyContent: 'center',
+                            gap: '8px',
+                            alignSelf: viewport.isMobile ? 'flex-start' : 'auto'
                         }}
                     >
-                        ← Back to Scenarios
+                        ← Back
                     </button>
-                    <div>
-                        <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>
+                    <div style={{ textAlign: viewport.isMobile ? 'center' : 'left' }}>
+                        <h1 style={{ color: 'white', margin: 0, fontSize: viewport.isMobile ? '20px' : '24px' }}>
                             {scenario.name}
                         </h1>
-                        <div style={{ color: '#999', fontSize: '14px', marginTop: '5px' }}>
-                            Created: {new Date(scenario.createdAt).toLocaleDateString()} • 
-                            {scenario.workouts.length} workouts
+                        <div style={{ color: '#999', fontSize: viewport.isMobile ? '12px' : '14px', marginTop: '5px' }}>
+                            Created: {new Date(scenario.createdAt).toLocaleDateString()} • {scenario.workouts.length} workouts
                         </div>
                     </div>
                 </div>
@@ -115,84 +124,88 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 {/* Scenario Summary Cards */}
                 <div style={{ 
                     display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                    gap: '20px',
-                    marginBottom: '30px'
+                    gridTemplateColumns: viewport.isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', 
+                    gap: viewport.isMobile ? '12px' : '20px',
+                    marginBottom: viewport.isMobile ? '16px' : '30px'
                 }}>
                     <div style={{
                         backgroundColor: '#2a2a2a',
-                        padding: '20px',
+                        padding: viewport.isMobile ? '16px' : '20px',
                         borderRadius: '8px',
                         border: '2px solid #4CAF50',
                         textAlign: 'center'
                     }}>
-                        <div style={{ color: '#4CAF50', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            Total Duration
+                        <div style={{ color: '#4CAF50', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Duration
                         </div>
-                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
                             {formatDuration(dynamicMetrics.totalDuration)}
                         </div>
                     </div>
 
                     <div style={{
                         backgroundColor: '#2a2a2a',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #FF5722',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#FF5722', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            Total Elapsed Duration
-                        </div>
-                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                            {formatDuration(dynamicMetrics.totalElapsedDuration)}
-                        </div>
-                        <div style={{ color: '#999', fontSize: '12px', marginTop: '5px' }}>
-                            Includes rest periods
-                        </div>
-                    </div>
-
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: '20px',
+                        padding: viewport.isMobile ? '16px' : '20px',
                         borderRadius: '8px',
                         border: '2px solid #2196F3',
                         textAlign: 'center'
                     }}>
-                        <div style={{ color: '#2196F3', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            Total TSS®
+                        <div style={{ color: '#2196F3', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            TSS®
                         </div>
-                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
                             {Math.round(dynamicMetrics.totalTSS)}
                         </div>
                     </div>
 
+                    {!viewport.isMobile && (
+                        <>
+                            <div style={{
+                                backgroundColor: '#2a2a2a',
+                                padding: '20px',
+                                borderRadius: '8px',
+                                border: '2px solid #FF5722',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{ color: '#FF5722', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                                    Total Elapsed Duration
+                                </div>
+                                <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                                    {formatDuration(dynamicMetrics.totalElapsedDuration)}
+                                </div>
+                                <div style={{ color: '#999', fontSize: '12px', marginTop: '5px' }}>
+                                    Includes rest periods
+                                </div>
+                            </div>
+                        </>
+                    )}
+
                     <div style={{
                         backgroundColor: '#2a2a2a',
-                        padding: '20px',
+                        padding: viewport.isMobile ? '16px' : '20px',
                         borderRadius: '8px',
                         border: '2px solid #FF9800',
                         textAlign: 'center'
                     }}>
-                        <div style={{ color: '#FF9800', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            Average IF®
+                        <div style={{ color: '#FF9800', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Avg IF®
                         </div>
-                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
                             {dynamicMetrics.averageIF.toFixed(2)}
                         </div>
                     </div>
 
                     <div style={{
                         backgroundColor: '#2a2a2a',
-                        padding: '20px',
+                        padding: viewport.isMobile ? '16px' : '20px',
                         borderRadius: '8px',
                         border: '2px solid #9C27B0',
                         textAlign: 'center'
                     }}>
-                        <div style={{ color: '#9C27B0', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            Average NP®
+                        <div style={{ color: '#9C27B0', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Avg NP®
                         </div>
-                        <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
                             {Math.round(dynamicMetrics.totalNP)}W
                         </div>
                     </div>

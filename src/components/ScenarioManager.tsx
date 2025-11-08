@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
+import { useViewport } from '../hooks/useViewport';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
@@ -20,6 +21,7 @@ interface ScenarioWithMetrics extends Scenario {
 }
 
 const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario, userProfile }) => {
+    const viewport = useViewport();
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [scenariosWithMetrics, setScenariosWithMetrics] = useState<ScenarioWithMetrics[]>([]);
     const [isLoadingMetrics, setIsLoadingMetrics] = useState(false);
@@ -181,7 +183,201 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
     const selectedScenariosList = scenariosWithMetrics.filter(s => selectedScenarios.has(s.id));
 
-    return (
+    // Mobile card layout
+    const renderMobileLayout = () => (
+        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '16px' }}>
+            <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
+                My Scenarios
+            </h1>
+            <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
+                Manage your Knighthood challenge combinations
+            </p>
+
+            {isLoadingMetrics && (
+                <div style={{ 
+                    textAlign: 'center', 
+                    color: '#999', 
+                    padding: '20px',
+                    backgroundColor: '#2a2a2a',
+                    borderRadius: '8px',
+                    marginBottom: '16px'
+                }}>
+                    <div style={{ fontSize: '16px', marginBottom: '8px' }}>
+                        📊 Calculating metrics...
+                    </div>
+                    <div style={{ fontSize: '12px' }}>
+                        Loading workout data
+                    </div>
+                </div>
+            )}
+
+            {scenariosWithMetrics.length === 0 && !isLoadingMetrics ? (
+                <div style={{ 
+                    backgroundColor: '#2a2a2a', 
+                    padding: '40px 20px', 
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏆</div>
+                    <h3 style={{ color: 'white', marginBottom: '12px' }}>No Scenarios Yet</h3>
+                    <p style={{ color: '#999', fontSize: '14px' }}>
+                        Create your first Knighthood challenge by selecting 10 workouts in the "Plan Challenge" tab.
+                    </p>
+                </div>
+            ) : (
+                <>
+                    {/* Sort Controls */}
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        marginBottom: '16px'
+                    }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
+                            {(['name', 'created', 'duration', 'tss'] as const).map(col => (
+                                <button
+                                    key={col}
+                                    onClick={() => handleSort(col)}
+                                    style={{
+                                        padding: '8px 12px',
+                                        backgroundColor: sortBy === col ? '#4CAF50' : '#555',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}
+                                >
+                                    {col === 'name' ? 'Name' : 
+                                     col === 'created' ? 'Date' :
+                                     col === 'duration' ? 'Duration' : 'TSS®'}
+                                    {sortBy === col && getSortIcon(col)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Scenario Cards */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {sortedScenarios.map((scenario, index) => (
+                            <div key={scenario.id} style={{
+                                backgroundColor: '#2a2a2a',
+                                borderRadius: '8px',
+                                padding: '16px',
+                                border: '1px solid #333'
+                            }}>
+                                {/* Header */}
+                                <div style={{ marginBottom: '12px' }}>
+                                    <h3 style={{ color: 'white', margin: '0 0 4px 0', fontSize: '16px' }}>
+                                        {scenario.name}
+                                    </h3>
+                                    <div style={{ color: '#999', fontSize: '12px' }}>
+                                        Created: {new Date(scenario.createdAt).toLocaleDateString()}
+                                    </div>
+                                </div>
+
+                                {/* Metrics Grid */}
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(2, 1fr)',
+                                    gap: '12px',
+                                    marginBottom: '16px'
+                                }}>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ color: '#4CAF50', fontSize: '12px', marginBottom: '4px' }}>Duration</div>
+                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                            {formatDuration(scenario.dynamicMetrics.totalDuration)}
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ color: '#2196F3', fontSize: '12px', marginBottom: '4px' }}>TSS®</div>
+                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                            {Math.round(scenario.dynamicMetrics.totalTSS)}
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ color: '#FF9800', fontSize: '12px', marginBottom: '4px' }}>Avg IF®</div>
+                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                            {scenario.dynamicMetrics.averageIF.toFixed(2)}
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ color: '#9C27B0', fontSize: '12px', marginBottom: '4px' }}>Workouts</div>
+                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                            {scenario.workouts.length}/10
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '8px',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <button
+                                        onClick={() => onViewScenario?.(scenario)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#4CAF50',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        👁️ View
+                                    </button>
+                                    <button
+                                        onClick={() => onEditScenario(scenario)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#FF9800',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        ✏️ Edit
+                                    </button>
+                                    <button
+                                        onClick={() => shareScenario(scenario)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#9C27B0',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        🔗 Share
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+
+    return viewport.isMobile ? renderMobileLayout() : (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 <h1 style={{ color: 'white', marginBottom: '10px' }}>
