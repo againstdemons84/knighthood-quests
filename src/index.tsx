@@ -23,6 +23,50 @@ import { getUserProfile, saveUserProfile, hasUserProfile, getUserProfileWithDefa
 import { useViewport } from './hooks/useViewport';
 import { useUrlFragment } from './hooks/useUrlFragment';
 
+// CSS styles for tabs and workout checkboxes
+const tabStyles = `
+  .tab-button {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    background-color: #555;
+    transition: background-color 0.2s ease;
+  }
+  
+  .tab-button.active {
+    background-color: #4CAF50;
+  }
+  
+  .tab-button.warning {
+    background-color: #FF9800;
+  }
+  
+  .tab-button.warning.active {
+    background-color: #4CAF50;
+  }
+  
+  .tab-button:hover:not(.active):not(.warning) {
+    background-color: #666;
+  }
+  
+  .tab-button.warning:hover:not(.active) {
+    background-color: #FFB74D;
+  }
+  
+  .workout-checkbox {
+    cursor: pointer;
+  }
+  
+  .workout-checkbox.selected {
+    background-color: #4CAF50 !important;
+  }
+  
+  .workout-checkbox.unselected {
+    background-color: transparent !important;
+  }
+`;
+
 interface KnighthoodWorkout {
     id: string;
     name: string;
@@ -292,33 +336,26 @@ const App = () => {
                     justifyContent: viewport.isMobile ? 'center' : 'flex-start'
                 }}>
                     <button
-                        onClick={() => setPage('intro')}
+                        data-testid="quest-tab"
+                        className={`tab-button ${currentPage === 'selector' ? 'active' : ''}`}
+                        onClick={() => setPage('selector')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'intro' ? '#4CAF50' : '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: viewport.isMobile ? '14px' : '13px',
                             minHeight: viewport.isMobile ? '44px' : 'auto',
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? 'Home' : 'Home'}
+                        Quest
                     </button>
                     <button
+                        className={`tab-button ${currentPage === 'selector' ? 'active' : ''}`}
                         onClick={() => {
                             setPage('selector');
                             setEditingScenario(null);
                         }}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'selector' ? '#4CAF50' : '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: viewport.isMobile ? '14px' : '13px',
                             minHeight: viewport.isMobile ? '44px' : 'auto',
                             flex: viewport.isMobile ? '1' : 'none'
@@ -327,30 +364,23 @@ const App = () => {
                         {viewport.isMobile ? `Plan Quest (${basketState.selectedWorkouts.length}/10)` : `Plan Your Quest (${basketState.selectedWorkouts.length}/10)`}
                     </button>
                     <button
+                        data-testid="scenarios-tab"
+                        className={`tab-button ${currentPage === 'scenarios' ? 'active' : ''}`}
                         onClick={() => setPage('scenarios')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'scenarios' ? '#4CAF50' : '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: viewport.isMobile ? '14px' : '13px',
                             minHeight: viewport.isMobile ? '44px' : 'auto',
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? `My Paths (${scenarios.length})` : `My Paths to KNIGHTHOOD (${scenarios.length})`}
+                        {viewport.isMobile ? `Arsenal (${scenarios.length})` : `Your Arsenal (${scenarios.length})`}
                     </button>
                     <button
+                        className={`tab-button ${currentPage === 'profile' ? 'active' : ''} ${isUsingDefaultProfile() ? 'warning' : ''}`}
                         onClick={() => setPage('profile')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            backgroundColor: currentPage === 'profile' ? '#4CAF50' : (isUsingDefaultProfile() ? '#FF9800' : '#555'),
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: viewport.isMobile ? '14px' : '13px',
                             minHeight: viewport.isMobile ? '44px' : 'auto',
                             flex: viewport.isMobile ? '1' : 'none'
@@ -371,6 +401,7 @@ const App = () => {
                 }}>
                     {basketState.isComplete && (
                         <button
+                            data-testid="save-scenario-button"
                             onClick={() => setShowSaveModal(true)}
                             style={{
                                 padding: viewport.isMobile ? '14px 24px' : '10px 20px',
@@ -489,6 +520,7 @@ const App = () => {
 
     return (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '0', paddingTop: viewport.isMobile ? '12px' : '0' }}>
+            <style dangerouslySetInnerHTML={{ __html: tabStyles }} />
             {currentPage !== 'shared-scenario' && renderNavigation()}
             {renderContent()}
             

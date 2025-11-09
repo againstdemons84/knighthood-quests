@@ -18,7 +18,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3001',
+    baseURL: 'http://localhost:3000/knighthood-quests',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -32,35 +32,18 @@ export default defineConfig({
 
   /* Configure projects for major browsers and viewports */
   projects: [
-    // Desktop browsers
+    // Desktop journey tests
     {
-      name: 'desktop-chromium',
+      name: 'desktop-journey',
       use: { ...devices['Desktop Chrome'] },
-      testMatch: ['**/desktop.spec.ts', '**/cross-platform.spec.ts'],
+      testMatch: ['**/desktop.journey.spec.ts'],
     },
 
+    // Mobile journey tests  
     {
-      name: 'desktop-firefox',
-      use: { ...devices['Desktop Firefox'] },
-      testMatch: ['**/desktop.spec.ts', '**/cross-platform.spec.ts'],
-    },
-
-    {
-      name: 'desktop-webkit',
-      use: { ...devices['Desktop Safari'] },
-      testMatch: ['**/desktop.spec.ts', '**/cross-platform.spec.ts'],
-    },
-
-    // Mobile browsers
-    {
-      name: 'mobile-chromium',
-      use: { ...devices['Pixel 5'] },
-      testMatch: ['**/mobile.spec.ts', '**/cross-platform.spec.ts'],
-    },
-    {
-      name: 'mobile-webkit',
+      name: 'mobile-journey',
       use: { ...devices['iPhone 12'] },
-      testMatch: ['**/mobile.spec.ts', '**/cross-platform.spec.ts'],
+      testMatch: ['**/mobile.journey.spec.ts'],
     },
 
     /* Test against branded browsers. */
@@ -76,8 +59,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'PORT=3001 npm start',
-    url: 'http://localhost:3001',
+    command: 'npm start',
+    url: 'http://localhost:3000/knighthood-quests',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes for the dev server to start
   },

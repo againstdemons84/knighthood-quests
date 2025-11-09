@@ -280,58 +280,6 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     </div>
                 </div>
 
-                {/* Search and Sort Controls */}
-                <div style={{ marginBottom: '16px' }}>
-                    <input
-                        type="text"
-                        placeholder="Search workouts..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '8px',
-                            marginBottom: '12px',
-                            fontSize: '16px'
-                        }}
-                    />
-                    
-                    <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                        alignItems: 'center'
-                    }}>
-                        <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
-                        {(['name', 'duration', 'tss', 'if'] as const).map(col => (
-                            <button
-                                key={col}
-                                onClick={() => handleSort(col)}
-                                style={{
-                                    padding: '8px 12px',
-                                    backgroundColor: sortBy === col ? '#4CAF50' : '#555',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                }}
-                            >
-                                {col === 'name' ? 'Name' : 
-                                 col === 'duration' ? 'Duration' :
-                                 col === 'tss' ? 'TSS®' : 'IF®'}
-                                {sortBy === col && getSortIcon(col)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Quick Selection Options - Mobile */}
                 {optimalSelections && (
                     <div style={{
@@ -474,6 +422,59 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         </div>
                     </div>
                 )}
+                
+                {/* Search and Sort Controls */}
+                <div style={{ marginBottom: '16px' }}>
+                    <input
+                        data-testid="workout-search"
+                        type="text"
+                        placeholder="Search workouts..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            backgroundColor: '#333',
+                            color: 'white',
+                            border: '1px solid #555',
+                            borderRadius: '8px',
+                            marginBottom: '12px',
+                            fontSize: '16px'
+                        }}
+                    />
+                    
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        alignItems: 'center'
+                    }}>
+                        <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
+                        {(['name', 'duration', 'tss', 'if'] as const).map(col => (
+                            <button
+                                key={col}
+                                onClick={() => handleSort(col)}
+                                style={{
+                                    padding: '8px 12px',
+                                    backgroundColor: sortBy === col ? '#4CAF50' : '#555',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}
+                            >
+                                {col === 'name' ? 'Name' : 
+                                 col === 'duration' ? 'Duration' :
+                                 col === 'tss' ? 'TSS®' : 'IF®'}
+                                {sortBy === col && getSortIcon(col)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
                 {/* Workout Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -499,19 +500,23 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 }}
                             >
                                 {/* Selection Indicator */}
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '12px',
-                                    right: '12px',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '4px',
-                                    border: '2px solid #555',
-                                    backgroundColor: isSelected ? '#4CAF50' : 'transparent',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
+                                <div 
+                                    data-testid={`workout-checkbox-${row.id}`} 
+                                    className={`workout-checkbox ${isSelected ? 'selected' : 'unselected'}`}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        width: '24px',
+                                        height: '24px',
+                                        borderRadius: '4px',
+                                        border: '2px solid #555',
+                                        backgroundColor: isSelected ? '#4CAF50' : 'transparent',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
                                     {isSelected && <span style={{ color: 'white', fontSize: '16px' }}>✓</span>}
                                 </div>
 
@@ -849,6 +854,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         </div>
                         <input
                             type="text"
+                            data-testid="workout-search"
                             placeholder="Search workouts..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -1019,6 +1025,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     >
                                         <td style={{ padding: '15px', textAlign: 'center' }}>
                                             <input
+                                                data-testid={`workout-checkbox-${row.id}`}
                                                 type="checkbox"
                                                 checked={isSelected}
                                                 onChange={() => toggleWorkoutSelection(row.id)}

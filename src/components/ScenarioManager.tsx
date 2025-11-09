@@ -100,17 +100,43 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         }
     };
 
-    const duplicateScenario = (scenario: Scenario) => {
+    const duplicateScenario = async (scenario: Scenario | ScenarioWithMetrics) => {
         const duplicatedScenario: Scenario = {
-            ...scenario,
             id: `scenario_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
             name: `${scenario.name} (Copy)`,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            workouts: scenario.workouts,
+            combinedMetrics: scenario.combinedMetrics
         };
         
         const updatedScenarios = [...scenarios, duplicatedScenario];
         setScenarios(updatedScenarios);
         saveScenarios(updatedScenarios);
+        
+        // Also calculate metrics for the duplicated scenario and update the metrics state
+        try {
+            const dynamicMetrics = await calculateCombinedMetricsDynamic(duplicatedScenario.workouts, userProfile);
+            const duplicatedScenarioWithMetrics: ScenarioWithMetrics = {
+                ...duplicatedScenario,
+                dynamicMetrics
+            };
+            
+            setScenariosWithMetrics(prev => [...prev, duplicatedScenarioWithMetrics]);
+        } catch (error) {
+            console.error('Error calculating metrics for duplicated scenario:', error);
+            // Fallback: add scenario with zero metrics
+            const duplicatedScenarioWithMetrics: ScenarioWithMetrics = {
+                ...duplicatedScenario,
+                dynamicMetrics: {
+                    totalDuration: 0,
+                    totalElapsedDuration: 0,
+                    totalTSS: 0,
+                    averageIF: 0,
+                    totalNP: 0
+                }
+            };
+            setScenariosWithMetrics(prev => [...prev, duplicatedScenarioWithMetrics]);
+        }
     };
 
     const shareScenario = (scenario: Scenario) => {
@@ -323,10 +349,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                     flexWrap: 'wrap'
                                 }}>
                                     <button
+                                        data-testid={`view-scenario-${scenario.id}`}
                                         onClick={() => onViewScenario?.(scenario)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#4CAF50',
                                             color: 'white',
@@ -340,10 +368,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         👁️ View
                                     </button>
                                     <button
+                                        data-testid={`edit-scenario-${scenario.id}`}
                                         onClick={() => onEditScenario(scenario)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#FF9800',
                                             color: 'white',
@@ -356,10 +386,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         ✏️ Edit
                                     </button>
                                     <button
+                                        data-testid={`print-scenario-${scenario.id}`}
                                         onClick={() => setShowPrintModal(scenario)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#607D8B',
                                             color: 'white',
@@ -372,10 +404,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         🖨️ Print
                                     </button>
                                     <button
+                                        data-testid={`share-scenario-${scenario.id}`}
                                         onClick={() => shareScenario(scenario)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#9C27B0',
                                             color: 'white',
@@ -388,10 +422,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         🔗 Share
                                     </button>
                                     <button
+                                        data-testid={`duplicate-scenario-${scenario.id}`}
                                         onClick={() => duplicateScenario(scenario)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#2196F3',
                                             color: 'white',
@@ -404,10 +440,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         📋 Copy
                                     </button>
                                     <button
+                                        data-testid={`delete-scenario-${scenario.id}`}
                                         onClick={() => deleteScenario(scenario.id)}
                                         style={{
                                             flex: '1',
                                             minWidth: '80px',
+                                            minHeight: '44px',
                                             padding: '10px 16px',
                                             backgroundColor: '#d32f2f',
                                             color: 'white',
@@ -759,6 +797,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                             <td style={{ padding: '15px', textAlign: 'center', verticalAlign: 'middle' }}>
                                                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                                     <button
+                                                        data-testid={`view-scenario-${scenario.id}`}
                                                         onClick={() => onViewScenario?.(scenario)}
                                                         style={{
                                                             padding: '6px 12px',
@@ -774,6 +813,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                     </button>
                                                     <button
                                                         onClick={() => onEditScenario(scenario)}
+                                                        data-testid={`edit-scenario-${scenario.id}`}
                                                         style={{
                                                             padding: '6px 12px',
                                                             backgroundColor: '#2196F3',
@@ -788,6 +828,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                     </button>
                                                     <button
                                                         onClick={() => duplicateScenario(scenario)}
+                                                        data-testid={`duplicate-scenario-${scenario.id}`}
                                                         style={{
                                                             padding: '6px 12px',
                                                             backgroundColor: '#FF9800',
@@ -802,6 +843,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                     </button>
                                                     <button
                                                         onClick={() => setShowPrintModal(scenario)}
+                                                        data-testid={`print-scenario-${scenario.id}`}
                                                         style={{
                                                             padding: '6px 12px',
                                                             backgroundColor: '#607D8B',
@@ -816,6 +858,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                     </button>
                                                     <button
                                                         onClick={() => shareScenario(scenario)}
+                                                        data-testid={`share-scenario-${scenario.id}`}
                                                         style={{
                                                             padding: '6px 12px',
                                                             backgroundColor: '#9C27B0',
@@ -830,6 +873,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                     </button>
                                                     <button
                                                         onClick={() => deleteScenario(scenario.id)}
+                                                        data-testid={`delete-scenario-${scenario.id}`}
                                                         style={{
                                                             padding: '6px 12px',
                                                             backgroundColor: '#d32f2f',

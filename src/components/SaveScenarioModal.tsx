@@ -99,6 +99,7 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                             setScenarioName(e.target.value);
                             setError('');
                         }}
+                        data-testid="scenario-name-input"
                         onKeyPress={handleKeyPress}
                         placeholder="Enter a name for your Knighthood challenge scenario..."
                         style={{
@@ -210,6 +211,7 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                     <button
                         onClick={handleSave}
                         disabled={!basketState.isComplete || !scenarioName.trim()}
+                        data-testid="save-scenario-modal-button"
                         style={{
                             padding: '12px 24px',
                             backgroundColor: basketState.isComplete && scenarioName.trim() ? '#4CAF50' : '#555',

@@ -216,6 +216,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                 marginBottom: '32px'
             }}>
                 <button
+                    data-testid="begin-quest-button"
                     onClick={onGetStarted}
                     style={{
                         padding: '16px 32px',
