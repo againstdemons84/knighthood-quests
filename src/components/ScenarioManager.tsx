@@ -3,6 +3,7 @@ import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
 import { useViewport } from '../hooks/useViewport';
+import PrintQuestModal from './PrintQuestModal';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
@@ -28,6 +29,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
     const [selectedScenarios, setSelectedScenarios] = useState<Set<string>>(new Set());
     const [sortBy, setSortBy] = useState<'name' | 'created' | 'duration' | 'elapsed' | 'tss' | 'if'>('created');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [showPrintModal, setShowPrintModal] = useState<Scenario | null>(null);
 
     useEffect(() => {
         const loadScenariosWithDynamicMetrics = async () => {
@@ -351,6 +353,22 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                         ✏️ Edit
                                     </button>
                                     <button
+                                        onClick={() => setShowPrintModal(scenario)}
+                                        style={{
+                                            flex: '1',
+                                            minWidth: '80px',
+                                            padding: '10px 16px',
+                                            backgroundColor: '#607D8B',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        🖨️ Print
+                                    </button>
+                                    <button
                                         onClick={() => shareScenario(scenario)}
                                         style={{
                                             flex: '1',
@@ -403,6 +421,15 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                         ))}
                     </div>
                 </>
+            )}
+            
+            {/* Print Modal */}
+            {showPrintModal && (
+                <PrintQuestModal
+                    scenario={showPrintModal}
+                    userProfile={userProfile}
+                    onClose={() => setShowPrintModal(null)}
+                />
             )}
         </div>
     );
@@ -771,6 +798,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                                         Copy
                                                     </button>
                                                     <button
+                                                        onClick={() => setShowPrintModal(scenario)}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            backgroundColor: '#607D8B',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '12px'
+                                                        }}
+                                                    >
+                                                        Print
+                                                    </button>
+                                                    <button
                                                         onClick={() => shareScenario(scenario)}
                                                         style={{
                                                             padding: '6px 12px',
@@ -808,6 +849,15 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     </div>
                 )}
             </div>
+            
+            {/* Print Modal */}
+            {showPrintModal && (
+                <PrintQuestModal
+                    scenario={showPrintModal}
+                    userProfile={userProfile}
+                    onClose={() => setShowPrintModal(null)}
+                />
+            )}
         </div>
     );
 };

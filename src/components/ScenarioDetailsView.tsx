@@ -4,6 +4,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import { formatDuration, calculateCombinedMetricsDynamic, loadScenarios, saveScenarios } from '../utils/scenarioHelpers';
 import ReorderableWorkoutList from './ReorderableWorkoutList';
 import { useViewport } from '../hooks/useViewport';
+import PrintQuestModal from './PrintQuestModal';
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
@@ -29,6 +30,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
         averageIF: 0,
         totalNP: 0
     });
+    const [showPrintModal, setShowPrintModal] = useState(false);
 
 
 
@@ -110,6 +112,25 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                         }}
                     >
                         ← Back
+                    </button>
+                    <button
+                        onClick={() => setShowPrintModal(true)}
+                        style={{
+                            padding: viewport.isMobile ? '12px 16px' : '10px 20px',
+                            backgroundColor: '#607D8B',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            alignSelf: viewport.isMobile ? 'flex-start' : 'auto'
+                        }}
+                    >
+                        🖨️ Print Quest Plan
                     </button>
                     <div style={{ textAlign: viewport.isMobile ? 'center' : 'left' }}>
                         <h1 style={{ color: 'white', margin: 0, fontSize: viewport.isMobile ? '20px' : '24px' }}>
@@ -220,6 +241,15 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 title={`${scenario.name} - Arsenal of SUFFERING`}
                 subtitle={`Drag and drop to reorder your ${scenario.workouts.length} instruments of pain for KNIGHTHOOD`}
             />
+            
+            {/* Print Modal */}
+            {showPrintModal && (
+                <PrintQuestModal
+                    scenario={scenario}
+                    userProfile={userProfile}
+                    onClose={() => setShowPrintModal(false)}
+                />
+            )}
         </div>
     );
 };
