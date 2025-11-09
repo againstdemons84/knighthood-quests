@@ -87,7 +87,10 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
     const deleteScenario = (scenarioId: string) => {
         if (window.confirm('Are you sure you want to delete this scenario?')) {
             const updatedScenarios = scenarios.filter(s => s.id !== scenarioId);
+            const updatedScenariosWithMetrics = scenariosWithMetrics.filter(s => s.id !== scenarioId);
+            
             setScenarios(updatedScenarios);
+            setScenariosWithMetrics(updatedScenariosWithMetrics);
             saveScenarios(updatedScenarios);
             setSelectedScenarios(prev => {
                 const newSet = new Set(prev);
