@@ -447,4 +447,58 @@ test.describe('Cross-Device Journey Tests', () => {
       await expect(handle).toHaveText('⋮⋮');
     }
   });
+
+  test('Floating save button functionality on mobile', async ({ page }) => {
+    // Skip this test if not on mobile
+    test.skip(!DeviceHelpers.isMobile(page), 'Mobile-specific test');
+    
+    // Clear any existing scenarios
+    await page.evaluate(() => {
+      localStorage.removeItem('knighthood-scenarios');
+    });
+    
+    // Start the quest
+    const beginButton = page.locator('[data-testid="begin-quest-button"]');
+    await beginButton.click();
+    
+    // Wait for the selector page to load
+    const searchInput = page.locator('[data-testid="workout-search"]');
+    await DeviceHelpers.ensureVisible(page, searchInput);
+    
+    // Select 10 workouts
+    await DeviceHelpers.selectWorkouts(page, 10);
+    
+    // Verify 10 checkboxes are selected
+    await expect(page.locator('[data-testid^="workout-checkbox-"].selected')).toHaveCount(10, { timeout: 2000 });
+    
+    // Verify the static save button exists in the Arsenal section
+    const staticSaveButton = page.locator('[data-testid="save-scenario-button"]');
+    await expect(staticSaveButton).toBeVisible();
+    
+    // Scroll down past the search input to trigger floating button
+    await page.evaluate(() => {
+      window.scrollTo(0, 1000); // Scroll down significantly
+    });
+    
+    // Wait a moment for scroll detection
+    await page.waitForTimeout(500);
+    
+    // Check if floating save button appears
+    const floatingSaveButton = page.locator('[data-testid="floating-save-scenario-button"]');
+    await expect(floatingSaveButton).toBeVisible({ timeout: 2000 });
+    
+    // Scroll back up past the search input
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+    });
+    
+    // Wait for scroll detection
+    await page.waitForTimeout(500);
+    
+    // Verify floating button disappears when scrolled back up
+    await expect(floatingSaveButton).not.toBeVisible();
+    
+    // Verify static button is still visible
+    await expect(staticSaveButton).toBeVisible();
+  });
 });

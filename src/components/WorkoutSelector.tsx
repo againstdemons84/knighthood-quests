@@ -16,6 +16,9 @@ interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
     initialBasket?: WorkoutSelection[];
     userProfile: UserPowerProfile;
+    onSaveScenario?: () => void;
+    editingScenario?: any;
+    onCancelEdit?: () => void;
 }
 
 interface WorkoutRow {
@@ -36,7 +39,10 @@ interface WorkoutRow {
 const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({ 
     onBasketChange, 
     initialBasket = [],
-    userProfile
+    userProfile,
+    onSaveScenario,
+    editingScenario,
+    onCancelEdit
 }) => {
     const viewport = useViewport();
     const [workoutRows, setWorkoutRows] = useState<WorkoutRow[]>([]);
@@ -46,6 +52,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     const [sortBy, setSortBy] = useState<'name' | 'duration' | 'tss' | 'if'>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [optimalSelections, setOptimalSelections] = useState<any>(null);
+    const [showFloatingSave, setShowFloatingSave] = useState(false);
+    
+    const searchInputRef = React.useRef<HTMLInputElement>(null);
 
     const MAX_WORKOUTS = 10;
 
@@ -141,6 +150,28 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
         loadAllWorkouts();
     }, [basket]);
+
+    // Scroll detection for floating save button on mobile
+    useEffect(() => {
+        if (!viewport.isMobile) return;
+
+        const handleScroll = () => {
+            if (searchInputRef.current) {
+                const searchRect = searchInputRef.current.getBoundingClientRect();
+                const isSearchVisible = searchRect.bottom > 0;
+                
+                // Show floating button when search is scrolled out of view and basket is complete
+                setShowFloatingSave(!isSearchVisible && basket.length === MAX_WORKOUTS);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [viewport.isMobile, basket.length, MAX_WORKOUTS]);
 
     const toggleWorkoutSelection = (workoutId: string) => {
         const workout = workoutRows.find(w => w.id === workoutId);
@@ -256,9 +287,50 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                         </h3>
                         {basket.length === MAX_WORKOUTS && (
-                            <div style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '14px' }}>
-                                ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
-                            </div>
+                            <>
+                                <div style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '14px', marginBottom: '12px' }}>
+                                    ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
+                                </div>
+                                {onSaveScenario && (
+                                    <button
+                                        data-testid="save-scenario-button"
+                                        onClick={onSaveScenario}
+                                        style={{
+                                            padding: '14px 24px',
+                                            backgroundColor: '#4CAF50',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            fontSize: '16px',
+                                            minHeight: '48px',
+                                            marginBottom: editingScenario ? '8px' : '12px',
+                                            width: '100%'
+                                        }}
+                                    >
+                                        {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                                    </button>
+                                )}
+                                {editingScenario && onCancelEdit && (
+                                    <button
+                                        onClick={onCancelEdit}
+                                        style={{
+                                            padding: '12px 24px',
+                                            backgroundColor: '#666',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            marginBottom: '8px',
+                                            width: '100%'
+                                        }}
+                                    >
+                                        Cancel Edit
+                                    </button>
+                                )}
+                            </>
                         )}
                         {basket.length > 0 && (
                             <button
@@ -426,6 +498,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 {/* Search and Sort Controls */}
                 <div style={{ marginBottom: '16px' }}>
                     <input
+                        ref={searchInputRef}
                         data-testid="workout-search"
                         type="text"
                         placeholder="Search workouts..."
@@ -608,6 +681,60 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     })}
                 </div>
             </div>
+            
+            {/* Floating Save Button */}
+            {showFloatingSave && onSaveScenario && (
+                <div style={{
+                    position: 'fixed',
+                    bottom: '16px',
+                    left: '16px',
+                    right: '16px',
+                    zIndex: 1000,
+                    display: 'flex',
+                    gap: '8px'
+                }}>
+                    <button
+                        data-testid="floating-save-scenario-button"
+                        onClick={onSaveScenario}
+                        style={{
+                            flex: 1,
+                            padding: '16px 24px',
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                        }}
+                    >
+                        💾 {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                    </button>
+                    {editingScenario && onCancelEdit && (
+                        <button
+                            onClick={onCancelEdit}
+                            style={{
+                                padding: '16px 20px',
+                                backgroundColor: '#666',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 
@@ -652,8 +779,44 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 Your Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                             </h3>
                             {basket.length === MAX_WORKOUTS && (
-                                <div style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                                <div style={{ color: '#4CAF50', fontWeight: 'bold', marginBottom: '15px' }}>
                                     ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness acknowledges your commitment to SUFFERING!
+                                </div>
+                            )}
+                            {basket.length === MAX_WORKOUTS && onSaveScenario && (
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                    <button
+                                        data-testid="save-scenario-button"
+                                        onClick={onSaveScenario}
+                                        style={{
+                                            padding: '12px 24px',
+                                            backgroundColor: '#4CAF50',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            fontSize: '16px'
+                                        }}
+                                    >
+                                        {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                                    </button>
+                                    {editingScenario && onCancelEdit && (
+                                        <button
+                                            onClick={onCancelEdit}
+                                            style={{
+                                                padding: '12px 24px',
+                                                backgroundColor: '#666',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px'
+                                            }}
+                                        >
+                                            Cancel Edit
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -1103,6 +1266,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 </div>
             </div>
         </div>
+        
     );
 };
 

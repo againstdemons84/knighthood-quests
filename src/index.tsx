@@ -391,55 +391,7 @@ const App = () => {
                     </button>
                 </div>
             </div>
-            
-            {currentPage === 'selector' && (
-                <div style={{ 
-                    display: 'flex', 
-                    gap: viewport.isMobile ? '8px' : '10px', 
-                    alignItems: 'center',
-                    justifyContent: viewport.isMobile ? 'center' : 'flex-start',
-                    width: viewport.isMobile ? '100%' : 'auto'
-                }}>
-                    {basketState.isComplete && (
-                        <button
-                            data-testid="save-scenario-button"
-                            onClick={() => setShowSaveModal(true)}
-                            style={{
-                                padding: viewport.isMobile ? '14px 24px' : '10px 20px',
-                                backgroundColor: '#4CAF50',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: viewport.isMobile ? '16px' : '14px',
-                                minHeight: viewport.isMobile ? '48px' : 'auto',
-                                flex: viewport.isMobile ? '1' : 'none'
-                            }}
-                        >
-                            {editingScenario ? 'Update Scenario' : 'Save Scenario'}
-                        </button>
-                    )}
-                    {editingScenario && (
-                        <button
-                            onClick={() => {
-                                setEditingScenario(null);
-                                setBasketState({ selectedWorkouts: [], isComplete: false });
-                            }}
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: '#666',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            Cancel Edit
-                        </button>
-                    )}
-                </div>
-            )}
+
         </div>
     );
 
@@ -459,6 +411,12 @@ const App = () => {
                         onBasketChange={handleBasketChange}
                         initialBasket={basketState.selectedWorkouts}
                         userProfile={userProfile}
+                        onSaveScenario={() => setShowSaveModal(true)}
+                        editingScenario={editingScenario}
+                        onCancelEdit={() => {
+                            setEditingScenario(null);
+                            setBasketState({ selectedWorkouts: [], isComplete: false });
+                        }}
                     />
                 ) : null;
             
