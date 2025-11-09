@@ -332,6 +332,149 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     </div>
                 </div>
 
+                {/* Quick Selection Options - Mobile */}
+                {optimalSelections && (
+                    <div style={{
+                        backgroundColor: '#333',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        marginBottom: '16px',
+                        border: '1px solid #444'
+                    }}>
+                        <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
+                            QUICK PICKS (Auto-select 10 workouts):
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#2196F3',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                🏃‍♂️ Easiest
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Lowest TSS)</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.shortestDuration);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#FF9800',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                ⚡ Quickest
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Shortest Duration)</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.lowestIF);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#4CAF50',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                💚 Mildest
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Lowest Intensity)</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.balanced);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#9C27B0',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                ⚖️ Balanced
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Mixed Challenge)</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.highestTSS);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#d32f2f',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                🔥 Hardest
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Highest TSS)</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const selections = convertToWorkoutSelections(optimalSelections.longestDuration);
+                                    setBasket(selections);
+                                    onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                                }}
+                                style={{
+                                    padding: '10px 8px',
+                                    backgroundColor: '#795548',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '11px',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                ⏰ Longest
+                                <br />
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Max Duration)</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Workout Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {sortedWorkouts.map((row, index) => {
