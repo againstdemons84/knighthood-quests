@@ -287,54 +287,15 @@ const App = () => {
             marginBottom: viewport.isMobile ? '12px' : '20px',
             borderRadius: '8px',
             display: 'flex',
-            flexDirection: viewport.isMobile ? 'column' : 'row',
-            gap: viewport.isMobile ? '12px' : '15px',
-            alignItems: viewport.isMobile ? 'stretch' : 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'center',
+            alignItems: 'center'
         }}>
             <div style={{ 
                 display: 'flex', 
-                flexDirection: viewport.isMobile ? 'column' : 'row',
-                gap: viewport.isMobile ? '8px' : '15px', 
-                alignItems: viewport.isMobile ? 'center' : 'center',
-                textAlign: viewport.isMobile ? 'center' : 'left'
+                gap: viewport.isMobile ? '8px' : '10px',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
             }}>
-                <div>
-                    <h2 style={{ 
-                        color: 'white', 
-                        margin: 0,
-                        fontSize: viewport.isMobile ? '18px' : '24px'
-                    }}>
-                        {viewport.isMobile ? 'Assault on the Castle' : 'Assault on the Castle of in the pursuit of KNIGHTHOOD'}
-                    </h2>
-                    {userProfile && (
-                        <div style={{ 
-                            color: '#999', 
-                            fontSize: viewport.isMobile ? '10px' : '12px', 
-                            marginTop: '2px'
-                        }}>
-                            {viewport.isMobile ? 
-                                `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W` :
-                                `FTP: ${userProfile.ftp}W | MAP: ${userProfile.map}W | AC: ${userProfile.ac}W | NM: ${userProfile.nm}W`
-                            }
-                            {isUsingDefaultProfile() && (
-                                <span style={{ 
-                                    color: '#FFA726', 
-                                    marginLeft: '8px',
-                                    fontSize: viewport.isMobile ? '9px' : '11px'
-                                }}>
-                                    (Using defaults - customize in Profile)
-                                </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-                <div style={{ 
-                    display: 'flex', 
-                    gap: viewport.isMobile ? '8px' : '10px',
-                    flexWrap: 'wrap',
-                    justifyContent: viewport.isMobile ? 'center' : 'flex-start'
-                }}>
                     <button
                         data-testid="home-tab"
                         className={`tab-button ${currentPage === 'intro' ? 'active' : ''}`}
@@ -375,7 +336,7 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? `Arsenal (${scenarios.length})` : `Your Arsenal (${scenarios.length})`}
+                        {viewport.isMobile ? `Enterpainment (${scenarios.length})` : `Enterpainment (${scenarios.length})`}
                     </button>
                     <button
                         className={`tab-button ${currentPage === 'profile' ? 'active' : ''} ${isUsingDefaultProfile() ? 'warning' : ''}`}
@@ -389,9 +350,7 @@ const App = () => {
                     >
                         {viewport.isMobile ? (isUsingDefaultProfile() ? '⚙️!' : '⚙️') : (isUsingDefaultProfile() ? '⚙️ Profile!' : '⚙️ Profile')}
                     </button>
-                </div>
             </div>
-
         </div>
     );
 

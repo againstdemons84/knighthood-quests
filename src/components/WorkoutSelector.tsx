@@ -271,7 +271,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     Plan Your Assault on the Castle
                 </h1>
                 <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
-                    Assemble 10 instruments of Suffering for your siege on the highest HONOUR in Sufferlandria
+                    Assemble 10 instruments of Suffering for your siezing of the highest HONOUR in Sufferlandria
                 </p>
 
                 {/* Basket Summary - Mobile */}
@@ -747,7 +747,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         Plan Your Assault on the Castle
                     </h1>
                     <p style={{ color: '#999', marginBottom: '30px' }}>
-                        Select 10 siege weapons of SUFFERING to complete back-to-back in your assault on the fortress of KNIGHTHOOD
+                        Assemble 10 instruments of SUFFERING for your siezing of the highest HONOUR in Sufferlandria
                     </p>
                 </div>
             </div>
