@@ -146,8 +146,8 @@ describe('WorkoutSelector', () => {
         
         // Wait for loading to complete and main content to appear
         await waitFor(() => {
-            expect(screen.getByText('Select Your Knighthood Challenge Workouts')).toBeInTheDocument();
-            expect(screen.getByText(/Choose 10 workouts to complete back-to-back/)).toBeInTheDocument();
+            expect(screen.getByText('Plan Your Assault on the Castle')).toBeInTheDocument();
+            expect(screen.getByText(/Select 10 siege weapons of SUFFERING to complete back-to-back/)).toBeInTheDocument();
         }, { timeout: 3000 });
     });
 
@@ -158,7 +158,7 @@ describe('WorkoutSelector', () => {
         
         // Wait for loading to complete and then check basket
         await waitFor(() => {
-            expect(screen.getByText('Your Challenge Basket (0/10)')).toBeInTheDocument();
+            expect(screen.getByText('Your Arsenal of SUFFERING (0/10)')).toBeInTheDocument();
         }, { timeout: 3000 });
     });
 
@@ -202,7 +202,7 @@ describe('WorkoutSelector', () => {
 
         // Should update progress
         await waitFor(() => {
-            expect(screen.getByText('Your Challenge Basket (1/10)')).toBeInTheDocument();
+            expect(screen.getByText('Your Arsenal of SUFFERING (1/10)')).toBeInTheDocument();
         });
     });
 
@@ -255,12 +255,12 @@ describe('WorkoutSelector', () => {
         
         // Wait for loading to complete and check metrics
         await waitFor(() => {
-            expect(screen.getByText('Select Your Knighthood Challenge Workouts')).toBeInTheDocument();
+            expect(screen.getByText('Plan Your Assault on the Castle')).toBeInTheDocument();
         }, { timeout: 3000 });
         
         // Should show initial metrics (all zeros) - these might not be visible until basket has items
         // For now, just verify component loaded
-        expect(screen.getByText('Your Challenge Basket (0/10)')).toBeInTheDocument();
+        expect(screen.getByText('Your Arsenal of SUFFERING (0/10)')).toBeInTheDocument();
     });
 
     test('should disable completed challenges from further selection', async () => {
@@ -291,7 +291,7 @@ describe('WorkoutSelector', () => {
             }
         }
         await waitFor(() => {
-            expect(screen.getByText(/Your Challenge Basket \(2\/10\)/)).toBeInTheDocument();
+            expect(screen.getByText(/Your Arsenal of SUFFERING \(2\/10\)/)).toBeInTheDocument();
         });
     });
 
@@ -319,13 +319,13 @@ describe('WorkoutSelector', () => {
         const checkboxes = screen.getAllByRole('checkbox');
         await userEvent.click(checkboxes[0]);
         await waitFor(() => {
-            expect(screen.getByText(/Your Challenge Basket \(1\/10\)/)).toBeInTheDocument();
+            expect(screen.getByText(/Your Arsenal of SUFFERING \(1\/10\)/)).toBeInTheDocument();
         });
 
         // Remove the workout
         await userEvent.click(checkboxes[0]);
         await waitFor(() => {
-            expect(screen.getByText(/Your Challenge Basket \(0\/10\)/)).toBeInTheDocument();
+            expect(screen.getByText(/Your Arsenal of SUFFERING \(0\/10\)/)).toBeInTheDocument();
         });
     });
 
@@ -340,7 +340,7 @@ describe('WorkoutSelector', () => {
         
         // Wait for loading to complete and main content to appear
         await waitFor(() => {
-            expect(screen.getByText('Select Your Knighthood Challenge Workouts')).toBeInTheDocument();
+            expect(screen.getByText('Plan Your Assault on the Castle')).toBeInTheDocument();
         }, { timeout: 3000 });
     });
 });

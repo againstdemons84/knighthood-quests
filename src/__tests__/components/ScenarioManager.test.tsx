@@ -75,8 +75,8 @@ describe('ScenarioManager', () => {
             render(<ScenarioManager {...mockProps} />);
         });
         
-        expect(screen.getByText('Your Knighthood Challenge Scenarios')).toBeInTheDocument();
-        expect(screen.getByText(/Manage and compare your different 10-workout combinations/)).toBeInTheDocument();
+        expect(screen.getByText('Your Arsenal of KNIGHTHOOD Quests')).toBeInTheDocument();
+        expect(screen.getByText(/Manage and compare your different recipes for SUFFERING/)).toBeInTheDocument();
     });
 
     it('should display scenarios after loading', async () => {
@@ -192,7 +192,7 @@ describe('ScenarioManager', () => {
 
         await waitFor(() => {
             expect(screen.getByText('No Scenarios Yet')).toBeInTheDocument();
-            expect(screen.getByText(/Create your first Knighthood challenge scenario/)).toBeInTheDocument();
+            expect(screen.getByText(/Forge your first path to KNIGHTHOOD/)).toBeInTheDocument();
         });
     });
 
