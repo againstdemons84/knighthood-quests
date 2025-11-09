@@ -44,7 +44,9 @@ beforeAll(() => {
     console.error = (...args: any[]) => {
         if (
             typeof args[0] === 'string' &&
-            args[0].includes('Warning: ReactDOM.render is no longer supported')
+            (args[0].includes('Warning: ReactDOM.render is no longer supported') ||
+             args[0].includes('Failed to calculate metrics for scenario') ||
+             args[0].includes('Error loading workout metrics for'))
         ) {
             return;
         }
