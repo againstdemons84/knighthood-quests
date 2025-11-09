@@ -157,8 +157,9 @@ const App = () => {
     const handleSaveScenario = (scenario: Scenario) => {
         const existingIndex = scenarios.findIndex(s => s.id === scenario.id);
         let updatedScenarios;
+        const isUpdate = existingIndex >= 0;
         
-        if (existingIndex >= 0) {
+        if (isUpdate) {
             updatedScenarios = [...scenarios];
             updatedScenarios[existingIndex] = scenario;
         } else {
@@ -172,6 +173,17 @@ const App = () => {
         
         // Clear basket after saving
         setBasketState({ selectedWorkouts: [], isComplete: false });
+        
+        // Provide user feedback and navigate to scenarios page
+        const action = isUpdate ? 'updated' : 'saved';
+        setTimeout(() => {
+            alert(`🏆 Quest "${scenario.name}" has been ${action} successfully!\n\nYour challenge is now ready for the pursuit of KNIGHTHOOD!`);
+        }, 100);
+        
+        // Navigate to scenarios page to show the saved scenario
+        setTimeout(() => {
+            setPage('scenarios');
+        }, 200);
     };
 
     const handleEditScenario = (scenario: Scenario) => {
@@ -204,6 +216,16 @@ const App = () => {
         const updatedScenarios = [...scenarios, scenario];
         setScenarios(updatedScenarios);
         saveScenarios(updatedScenarios);
+        
+        // Provide user feedback and navigate to scenarios page
+        setTimeout(() => {
+            alert(`🏆 Shared quest "${scenario.name}" has been saved to your collection!\n\nYou can now view and manage it with your other challenges.`);
+        }, 100);
+        
+        // Navigate to scenarios page to show the saved scenario
+        setTimeout(() => {
+            setPage('scenarios');
+        }, 200);
     };
 
     const handleBackToAppFromShare = () => {
