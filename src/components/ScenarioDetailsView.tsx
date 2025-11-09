@@ -94,7 +94,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                     gap: viewport.isMobile ? '12px' : '20px', 
                     marginBottom: viewport.isMobile ? '16px' : '20px' 
                 }}>
-                    <button
+                    <button data-testid="back-button"
                         onClick={onBack}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '10px 20px',

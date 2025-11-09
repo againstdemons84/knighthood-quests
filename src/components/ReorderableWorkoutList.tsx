@@ -290,7 +290,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     };
 
     const renderMobileLayout = () => (
-        <div style={{ margin: "20px 0" }}>
+        <div data-testid="reorderable-workout-list" style={{ margin: "20px 0" }}>
             <div style={{ marginBottom: "16px" }}>
                 <h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "600", color: "white" }}>{title}</h2>
                 {subtitle && (
@@ -345,6 +345,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                         {workoutRows.map((row, index) => (
                         <div
                             key={`${row.name}-${index}`}
+                            data-testid={`workout-item-${index}`}
+                            data-workout-id={row.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, index)}
                             onDragEnd={handleDragEnd}
@@ -370,25 +372,31 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 justifyContent: "space-between",
                                 marginBottom: "12px"
                             }}>
-                                <div style={{
-                                    backgroundColor: "#4CAF50",
-                                    color: "white",
-                                    borderRadius: "50%",
-                                    width: "32px",
-                                    height: "32px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: "16px",
-                                    fontWeight: "bold"
-                                }}>
+                                <div 
+                                    data-testid={`order-number-${index}`}
+                                    style={{
+                                        backgroundColor: "#4CAF50",
+                                        color: "white",
+                                        borderRadius: "50%",
+                                        width: "32px",
+                                        height: "32px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "16px",
+                                        fontWeight: "bold"
+                                    }}
+                                >
                                     {index + 1}
                                 </div>
-                                <div style={{
-                                    color: "#999",
-                                    fontSize: "20px",
-                                    cursor: "grab"
-                                }}>
+                                <div 
+                                    data-testid={`drag-handle-${index}`}
+                                    style={{
+                                        color: "#999",
+                                        fontSize: "20px",
+                                        cursor: "grab"
+                                    }}
+                                >
                                     ⋮⋮
                                 </div>
                             </div>
@@ -578,7 +586,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
             )}
 
             {/* Reorderable Workout List */}
-            <div style={{
+            <div data-testid="reorderable-workout-list" style={{
                 backgroundColor: '#2a2a2a',
                 borderRadius: '8px',
                 border: '1px solid #444'
@@ -610,6 +618,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     {workoutRows.map((workout, index) => (
                         <div
                             key={workout.id}
+                            data-testid={`workout-item-${index}`}
+                            data-workout-id={workout.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, index)}
                             onDragEnd={handleDragEnd}
@@ -630,24 +640,29 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             }}
                         >
                             {/* Drag Handle */}
-                            <div style={{
-                                color: '#999',
-                                width: '28px',
-                                fontSize: '16px',
-                                cursor: 'grab',
-                                textAlign: 'center'
-                            }}>
+                            <div 
+                                data-testid={`drag-handle-${index}`}
+                                style={{
+                                    color: '#999',
+                                    width: '28px',
+                                    fontSize: '16px',
+                                    cursor: 'grab',
+                                    textAlign: 'center'
+                                }}
+                            >
                                 ⋮⋮
                             </div>
 
                             {/* Order Number */}
-                            <div style={{
-                                backgroundColor: '#4CAF50',
-                                color: 'white',
-                                borderRadius: '50%',
-                                width: '26px',
-                                height: '26px',
-                                display: 'flex',
+                            <div 
+                                data-testid={`order-number-${index}`}
+                                style={{
+                                    backgroundColor: '#4CAF50',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    width: '26px',
+                                    height: '26px',
+                                    display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '13px',

@@ -336,9 +336,9 @@ const App = () => {
                     justifyContent: viewport.isMobile ? 'center' : 'flex-start'
                 }}>
                     <button
-                        data-testid="quest-tab"
-                        className={`tab-button ${currentPage === 'selector' ? 'active' : ''}`}
-                        onClick={() => setPage('selector')}
+                        data-testid="home-tab"
+                        className={`tab-button ${currentPage === 'intro' ? 'active' : ''}`}
+                        onClick={() => setPage('intro')}
                         style={{
                             padding: viewport.isMobile ? '12px 16px' : '8px 16px',
                             fontSize: viewport.isMobile ? '14px' : '13px',
@@ -346,9 +346,10 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        Quest
+                        Home
                     </button>
                     <button
+                        data-testid="quest-tab"
                         className={`tab-button ${currentPage === 'selector' ? 'active' : ''}`}
                         onClick={() => {
                             setPage('selector');
