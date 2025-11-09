@@ -35,15 +35,21 @@ export default defineConfig({
     // Desktop journey tests
     {
       name: 'desktop-journey',
-      use: { ...devices['Desktop Chrome'] },
-      testMatch: ['**/desktop.journey.spec.ts'],
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1200, height: 800 }
+      },
+      testMatch: ['**/journey.spec.ts'],
     },
 
     // Mobile journey tests  
     {
       name: 'mobile-journey',
-      use: { ...devices['iPhone 12'] },
-      testMatch: ['**/mobile.journey.spec.ts'],
+      use: { 
+        ...devices['iPhone 12'],
+        viewport: { width: 375, height: 667 } // iPhone SE dimensions for consistency
+      },
+      testMatch: ['**/journey.spec.ts'],
     },
 
     /* Test against branded browsers. */
