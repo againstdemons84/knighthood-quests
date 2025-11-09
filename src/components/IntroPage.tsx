@@ -28,15 +28,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text'
                 }}>
-                    Knight of Sufferlandria Challenge
+                    Assault on the Castle
                 </h1>
                 <p style={{
                     fontSize: viewport.isMobile ? '18px' : '20px',
                     color: '#999',
                     lineHeight: '1.6'
                 }}>
-                    Become a Knight by completing 10 Knighthood workouts back-to-back. 
-                    Plan your challenge, analyze the training load, and conquer Sufferlandria!
+                    Launch your siege on the fortress in pursuit of KNIGHTHOOD and IMMORTALITY! Plan your quest through 10 instruments of SUFFERING, 
+                    analyze the training load, and storm the castle to claim the highest HONOUR in Sufferlandria!
                 </p>
             </div>
 
@@ -52,7 +52,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     marginBottom: '16px',
                     color: '#4CAF50'
                 }}>
-                    🏰 What is the Knight of Sufferlandria Challenge?
+                    🏰 The Quest Bestowed by the Ministry of Madness
                 </h2>
                 <p style={{
                     fontSize: '16px',
@@ -60,17 +60,18 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     color: '#ccc',
                     marginBottom: '16px'
                 }}>
-                    The Knight of Sufferlandria is the ultimate endurance challenge in the SYSTM training app. 
-                    To earn your knighthood, you must complete <strong>10 Knighthood workouts</strong> in a single session, 
-                    back-to-back with no more than 10 minutes between each workout.
+                    There are those who know how to Suffer. And there are those for whom SUFFERING is but a minor annoyance. 
+                    To earn the highest HONOUR accorded by the Sufferlandrian Ministry of Madness, one must simply do 
+                    <strong> 10 Sufferfest videos back-to-back</strong>, with no more than 10 minutes rest between each instrument of pain.
                 </p>
                 <p style={{
                     fontSize: '16px',
                     lineHeight: '1.7',
                     color: '#ccc'
                 }}>
-                    This is not just a test of fitness—it's a test of mental fortitude, strategic planning, 
-                    and pure determination. Only the brave attempt it, and even fewer complete it successfully.
+                    This is not merely a test of your physical capabilities in your Bicycle Torture Chamber—it's a trial of mental 
+                    fortitude that separates true Sufferlandrians from mere mortals. Only the brave dare attempt it, and even fewer 
+                    emerge victorious to bask in eternal GLORY!
                 </p>
             </div>
 
@@ -86,7 +87,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     marginBottom: '20px',
                     color: '#4CAF50'
                 }}>
-                    📱 How to Use This App
+                    📱 Your Guide to KNIGHTHOOD
                 </h2>
                 
                 <div style={{
@@ -110,11 +111,11 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                         }}>1</div>
                         <div>
                             <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white' }}>
-                                Plan Your Challenge
+                                Assemble Your Arsenal of SUFFERING
                             </h3>
                             <p style={{ color: '#ccc', lineHeight: '1.6' }}>
-                                Use the <strong>"Plan Challenge"</strong> tab to select 10 workouts from all available 
-                                Knighthood workouts. See real-time calculations of total duration, TSS, and training load.
+                                Use the <strong>"Plan Quest"</strong> tab to select 10 instruments of pain from all available 
+                                Knighthood workouts. Witness real-time calculations of your impending SUFFERING through TSS and training load.
                             </p>
                         </div>
                     </div>
@@ -135,11 +136,11 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                         }}>2</div>
                         <div>
                             <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white' }}>
-                                Save & Compare Scenarios
+                                Plot Your Path to GLORY
                             </h3>
                             <p style={{ color: '#ccc', lineHeight: '1.6' }}>
-                                Save different workout combinations as scenarios. Compare training loads, 
-                                share with friends, and find the perfect strategy for your fitness level.
+                                Save different combinations of SUFFERING as scenarios. Compare the pain levels, 
+                                share your madness with fellow Sufferlandrians, and find the perfect recipe for KNIGHTHOOD.
                             </p>
                         </div>
                     </div>
@@ -160,11 +161,11 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                         }}>3</div>
                         <div>
                             <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white' }}>
-                                Optimize Your Strategy
+                                Perfect Your 4DP Battle Plan
                             </h3>
                             <p style={{ color: '#ccc', lineHeight: '1.6' }}>
-                                Analyze power profiles, view detailed workout breakdowns, and adjust your 
-                                power profile settings to get accurate TSS and IF calculations.
+                                Analyze your Four Dimensional Power profile, view detailed breakdowns of each torture session, 
+                                and calibrate your power settings to accurately predict the magnitude of SUFFERING ahead.
                             </p>
                         </div>
                     </div>
@@ -183,7 +184,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     marginBottom: '16px',
                     color: '#FF9800'
                 }}>
-                    💡 Pro Tips for Success
+                    💡 Wisdom from Fellow Knights
                 </h2>
                 <ul style={{
                     fontSize: '16px',
@@ -192,16 +193,16 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     paddingLeft: '20px'
                 }}>
                     <li style={{ marginBottom: '8px' }}>
-                        <strong>Start Conservative:</strong> Choose easier workouts for your first attempt
+                        <strong>Embrace Humility:</strong> Choose the Merciful Path for your first quest into KNIGHTHOOD
                     </li>
                     <li style={{ marginBottom: '8px' }}>
-                        <strong>Plan Your Nutrition:</strong> 6+ hours requires serious fueling strategy
+                        <strong>Fuel for Battle:</strong> 6+ hours in your Bicycle Torture Chamber demands serious nutrition strategy
                     </li>
                     <li style={{ marginBottom: '8px' }}>
-                        <strong>Mind the TSS:</strong> Aim for 400-600 TSS depending on your fitness level
+                        <strong>Respect the TSS:</strong> Aim for 400-600 TSS based on your tolerance for SUFFERING
                     </li>
                     <li style={{ marginBottom: '8px' }}>
-                        <strong>Test Your Scenarios:</strong> Practice with shorter workout combinations first
+                        <strong>Train for Pain:</strong> Test shorter combinations before attempting the full symphony of SUFFERING
                     </li>
                 </ul>
             </div>
@@ -230,7 +231,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'}
                 >
-                    🚀 Start Planning Your Challenge
+                    ⚔️ Begin Your Assault on the Castle
                 </button>
                 <a
                     href="https://support.wahoofitness.com/hc/en-us/articles/4406074947090-How-to-become-a-Knight-of-Sufferlandria"
@@ -253,7 +254,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1976D2'}
                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2196F3'}
                 >
-                    📚 Official SYSTM Guide
+                    � Official Rules from the Ministry
                 </a>
             </div>
 

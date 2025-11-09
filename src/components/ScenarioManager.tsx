@@ -186,14 +186,12 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
     // Mobile card layout
     const renderMobileLayout = () => (
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '16px' }}>
-            <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
-                My Scenarios
-            </h1>
-            <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
-                Manage your Knighthood challenge combinations
-            </p>
-
-            {isLoadingMetrics && (
+                <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
+                    My Paths to KNIGHTHOOD
+                </h1>
+                <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
+                    Manage your various quests and recipes for SUFFERING
+                </p>            {isLoadingMetrics && (
                 <div style={{ 
                     textAlign: 'center', 
                     color: '#999', 
@@ -413,10 +411,10 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 <h1 style={{ color: 'white', marginBottom: '10px' }}>
-                    Your Knighthood Challenge Scenarios
+                    Your Arsenal of KNIGHTHOOD Quests
                 </h1>
                 <p style={{ color: '#999', marginBottom: '30px' }}>
-                    Manage and compare your different 10-workout combinations for the Knight of Sufferlandria challenge
+                    Manage and compare your different recipes for SUFFERING in pursuit of the highest HONOUR in Sufferlandria
                 </p>
 
                 {isLoadingMetrics && (
@@ -571,7 +569,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     }}>
                         <h3 style={{ color: 'white', marginBottom: '10px' }}>No Scenarios Yet</h3>
                         <p style={{ color: '#999', marginBottom: '20px' }}>
-                            Create your first Knighthood challenge scenario by selecting 10 workouts.
+                            Forge your first path to KNIGHTHOOD by assembling an arsenal of 10 instruments of SUFFERING.
                         </p>
                     </div>
                 ) : (

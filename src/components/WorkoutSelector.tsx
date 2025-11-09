@@ -237,10 +237,10 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
             {/* Header Section */}
             <div style={{ padding: '16px' }}>
                 <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
-                    Plan Your Challenge
+                    Plan Your Assault on the Castle
                 </h1>
                 <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
-                    Choose 10 workouts for your Knight of Sufferlandria challenge
+                    Assemble 10 instruments of Suffering for your siege on the highest HONOUR in Sufferlandria
                 </p>
 
                 {/* Basket Summary - Mobile */}
@@ -253,11 +253,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 }}>
                     <div style={{ textAlign: 'center' }}>
                         <h3 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '16px' }}>
-                            Challenge Basket ({basket.length}/{MAX_WORKOUTS})
+                            Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                         </h3>
                         {basket.length === MAX_WORKOUTS && (
                             <div style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '14px' }}>
-                                ✓ Challenge Complete!
+                                ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
                             </div>
                         )}
                         {basket.length > 0 && (
@@ -342,7 +342,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         border: '1px solid #444'
                     }}>
                         <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
-                            QUICK PICKS (Auto-select 10 workouts):
+                            PATHS TO KNIGHTHOOD (Choose your destiny):
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                             <button
@@ -362,9 +362,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                🏃‍♂️ Easiest
+                                🏃‍♂️ Merciful Path
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Lowest TSS)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(For those new to SUFFERING)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -383,9 +383,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                ⚡ Quickest
+                                ⚡ Swift Strike
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Shortest Duration)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Get it over with quickly)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -404,9 +404,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                💚 Mildest
+                                💚 Gentle Suffering
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Lowest Intensity)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Less pain, more endurance)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -425,9 +425,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                ⚖️ Balanced
+                                ⚖️ True Sufferlandrian
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Mixed Challenge)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(The way GvA intended)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -446,9 +446,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                🔥 Hardest
+                                🔥 Path of MAXIMUM SUFFERING
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Highest TSS)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Please see a doctor first)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -467,9 +467,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     textAlign: 'center'
                                 }}
                             >
-                                ⏰ Longest
+                                ⏰ Epic Endurance
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Max Duration)</span>
+                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Test your mental fortitude)</span>
                             </button>
                         </div>
                     </div>
@@ -612,10 +612,10 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
             <div style={{ padding: '20px 20px 0 20px' }}>
                 <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                     <h1 style={{ color: 'white', marginBottom: '10px' }}>
-                        Select Your Knighthood Challenge Workouts
+                        Plan Your Assault on the Castle
                     </h1>
                     <p style={{ color: '#999', marginBottom: '30px' }}>
-                        Choose 10 workouts to complete back-to-back for your Knight of Sufferlandria challenge
+                        Select 10 siege weapons of SUFFERING to complete back-to-back in your assault on the fortress of KNIGHTHOOD
                     </p>
                 </div>
             </div>
@@ -644,11 +644,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <h3 style={{ color: 'white', margin: '0 0 10px 0' }}>
-                                Your Challenge Basket ({basket.length}/{MAX_WORKOUTS})
+                                Your Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                             </h3>
                             {basket.length === MAX_WORKOUTS && (
                                 <div style={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                                    ✓ Challenge Complete! Ready to save scenario.
+                                    ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness acknowledges your commitment to SUFFERING!
                                 </div>
                             )}
                         </div>
@@ -717,7 +717,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             border: '1px solid #444'
                         }}>
                             <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
-                                QUICK PICKS (Auto-select 10 workouts):
+                                PATHS TO KNIGHTHOOD (Choose your destiny of SUFFERING):
                             </div>
                             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                 <button
@@ -736,7 +736,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    🏃‍♂️ Easiest (Lowest TSS)
+                                    🏃‍♂️ Merciful Path (For Suffering Beginners)
                                 </button>
                                 <button
                                     onClick={() => {
@@ -754,7 +754,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    ⚡ Quickest (Shortest Duration)
+                                    ⚡ Swift Strike (Get it over with quickly)
                                 </button>
                                 <button
                                     onClick={() => {
@@ -772,7 +772,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    💚 Mildest (Lowest Intensity)
+                                    💚 Gentle Suffering (Less pain, more endurance)
                                 </button>
                                 <button
                                     onClick={() => {
@@ -790,7 +790,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    ⚖️ Balanced (Mixed Challenge)
+                                    ⚖️ True Sufferlandrian (The way GvA intended)
                                 </button>
                                 <button
                                     onClick={() => {
@@ -808,7 +808,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    🔥 Hardest (Highest TSS)
+                                    🔥 Path of MAXIMUM SUFFERING (Please see a doctor first)
                                 </button>
                                 <button
                                     onClick={() => {
@@ -826,7 +826,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         fontSize: '12px'
                                     }}
                                 >
-                                    ⏰ Longest (Max Duration)
+                                    ⏰ Epic Endurance (Test your mental fortitude)
                                 </button>
                             </div>
                         </div>

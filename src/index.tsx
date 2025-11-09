@@ -239,7 +239,7 @@ const App = () => {
                         margin: 0,
                         fontSize: viewport.isMobile ? '18px' : '24px'
                     }}>
-                        {viewport.isMobile ? 'Knighthood Challenge' : 'Knight of Sufferlandria Challenge'}
+                        {viewport.isMobile ? 'Assault on the Castle' : 'Assault on the Castle of KNIGHTHOOD'}
                     </h2>
                     {userProfile && (
                         <div style={{ 
@@ -302,7 +302,7 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? `Plan (${basketState.selectedWorkouts.length}/10)` : `Plan Challenge (${basketState.selectedWorkouts.length}/10)`}
+                        {viewport.isMobile ? `Plan Quest (${basketState.selectedWorkouts.length}/10)` : `Plan Your Quest (${basketState.selectedWorkouts.length}/10)`}
                     </button>
                     <button
                         onClick={() => setPage('scenarios')}
@@ -318,7 +318,7 @@ const App = () => {
                             flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
-                        {viewport.isMobile ? `Saved (${scenarios.length})` : `My Scenarios (${scenarios.length})`}
+                        {viewport.isMobile ? `My Paths (${scenarios.length})` : `My Paths to KNIGHTHOOD (${scenarios.length})`}
                     </button>
                     <button
                         onClick={() => setPage('profile')}

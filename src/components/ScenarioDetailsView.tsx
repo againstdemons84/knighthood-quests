@@ -217,8 +217,8 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 workouts={scenario.workouts}
                 userProfile={userProfile}
                 onReorder={handleWorkoutReorder}
-                title={`${scenario.name} - Challenge Workouts`}
-                subtitle={`Drag and drop to reorder your ${scenario.workouts.length} Knight of Sufferlandria challenge workouts`}
+                title={`${scenario.name} - Arsenal of SUFFERING`}
+                subtitle={`Drag and drop to reorder your ${scenario.workouts.length} instruments of pain for KNIGHTHOOD`}
             />
         </div>
     );

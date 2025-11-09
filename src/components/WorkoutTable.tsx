@@ -451,7 +451,7 @@ const WorkoutTable: React.FC<WorkoutTableProps> = ({
                         </p>
                         {workoutRows.length === 10 && (
                             <p style={{ marginTop: '10px', fontSize: '14px' }}>
-                                <strong>Knight of Sufferlandria Challenge:</strong> Complete these 10 workouts back-to-back to earn your knighthood!
+                                <strong>Quest for KNIGHTHOOD:</strong> Complete these 10 instruments of SUFFERING back-to-back to earn the highest HONOUR in Sufferlandria!
                             </p>
                         )}
                     </div>

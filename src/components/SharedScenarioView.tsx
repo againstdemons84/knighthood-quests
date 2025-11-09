@@ -289,8 +289,8 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
 
             {/* Workout List */}
             <ReorderableWorkoutList
-                title="Challenge Workouts"
-                subtitle="The 10 workouts in this shared challenge (read-only)"
+                title="Arsenal of SUFFERING"
+                subtitle="The 10 instruments of pain in this shared quest (read-only)"
                 workouts={workouts}
                 onReorder={() => {}} // Read-only, no reordering
                 userProfile={userProfile}
