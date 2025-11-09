@@ -128,6 +128,9 @@ test.describe('Cross-Device Journey Tests', () => {
     await DeviceHelpers.validateTouchTarget(page, modalSaveButton, 44, false); // Non-critical validation
     await modalSaveButton.click();
 
+    // Wait for modal to close and scenario to be saved
+    await page.waitForTimeout(1000);
+
     // Step 6: Navigate to scenarios tab
     const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
     await DeviceHelpers.validateTouchTarget(page, scenariosTab);
@@ -141,7 +144,6 @@ test.describe('Cross-Device Journey Tests', () => {
     await DeviceHelpers.ensureVisible(page, firstViewButton);
     await DeviceHelpers.validateTouchTarget(page, firstViewButton);
     
-    test.skip(DeviceHelpers.isMobile(page), 'Not working on mobile yet');
     // Test view scenario
     await firstViewButton.click();
     
