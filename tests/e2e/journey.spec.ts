@@ -127,20 +127,10 @@ test.describe('Cross-Device Journey Tests', () => {
     await DeviceHelpers.ensureVisible(page, modalSaveButton);
     await DeviceHelpers.validateTouchTarget(page, modalSaveButton, 44, false); // Non-critical validation
     await modalSaveButton.click();
-
-    // Wait for modal to close and scenario to be saved
-    await page.waitForTimeout(1000);
-
-    // Step 6: Navigate to scenarios tab
-    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
-    await DeviceHelpers.validateTouchTarget(page, scenariosTab);
-    await scenariosTab.click();
-    
-    // Verify we're on scenarios page
-    await expect(scenariosTab).toBeVisible();
     
     // Step 7: Test scenario management functionality
     const firstViewButton = page.locator('[data-testid^="view-scenario-"]').first();
+    expect(firstViewButton).toBeVisible({timeout: 5000 });
     await DeviceHelpers.ensureVisible(page, firstViewButton);
     await DeviceHelpers.validateTouchTarget(page, firstViewButton);
     
@@ -178,12 +168,9 @@ test.describe('Cross-Device Journey Tests', () => {
     });
     
     await deleteButton.click();
-    
-    // Wait for deletion to process
-    await page.waitForTimeout(500);
-    
+        
     // Verify deletion worked
-    await expect(page.locator('[data-testid^="view-scenario-"]')).toHaveCount(initialScenarioCount);
+    await expect(page.locator('[data-testid^="view-scenario-"]')).toHaveCount(initialScenarioCount, {timeout: 1000});
   });
 
   test('Workout search and filtering journey', async ({ page }) => {
@@ -199,19 +186,14 @@ test.describe('Cross-Device Journey Tests', () => {
     await searchInput.click();
     await searchInput.fill('power'); // Use a common search term
     
-    // Wait for search results
-    await page.waitForTimeout(500);
-    
     // Test selection if workouts are available
     const workoutCheckboxes = page.locator('[data-testid^="workout-checkbox-"]');
-    const checkboxCount = await workoutCheckboxes.count();
-    
-    if (checkboxCount > 0) {
-      const firstCheckbox = workoutCheckboxes.first();
-      await DeviceHelpers.ensureVisible(page, firstCheckbox);
-      await DeviceHelpers.validateTouchTarget(page, firstCheckbox, 24, false); // Non-critical, 24px min
-      await DeviceHelpers.selectCheckbox(page, firstCheckbox);
-    }
+    await expect(workoutCheckboxes).toHaveCount(1, { timeout: 1000 });
+
+    const firstCheckbox = workoutCheckboxes.first();
+    await DeviceHelpers.ensureVisible(page, firstCheckbox);
+    await DeviceHelpers.validateTouchTarget(page, firstCheckbox, 24, false); // Non-critical, 24px min
+    await DeviceHelpers.selectCheckbox(page, firstCheckbox);
     
     // Clear search and verify more workouts appear
     await searchInput.clear();
@@ -326,8 +308,12 @@ test.describe('Cross-Device Journey Tests', () => {
     await expect(page.locator('[data-testid^="workout-checkbox-"]').first()).toBeVisible();
     await DeviceHelpers.selectWorkouts(page, 10);
     
-    // Wait a moment for UI to update after selections
-    await page.waitForTimeout(500);
+    // Verify 10 checkboxes are selected with timeout (different selectors for mobile vs desktop)
+    if (DeviceHelpers.isMobile(page)) {
+      await expect(page.locator('[data-testid^="workout-checkbox-"].selected')).toHaveCount(10, { timeout: 1000 });
+    } else {
+      await expect(page.locator('[data-testid^="workout-checkbox-"]:checked')).toHaveCount(10, { timeout: 1000 });
+    }
 
     // Step 5: Save the scenario 
     const saveButton = page.locator('[data-testid="save-scenario-button"]');
@@ -340,16 +326,6 @@ test.describe('Cross-Device Journey Tests', () => {
     const modalSaveButton = page.locator('[data-testid="save-scenario-modal-button"]');
     await DeviceHelpers.ensureVisible(page, modalSaveButton);
     await modalSaveButton.click();
-
-    // Wait for modal to close and scenario to be saved
-    await page.waitForTimeout(1000);
-
-    // Step 6: Navigate to scenarios tab
-    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
-    await scenariosTab.click();
-    
-    // Wait for scenarios to load
-    await page.waitForTimeout(500);
     
     // Step 7: View the scenario to access reorder functionality
     // Wait for the first view scenario button to be available
@@ -358,13 +334,9 @@ test.describe('Cross-Device Journey Tests', () => {
     const firstViewButton = page.locator('[data-testid^="view-scenario-"]').first();
     await DeviceHelpers.ensureVisible(page, firstViewButton);
     await firstViewButton.click();
-    
-    // Wait for scenario details page to load and show workout items
-    // Give it more time to load and render the reorderable list
-    await page.waitForTimeout(1000);
-    
+
     // Wait for at least the first few workout items to be visible
-    await expect(page.locator('[data-testid^="workout-item-"]').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid^="workout-item-"]').first()).toBeVisible({ timeout: 1000 });
     
     // Ensure we have the expected number of workout items (10)
     const workoutItems = page.locator('[data-testid^="workout-item-"]');
@@ -426,22 +398,6 @@ test.describe('Cross-Device Journey Tests', () => {
         await DeviceHelpers.ensureVisible(page, firstWorkoutItem);
         await DeviceHelpers.ensureVisible(page, secondWorkoutItem);
         await DeviceHelpers.ensureVisible(page, thirdWorkoutItem);
-      
-        /*// Drag first item to third position (1 -> 3)
-        const startX = firstBox.x + firstBox.width / 2;
-        const startY = firstBox.y + firstBox.height / 2;
-        const endX = thirdBox.x + thirdBox.width / 2;
-        const endY = thirdBox.y + thirdBox.height / 2;
-
-        await page.mouse.move(firstBox.x + firstBox.width / 2, firstBox.y + firstBox.height / 2);
-        await page.mouse.down();
-        
-        for(let i = startY; i <= endY; i++) {
-          await page.mouse.move(i, thirdBox.y + thirdBox.height / 2);
-          await page.waitForTimeout(100); // Pause after each pixel movement to see drag in video
-        }
-
-        await page.mouse.up();*/
 
         await firstWorkoutItem.dragTo(thirdWorkoutItem);
         
@@ -464,13 +420,6 @@ test.describe('Cross-Device Journey Tests', () => {
         const updatedFirstBox = await page.locator('[data-testid="workout-item-0"]');
         
         if (updatedThirdBox && updatedFirstBox) {
-          /*await page.mouse.move(updatedThirdBox.x + updatedThirdBox.width / 2, updatedThirdBox.y + updatedThirdBox.height / 2);
-          await page.mouse.down();
-          await page.mouse.move(updatedFirstBox.x + updatedFirstBox.width / 2, updatedFirstBox.y + updatedFirstBox.height / 2, { steps: 5 });
-          await page.mouse.up();
-          
-          await page.waitForTimeout(500);*/
-
           await updatedThirdBox.dragTo(updatedFirstBox);
           
           // Verify second drag operation also completed without errors
