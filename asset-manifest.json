@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/knighthood-quests/static/js/main.bdee0093.js",
+    "main.js": "/knighthood-quests/static/js/main.32486821.js",
     "index.html": "/knighthood-quests/index.html",
-    "main.bdee0093.js.map": "/knighthood-quests/static/js/main.bdee0093.js.map"
+    "main.32486821.js.map": "/knighthood-quests/static/js/main.32486821.js.map"
   },
   "entrypoints": [
-    "static/js/main.bdee0093.js"
+    "static/js/main.32486821.js"
   ]
 }
