@@ -284,20 +284,6 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
 
     return (
         <>
-            {/* Debug indicator */}
-            <div style={{
-                position: 'fixed',
-                top: '10px',
-                left: '10px',
-                backgroundColor: 'red',
-                color: 'white',
-                padding: '5px',
-                zIndex: 1000000,
-                fontSize: '12px'
-            }}>
-                MODAL ACTIVE - {window.innerWidth}px
-            </div>
-            
             <div 
                 style={{
                     position: 'fixed',
