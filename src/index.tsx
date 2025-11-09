@@ -239,7 +239,7 @@ const App = () => {
                         margin: 0,
                         fontSize: viewport.isMobile ? '18px' : '24px'
                     }}>
-                        {viewport.isMobile ? 'Assault on the Castle' : 'Assault on the Castle of KNIGHTHOOD'}
+                        {viewport.isMobile ? 'Assault on the Castle' : 'Assault on the Castle of in the pursuit of KNIGHTHOOD'}
                     </h2>
                     {userProfile && (
                         <div style={{ 
