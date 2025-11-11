@@ -28,6 +28,7 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 3057 370.7"
                 preserveAspectRatio="xMidYMid meet"
+                shapeRendering="crispedges"
                 style={{ width: '100%', height: '100%' }}
             >
                 {/* Background first */}

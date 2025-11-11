@@ -43,6 +43,7 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile 
     }
     
     // Generate workout bars
+    let currentX = 0; // Track cumulative X position to ensure gapless rendering
     for (let i = 0; i < time.length - 1; i++) {
         const startTime = time[i];
         const endTime = time[i + 1];
@@ -50,8 +51,11 @@ export const generateSVG = (workoutData: WorkoutData, userProfile?: UserProfile 
         const workoutType = type[i];
         
         // Calculate position and dimensions
-        const x = (startTime / maxTime) * svgWidth;
-        const rectWidth = Math.max(1, ((endTime - startTime) / maxTime) * svgWidth);
+        // Use cumulative X position to ensure gapless rendering: Rect1.x + Rect1.width = Rect2.x
+        const x = Math.round(currentX); // Ensure integer x position
+        const rectWidthFloat = ((endTime - startTime) / maxTime) * svgWidth;
+        const rectWidth = Math.max(1, Math.round(rectWidthFloat)); // Ensure integer width
+        currentX += rectWidth; // Update for next rectangle using precise float value
         
         // Calculate actual power for this segment
         const actualPower = getPowerValue(workoutType, intensity, userProfile);

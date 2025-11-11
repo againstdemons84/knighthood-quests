@@ -118,6 +118,43 @@ describe('SVG Generation', () => {
       );
       expect(lineElements.length).toBeGreaterThan(0);
     });
+
+    it('should render rectangles without gaps (gapless) using integer values', () => {
+      const gapTestData: WorkoutData = {
+        time: [0, 60, 120, 180],
+        value: [0.5, 0.8, 1.0],
+        type: ['FTP', 'AC', 'MAP'],
+        __typename: 'WorkoutData'
+      };
+
+      const svgElements = generateSVG(gapTestData, mockUserProfile, false);
+      
+      // Find rect elements
+      const rectElements = svgElements.filter(element => 
+        element && typeof element === 'object' && 'type' in element && element.type === 'rect' &&
+        'key' in element && typeof element.key === 'string' && element.key.startsWith('bar-')
+      );
+      
+      expect(rectElements.length).toBe(3); // Should have 3 workout rectangles
+
+      // Verify all positions and widths are integers
+      rectElements.forEach((rect: any) => {
+        expect(Number.isInteger(rect.props.x)).toBe(true);
+        expect(Number.isInteger(rect.props.width)).toBe(true);
+      });
+
+      // Verify gapless positioning: Rect1.x + Rect1.width = Rect2.x
+      if (rectElements.length >= 2) {
+        const rect1 = rectElements[0] as any;
+        const rect2 = rectElements[1] as any;
+        
+        const rect1End = rect1.props.x + rect1.props.width;
+        const rect2Start = rect2.props.x;
+        
+        // Should be exactly equal (no gap)
+        expect(rect1End).toBe(rect2Start);
+      }
+    });
   });
 
   describe('generateWorkoutHeader', () => {

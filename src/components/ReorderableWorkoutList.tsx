@@ -422,6 +422,37 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                         OUTDOOR
                                     </span>
                                 )}
+                                <a 
+                                    href={`https://systm.wahoofitness.com/content-details/${row.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                        color: '#4CAF50',
+                                        textDecoration: 'none',
+                                        fontSize: '14px',
+                                        padding: '4px 6px',
+                                        marginLeft: '8px',
+                                        borderRadius: '4px',
+                                        transition: 'background-color 0.2s',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        minHeight: '44px',
+                                        minWidth: '44px',
+                                        justifyContent: 'center'
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                                        setTimeout(() => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                        }, 150);
+                                    }}
+                                    title={`View ${row.name} on SYSTM`}
+                                >
+                                    ↗
+                                </a>
                             </h3>
 
                             {/* Metrics Grid */}
@@ -702,6 +733,33 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                             OUTDOOR
                                         </span>
                                     )}
+                                    <a 
+                                        href={`https://systm.wahoofitness.com/content-details/${workout.id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                        onClick={(e) => e.stopPropagation()}
+                                        style={{
+                                            color: '#4CAF50',
+                                            textDecoration: 'none',
+                                            fontSize: '12px',
+                                            padding: '2px 4px',
+                                            marginLeft: '6px',
+                                            borderRadius: '3px',
+                                            transition: 'background-color 0.2s',
+                                            display: 'inline-flex',
+                                            alignItems: 'center'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                        }}
+                                        title={`View ${workout.name} on SYSTM`}
+                                    >
+                                        ↗
+                                    </a>
                                 </div>
                                 <div style={{ 
                                     color: '#999', 
