@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import WorkoutChart from './components/WorkoutChart';
+import styles from './App.module.css';
 import WorkoutSelector from './components/WorkoutSelector';
 import ScenarioManager from './components/ScenarioManager';
 import SaveScenarioModal from './components/SaveScenarioModal';
@@ -24,37 +25,8 @@ import { getUserProfile, saveUserProfile, hasUserProfile, getUserProfileWithDefa
 import { useViewport } from './hooks/useViewport';
 import { useUrlFragment } from './hooks/useUrlFragment';
 
-// CSS styles for tabs and workout checkboxes
-const tabStyles = `
-  .tab-button {
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-    background-color: #555;
-    transition: background-color 0.2s ease;
-  }
-  
-  .tab-button.active {
-    background-color: #4CAF50;
-  }
-  
-  .tab-button.warning {
-    background-color: #FF9800;
-  }
-  
-  .tab-button.warning.active {
-    background-color: #4CAF50;
-  }
-  
-  .tab-button:hover:not(.active):not(.warning) {
-    background-color: #666;
-  }
-  
-  .tab-button.warning:hover:not(.active) {
-    background-color: #FFB74D;
-  }
-  
+// Global CSS styles that need to be injected for dynamic classes
+const globalStyles = `
   .workout-checkbox {
     cursor: pointer;
   }
@@ -279,75 +251,35 @@ const App = () => {
     };
 
     const renderNavigation = () => (
-        <div style={{ 
-            backgroundColor: '#2a2a2a', 
-            padding: viewport.isMobile ? '12px 12px' : '15px 20px',
-            marginTop: '0',
-            marginLeft: viewport.isMobile ? '12px' : '20px',
-            marginRight: viewport.isMobile ? '12px' : '20px',
-            marginBottom: viewport.isMobile ? '12px' : '20px',
-            borderRadius: '8px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}>
-            <div style={{ 
-                display: 'flex', 
-                gap: viewport.isMobile ? '8px' : '10px',
-                flexWrap: 'wrap',
-                justifyContent: 'center'
-            }}>
+        <div className={`${styles.navigation} ${viewport.isMobile ? styles.navigationMobile : styles.navigationDesktop}`}>
+            <div className={`${styles.tabContainer} ${viewport.isMobile ? styles.tabContainerMobile : ''}`}>
                     <button
                         data-testid="home-tab"
-                        className={`tab-button ${currentPage === 'intro' ? 'active' : ''}`}
+                        className={`${styles.tabButton} ${viewport.isMobile ? styles.tabButtonMobile : ''} ${currentPage === 'intro' ? 'active' : ''}`}
                         onClick={() => setPage('intro')}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            fontSize: viewport.isMobile ? '14px' : '13px',
-                            minHeight: viewport.isMobile ? '44px' : 'auto',
-                            flex: viewport.isMobile ? '1' : 'none'
-                        }}
                     >
                         Home
                     </button>
                     <button
                         data-testid="quest-tab"
-                        className={`tab-button ${currentPage === 'selector' ? 'active' : ''}`}
+                        className={`${styles.tabButton} ${viewport.isMobile ? styles.tabButtonMobile : ''} ${currentPage === 'selector' ? 'active' : ''}`}
                         onClick={() => {
                             setPage('selector');
                             setEditingScenario(null);
-                        }}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            fontSize: viewport.isMobile ? '14px' : '13px',
-                            minHeight: viewport.isMobile ? '44px' : 'auto',
-                            flex: viewport.isMobile ? '1' : 'none'
                         }}
                     >
                         {viewport.isMobile ? `Plan Quest (${basketState.selectedWorkouts.length}/10)` : `Plan Your Quest (${basketState.selectedWorkouts.length}/10)`}
                     </button>
                     <button
                         data-testid="scenarios-tab"
-                        className={`tab-button ${currentPage === 'scenarios' ? 'active' : ''}`}
+                        className={`${styles.tabButton} ${viewport.isMobile ? styles.tabButtonMobile : ''} ${currentPage === 'scenarios' ? 'active' : ''}`}
                         onClick={() => setPage('scenarios')}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            fontSize: viewport.isMobile ? '14px' : '13px',
-                            minHeight: viewport.isMobile ? '44px' : 'auto',
-                            flex: viewport.isMobile ? '1' : 'none'
-                        }}
                     >
                         {viewport.isMobile ? `Enterpainment (${scenarios.length})` : `Enterpainment (${scenarios.length})`}
                     </button>
                     <button
-                        className={`tab-button ${currentPage === 'profile' ? 'active' : ''} ${isUsingDefaultProfile() ? 'warning' : ''}`}
+                        className={`${styles.tabButton} ${viewport.isMobile ? styles.tabButtonMobile : ''} ${currentPage === 'profile' ? 'active' : ''} ${isUsingDefaultProfile() ? 'warning' : ''}`}
                         onClick={() => setPage('profile')}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '8px 16px',
-                            fontSize: viewport.isMobile ? '14px' : '13px',
-                            minHeight: viewport.isMobile ? '44px' : 'auto',
-                            flex: viewport.isMobile ? '1' : 'none'
-                        }}
                     >
                         {viewport.isMobile ? (isUsingDefaultProfile() ? '⚙️!' : '⚙️') : (isUsingDefaultProfile() ? '⚙️ Profile!' : '⚙️ Profile')}
                     </button>
@@ -357,9 +289,7 @@ const App = () => {
 
     const renderContent = () => {
         const wrapContent = (content: JSX.Element | null) => (
-            <div style={{ 
-                margin: viewport.isMobile ? '0 12px 12px 12px' : '0 20px 20px 20px'
-            }}>
+            <div className={viewport.isMobile ? styles.contentWrapperMobile : styles.contentWrapper}>
                 {content}
             </div>
         );
@@ -438,16 +368,8 @@ const App = () => {
     };
 
     return (
-        <div style={{ 
-            backgroundColor: '#1a1a1a', 
-            minHeight: '100vh', 
-            padding: '0', 
-            paddingTop: viewport.isMobile ? '12px' : '0',
-            // Prevent any white space at bottom
-            paddingBottom: '0',
-            margin: '0'
-        }}>
-            <style dangerouslySetInnerHTML={{ __html: tabStyles }} />
+        <div className={`${styles.appContainer} ${viewport.isMobile ? styles.appContainerMobile : ''}`}>
+            <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
             {currentPage !== 'shared-scenario' && renderNavigation()}
             {renderContent()}
             

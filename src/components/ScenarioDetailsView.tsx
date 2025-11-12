@@ -5,6 +5,7 @@ import { formatDuration, calculateCombinedMetricsDynamic, loadScenarios, saveSce
 import ReorderableWorkoutList from './ReorderableWorkoutList';
 import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
+import styles from './ScenarioDetailsView.module.css';
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
@@ -88,203 +89,111 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
     if (loading) {
         return (
-            <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', paddingTop: '100px' }}>
-                    <h1 style={{ color: 'white', marginBottom: '20px' }}>Loading Scenario Details...</h1>
-                    <p style={{ color: '#999' }}>Loading workout data for "{scenario.name}"...</p>
+            <div className={styles.loadingContainer}>
+                <div className={styles.loadingContent}>
+                    <h1 className={styles.loadingTitle}>Loading Scenario Details...</h1>
+                    <p className={styles.loadingText}>Loading workout data for "{scenario.name}"...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: viewport.isMobile ? '16px' : '20px' }}>
+        <div className={`${styles.container} ${viewport.isMobile ? styles.containerMobile : styles.containerDesktop}`}>
             {/* Header with Back Button */}
-            <div style={{ maxWidth: viewport.isMobile ? '100%' : '1400px', margin: '0 auto', marginBottom: viewport.isMobile ? '16px' : '30px' }}>
-                <div style={{ 
-                    display: 'flex', 
-                    flexDirection: viewport.isMobile ? 'column' : 'row',
-                    alignItems: viewport.isMobile ? 'stretch' : 'center', 
-                    gap: viewport.isMobile ? '12px' : '20px', 
-                    marginBottom: viewport.isMobile ? '16px' : '20px' 
-                }}>
-                    <button data-testid="back-button"
+            <div className={`${styles.headerContainer} ${viewport.isMobile ? styles.headerContainerMobile : styles.headerContainerDesktop}`}>
+                <div className={`${styles.buttonContainer} ${viewport.isMobile ? styles.buttonContainerMobile : styles.buttonContainerDesktop}`}>
+                    <button 
+                        data-testid="back-button"
                         onClick={onBack}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '10px 20px',
-                            backgroundColor: '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            alignSelf: viewport.isMobile ? 'flex-start' : 'auto'
-                        }}
+                        className={`${styles.button} ${styles.backButton} ${viewport.isMobile ? styles.buttonMobile : styles.buttonDesktop}`}
                     >
                         ← Back
                     </button>
                     <button
                         onClick={() => setShowPrintModal(true)}
-                        style={{
-                            padding: viewport.isMobile ? '12px 16px' : '10px 20px',
-                            backgroundColor: '#607D8B',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            alignSelf: viewport.isMobile ? 'flex-start' : 'auto'
-                        }}
+                        className={`${styles.button} ${styles.printButton} ${viewport.isMobile ? styles.buttonMobile : styles.buttonDesktop}`}
                     >
                         🖨️ Print Quest Plan
                     </button>
                 </div>
 
                 {/* Scenario Title and Description */}
-                <div style={{ 
-                    marginBottom: viewport.isMobile ? '16px' : '24px',
-                    textAlign: viewport.isMobile ? 'center' : 'left'
-                }}>
-                    <h1 style={{ 
-                        color: 'white', 
-                        margin: '0 0 8px 0', 
-                        fontSize: viewport.isMobile ? '20px' : '28px',
-                        fontWeight: '600'
-                    }}>
+                <div className={viewport.isMobile ? styles.titleSectionMobile : styles.titleSectionDesktop}>
+                    <h1 className={`${styles.title} ${viewport.isMobile ? styles.titleMobile : styles.titleDesktop}`}>
                         {scenario.name} - Arsenal of SUFFERING
                     </h1>
-                    <p style={{ 
-                        color: '#999', 
-                        margin: 0, 
-                        fontSize: viewport.isMobile ? '12px' : '14px' 
-                    }}>
+                    <p className={`${styles.subtitle} ${viewport.isMobile ? styles.subtitleMobile : styles.subtitleDesktop}`}>
                         Drag and drop to reorder your {scenario.workouts.length} instruments of pain for KNIGHTHOOD
                     </p>
                 </div>
 
                 {/* Scenario Summary Cards */}
-                <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: viewport.isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', 
-                    gap: viewport.isMobile ? '12px' : '20px',
-                    marginBottom: viewport.isMobile ? '16px' : '30px'
-                }}>
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #4CAF50',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#4CAF50', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                <div className={`${styles.metricsGrid} ${viewport.isMobile ? styles.metricsGridMobile : styles.metricsGridDesktop}`}>
+                    <div className={`${styles.metricCard} ${styles.metricCardDuration} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorDuration} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             Duration
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {formatDuration(dynamicMetrics.totalDuration)}
                         </div>
                     </div>
 
                     {!viewport.isMobile && (
-                        <>
-                            <div style={{
-                                backgroundColor: '#2a2a2a',
-                                padding: '20px',
-                                borderRadius: '8px',
-                                border: '2px solid #FF5722',
-                                textAlign: 'center'
-                            }}>
-                                <div style={{ color: '#FF5722', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                                    Total Elapsed Duration
-                                </div>
-                                <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-                                    {formatDuration(dynamicMetrics.totalElapsedDuration)}
-                                </div>
-                                <div style={{ color: '#999', fontSize: '12px', marginTop: '5px' }}>
-                                    Includes rest periods
-                                </div>
+                        <div className={`${styles.metricCard} ${styles.metricCardElapsed} ${styles.metricCardDesktop}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorElapsed} ${styles.metricLabelDesktop}`}>
+                                Total Elapsed Duration
                             </div>
-                        </>
+                            <div className={`${styles.metricValue} ${styles.metricValueDesktop}`}>
+                                {formatDuration(dynamicMetrics.totalElapsedDuration)}
+                            </div>
+                            <div className={styles.metricSubtext}>
+                                Includes rest periods
+                            </div>
+                        </div>
                     )}
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #2196F3',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#2196F3', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={`${styles.metricCard} ${styles.metricCardTss} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorTss} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             TSS®
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {Math.round(dynamicMetrics.totalTSS)}
                         </div>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #FF9800',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#FF9800', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={`${styles.metricCard} ${styles.metricCardIf} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorIf} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             Avg IF®
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {dynamicMetrics.averageIF.toFixed(2)}
                         </div>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #9C27B0',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#9C27B0', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={`${styles.metricCard} ${styles.metricCardNp} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorNp} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             Avg NP®
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {Math.round(dynamicMetrics.totalNP)}W
                         </div>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #E91E63',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#E91E63', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={`${styles.metricCard} ${styles.metricCardTargetTss} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorTargetTss} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             Target TSS® ({userProfile.targetIntensity}%)
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {Math.round(targetMetrics.totalTargetTSS)}
                         </div>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #673AB7',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#673AB7', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={`${styles.metricCard} ${styles.metricCardTargetIf} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
+                        <div className={`${styles.metricLabel} ${styles.colorTargetIf} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
                             Target IF® ({userProfile.targetIntensity}%)
                         </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {targetMetrics.averageTargetIF.toFixed(2)}
                         </div>
                     </div>

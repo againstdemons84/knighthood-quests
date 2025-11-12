@@ -1,0 +1,700 @@
+/* Main Container - Mobile */
+.containerMobile {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.titleMobile {
+  color: white;
+  margin-bottom: 8px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.subtitleMobile {
+  color: #999;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Loading State Mobile */
+.loadingContainerMobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: white;
+}
+
+.loadingTextLarge {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.loadingTextSmall {
+  font-size: 12px;
+}
+
+/* Empty State Mobile */
+.emptyStateMobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: white;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.emptyTitle {
+  color: white;
+  margin-bottom: 12px;
+}
+
+.emptyDescription {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Controls Mobile */
+.controlsMobile {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.sortControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.sortLabel {
+  color: white;
+  font-size: 14px;
+  min-width: 60px;
+}
+
+.sortSelect {
+  padding: 8px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.sortButton {
+  padding: 8px 12px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sortButtonActive {
+  background-color: #4CAF50;
+}
+
+.sortButtonInactive {
+  background-color: #555;
+}
+
+/* Scenario List Mobile */
+.scenarioListMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scenarioCardMobile {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Scenario Card Header */
+.scenarioHeader {
+  margin-bottom: 12px;
+}
+
+.scenarioTitle {
+  color: white;
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.scenarioDate {
+  color: #999;
+  font-size: 12px;
+}
+
+/* Metrics Grid */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metricItem {
+  text-align: center;
+}
+
+.metricLabelDuration {
+  color: #4CAF50;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.metricLabelTSS {
+  color: #2196F3;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.metricLabelIF {
+  color: #FF9800;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.metricLabelWorkouts {
+  color: #9C27B0;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.metricValue {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Action Buttons */
+.actionButtonsMobile {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.viewButton {
+  background-color: #2196F3;
+  color: white;
+}
+
+.editButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.printButton {
+  background-color: #FF9800;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.selectButton {
+  background-color: #9C27B0;
+  color: white;
+}
+
+.deselectButton {
+  background-color: #666;
+  color: white;
+}
+
+/* Mobile Action Button Variants */
+.actionButtonMobile {
+  flex: 1;
+  min-width: 80px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.viewButtonMobile {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+.editButtonMobile {
+  background-color: #FF9800;
+  color: white;
+}
+
+.printButtonMobile {
+  background-color: #607D8B;
+  color: white;
+}
+
+.shareButtonMobile {
+  background-color: #9C27B0;
+  color: white;
+}
+
+.deleteButtonMobile {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.duplicateButtonMobile {
+  background-color: #2196F3;
+  color: white;
+}
+
+/* Desktop Layout */
+.containerDesktop {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.containerInner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.titleDesktop {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.subtitleDesktop {
+  color: #999;
+  margin-bottom: 30px;
+}
+
+/* Loading State Desktop */
+.loadingContainerDesktop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  color: white;
+}
+
+.loadingTextLargeDesktop {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.loadingTextSmallDesktop {
+  font-size: 14px;
+}
+
+/* Empty State Desktop */
+.emptyStateDesktop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+/* Controls Desktop */
+.controlsDesktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.controlsTitle {
+  color: white;
+  margin: 0;
+}
+
+.bulkActionsButton {
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Table Container */
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  background-color: #333;
+}
+
+.tableHeaderCell {
+  padding: 12px;
+  text-align: left;
+  color: #ccc;
+  font-weight: 500;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+}
+
+.sortableHeader {
+  user-select: none;
+}
+
+.sortableHeader:hover {
+  background-color: #444;
+}
+
+.tableRow {
+  border-bottom: 1px solid #444;
+}
+
+.tableRow:hover {
+  background-color: #333;
+}
+
+.tableCell {
+  padding: 12px;
+  color: white;
+  vertical-align: middle;
+}
+
+.scenarioNameCell {
+  font-weight: 500;
+}
+
+.dateCell {
+  color: #999;
+  font-size: 14px;
+}
+
+.metricCell {
+  text-align: center;
+  font-weight: 500;
+}
+
+.actionsCell {
+  text-align: right;
+}
+
+.actionButtonsDesktop {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.actionButtonSmall {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Checkbox Styling */
+.checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Comparison Section */
+.comparisonSection {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #333;
+}
+
+.comparisonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.comparisonTitle {
+  color: white;
+  margin: 0;
+}
+
+.clearSelectionButton {
+  padding: 8px 16px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comparisonTableContainer {
+  overflow-x: auto;
+}
+
+.comparisonTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.comparisonTableHeader {
+  background-color: #444;
+}
+
+.comparisonTableHeaderCell {
+  padding: 12px;
+  color: white;
+  text-align: left;
+}
+
+.comparisonTableHeaderCellCenter {
+  text-align: center;
+}
+
+.comparisonTableRow {
+  /* Base table row - styling applied through even/odd variants */
+}
+
+.comparisonTableRowEven {
+  background-color: #333;
+}
+
+.comparisonTableRowOdd {
+  background-color: #3a3a3a;
+}
+
+.comparisonTableCell {
+  padding: 12px;
+  color: white;
+}
+
+.comparisonTableCellCenter {
+  text-align: center;
+}
+
+/* Controls Section */
+.controlsSection {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sortSelect {
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+
+.sortOrderButton {
+  padding: 10px 15px;
+  background-color: #444;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selectionInfo {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Empty State Desktop */
+.emptyStateDesktopAlt {
+  background-color: #2a2a2a;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.emptyTitleDesktop {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.emptyDescriptionDesktop {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+/* Main Table Styles */
+.mainTableContainer {
+  overflow-x: auto;
+}
+
+.mainTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mainTableHeader {
+  background-color: #333;
+}
+
+.mainTableHeaderCell {
+  padding: 15px;
+  color: white;
+  border-bottom: 2px solid #444;
+  text-align: left;
+}
+
+.mainTableHeaderCellCenter {
+  text-align: center;
+}
+
+.mainTableHeaderCellSortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.mainTableHeaderCellSortable:hover {
+  background-color: #444;
+}
+
+.mainTableHeaderCellCheckbox {
+  width: 60px;
+  text-align: center;
+}
+
+.mainTableRow {
+  border-bottom: 1px solid #333;
+}
+
+.mainTableRowSelected {
+  background-color: #1e3a4d;
+}
+
+.mainTableRowEven {
+  background-color: #2a2a2a;
+}
+
+.mainTableRowOdd {
+  background-color: #252525;
+}
+
+.mainTableRowLast {
+  border-bottom: none;
+}
+
+.mainTableCell {
+  padding: 15px;
+  color: white;
+  vertical-align: middle;
+}
+
+.mainTableCellCenter {
+  text-align: center;
+}
+
+.mainTableCellTop {
+  vertical-align: top;
+}
+
+.scenarioNameDesktop {
+  font-weight: bold;
+}
+
+.scenarioDateDesktop {
+  color: #999;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.scenarioCheckbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.actionButtonsDesktopContainer {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.actionButtonDesktop {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: white;
+}
+
+.viewButtonDesktop {
+  background-color: #4CAF50;
+}
+
+.editButtonDesktop {
+  background-color: #2196F3;
+}
+
+.copyButtonDesktop {
+  background-color: #FF9800;
+}
+
+.printButtonDesktop {
+  background-color: #607D8B;
+}
+
+.shareButtonDesktop {
+  background-color: #9C27B0;
+}
+
+.deleteButtonDesktop {
+  background-color: #d32f2f;
+}

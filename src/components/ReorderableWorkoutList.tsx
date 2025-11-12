@@ -9,6 +9,7 @@ import allWorkouts from '../data/workouts.json';
 import { getWorkoutData } from '../data/workout-data';
 import { useViewport } from '../hooks/useViewport';
 import { formatDuration } from '../utils/scenarioHelpers';
+import styles from './ReorderableWorkoutList.module.css';
 
 // Utility function to get color based on TSS value (red = high, green = low)
 const getTSSColor = (tss: number, minTSS: number, maxTSS: number): string => {
@@ -353,12 +354,12 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     };
 
     const renderMobileLayout = () => (
-        <div data-testid="reorderable-workout-list" style={{ margin: "20px 0" }}>
+        <div data-testid="reorderable-workout-list" className={styles.container}>
             {(title || subtitle) && (
-                <div style={{ marginBottom: "16px" }}>
-                    {title && <h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "600", color: "white" }}>{title}</h2>}
+                <div className={styles.headerSection}>
+                    {title && <h2 className={styles.title}>{title}</h2>}
                     {subtitle && (
-                        <p style={{ margin: 0, color: "#999", fontSize: "14px" }}>
+                        <p className={styles.subtitle}>
                             Tap and hold to reorder • Tap charts to see detailed workout profiles
                         </p>
                     )}
@@ -366,35 +367,18 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
             )}
             
             {loading ? (
-                <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
+                <div className={styles.loadingContainer}>
                     Loading workouts...
                 </div>
             ) : (
                 <>
                     {/* Combined Scenario Power Profile */}
                     {combinedWorkoutData && (
-                        <div style={{
-                            backgroundColor: "#2a2a2a",
-                            border: "2px solid #4CAF50",
-                            borderRadius: "12px",
-                            padding: "16px",
-                            marginBottom: "20px"
-                        }}>
-                            <h3 style={{
-                                margin: "0 0 12px 0",
-                                fontSize: "18px",
-                                fontWeight: "600",
-                                color: "#4CAF50",
-                                textAlign: "center"
-                            }}>
+                        <div className={styles.combinedProfile}>
+                            <h3 className={`${styles.combinedProfileTitle} ${styles.combinedProfileTitleMobile}`}>
                                 Complete Challenge Profile
                             </h3>
-                            <p style={{
-                                margin: "0 0 12px 0",
-                                fontSize: "12px",
-                                color: "#999",
-                                textAlign: "center"
-                            }}>
+                            <p className={styles.combinedProfileSubtitle}>
                                 Full power profile with 10-minute rest periods between workouts
                             </p>
                             <WorkoutChart
@@ -406,7 +390,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                         </div>
                     )}
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <div className={styles.mobileContainer}>
                         {workoutRows.map((row, index) => (
                         <div
                             key={`${row.name}-${index}`}
@@ -418,72 +402,29 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             onDragOver={handleDragOver}
                             onDragEnter={(e) => handleDragEnter(e, index)}
                             onDrop={(e) => handleDrop(e, index)}
-                            style={{
-                                backgroundColor: "#2a2a2a",
-                                border: "1px solid #444",
-                                borderRadius: "12px",
-                                padding: "16px",
-                                cursor: "grab",
-                                transform: draggedIndex === index ? "rotate(3deg)" : "none",
-                                opacity: draggedIndex === index ? 0.7 : 1,
-                                transition: "transform 0.2s ease, opacity 0.2s ease",
-                                touchAction: "manipulation"
-                            }}
+                            className={`${styles.mobileWorkoutItem} ${draggedIndex === index ? styles.mobileWorkoutItemDragging : ''} ${dragOverIndex === index ? styles.mobileWorkoutItemDragOver : ''}`}
                         >
                             {/* Order Number and Drag Handle */}
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                marginBottom: "12px"
-                            }}>
+                            <div className={styles.mobileHeader}>
                                 <div 
                                     data-testid={`order-number-${index}`}
-                                    style={{
-                                        backgroundColor: "#4CAF50",
-                                        color: "white",
-                                        borderRadius: "50%",
-                                        width: "32px",
-                                        height: "32px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: "16px",
-                                        fontWeight: "bold"
-                                    }}
+                                    className={styles.mobileIndex}
                                 >
                                     {index + 1}
                                 </div>
                                 <div 
                                     data-testid={`drag-handle-${index}`}
-                                    style={{
-                                        color: "#999",
-                                        fontSize: "20px",
-                                        cursor: "grab"
-                                    }}
+                                    className={styles.mobileDragHandle}
                                 >
                                     ⋮⋮
                                 </div>
                             </div>
 
                             {/* Workout Name */}
-                            <h3 style={{
-                                margin: "0 0 12px 0",
-                                fontSize: "18px",
-                                fontWeight: "600",
-                                color: "white",
-                                lineHeight: "1.3"
-                            }}>
+                            <h3 className={styles.mobileWorkoutName}>
                                 {row.name}
                                 {row.usedOutdoorData && (
-                                    <span style={{ 
-                                        color: '#FF9800',
-                                        fontSize: '10px',
-                                        marginLeft: '8px',
-                                        padding: '2px 6px',
-                                        backgroundColor: 'rgba(255,152,0,0.2)',
-                                        borderRadius: '4px'
-                                    }}>
+                                    <span className={styles.outdoorBadge}>
                                         OUTDOOR
                                     </span>
                                 )}
@@ -494,20 +435,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     onTouchStart={(e) => e.stopPropagation()}
                                     onMouseDown={(e) => e.stopPropagation()}
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{
-                                        color: '#4CAF50',
-                                        textDecoration: 'none',
-                                        fontSize: '14px',
-                                        padding: '4px 6px',
-                                        marginLeft: '8px',
-                                        borderRadius: '4px',
-                                        transition: 'background-color 0.2s',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        minHeight: '44px',
-                                        minWidth: '44px',
-                                        justifyContent: 'center'
-                                    }}
+                                    className={styles.systmLink}
                                     onTouchEnd={(e) => {
                                         e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
                                         setTimeout(() => {
@@ -522,116 +450,83 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
                             {/* Metrics Grid */}
                             {/* First Row: Duration and Full TSS */}
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(2, 1fr)",
-                                gap: "8px",
-                                marginBottom: "12px"
-                            }}>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "16px", fontWeight: "600", color: "white" }}>
+                            <div className={styles.mobileDurationTssRow}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileMetricValue}>
                                         {row.metrics?.duration || '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileMetricLabel}>
                                         Duration
                                     </div>
                                 </div>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ 
-                                        fontSize: "16px", 
-                                        fontWeight: "600", 
-                                        color: row.metrics ? getTSSColor(row.metrics.tss, minTSS, maxTSS) : "white"
-                                    }}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div 
+                                        className={styles.mobileMetricValue}
+                                        style={{ 
+                                            color: row.metrics ? getTSSColor(row.metrics.tss, minTSS, maxTSS) : "white"
+                                        }}>
                                         {row.metrics ? Math.round(row.metrics.tss) : '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileMetricLabel}>
                                         Full TSS
                                     </div>
                                 </div>
                             </div>
 
                             {/* Second Row: Target TSS */}
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: "1fr",
-                                gap: "8px",
-                                marginBottom: "12px"
-                            }}>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ 
-                                        fontSize: "14px", 
-                                        fontWeight: "600", 
-                                        color: "#9C27B0"
-                                    }}>
+                            <div className={styles.mobileTargetTssRow}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileTargetValue}>
                                         {row.metrics ? `${Math.round(row.metrics.targetTss)} (${userProfile.targetIntensity}%)` : '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileMetricLabel}>
                                         Target TSS  ({userProfile.targetIntensity}%)
                                     </div>
                                 </div>
                             </div>
 
                             {/* Third Row: Cumulative TSS and Power metrics */}
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(3, 1fr)",
-                                gap: "8px",
-                                marginBottom: "16px"
-                            }}>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ 
-                                        fontSize: "14px", 
-                                        fontWeight: "600", 
-                                        color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white",
-                                        whiteSpace: "nowrap"
-                                    }}>
+                            <div className={styles.mobileCumulativePowerRow}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div 
+                                        className={styles.mobileCumulativeValue}
+                                        style={{ 
+                                            color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white"
+                                        }}>
                                         {row.cumulativeTSSPercentage ? 
                                             `${Math.round(row.cumulativeTSSPercentage)}% (${(row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(row.cumulativeTSSPercentage - (index + 1) * 10)}%)` 
                                             : '-'
                                         }
                                     </div>
-                                    <div style={{ 
-                                        fontSize: "8px", 
-                                        color: "#999", 
-                                        marginTop: "2px" 
-                                    }}>
+                                    <div className={styles.mobileCumulativeLabel}>
                                         Cum TSS%
                                     </div>
                                 </div>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "14px", fontWeight: "600", color: "white" }}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileMetricValue}>
                                         {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}
                                     </div>
-                                    <div style={{ fontSize: "9px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileNpLabel}>
                                         NP®
                                     </div>
                                 </div>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ fontSize: "14px", fontWeight: "600", color: "white" }}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileMetricValue}>
                                         {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
                                     </div>
-                                    <div style={{ fontSize: "9px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileNpLabel}>
                                         Full IF®
                                     </div>
                                 </div>
                             </div>
 
                             {/* Fourth Row: Target IF */}
-                            <div style={{
-                                display: "grid",
-                                gridTemplateColumns: "1fr",
-                                gap: "8px",
-                                marginBottom: "16px"
-                            }}>
-                                <div style={{ textAlign: "center" }}>
-                                    <div style={{ 
-                                        fontSize: "14px", 
-                                        fontWeight: "600", 
-                                        color: "#9C27B0"
-                                    }}>
+                            <div className={styles.mobileTargetIfRow}>
+                                <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileTargetValue}>
                                         {row.metrics ? `${row.metrics.targetIntensityFactor.toFixed(2)} (${userProfile.targetIntensity}%)` : '-'}
                                     </div>
-                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                    <div className={styles.mobileMetricLabel}>
                                         Target IF® (${userProfile.targetIntensity}%)
                                     </div>
                                 </div>
@@ -640,11 +535,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             {/* Workout Chart */}
                             {row.workoutData && (
                                 <div 
-                                    style={{ 
-                                        marginTop: "12px",
-                                        cursor: "pointer",
-                                        touchAction: "manipulation"
-                                    }}
+                                    className={styles.mobileChartContainer}
                                     onClick={() => handleChartClick(row)}
                                 >
                                     <WorkoutChart
@@ -665,13 +556,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
     if (loading) {
         return (
-            <div style={{ 
-                backgroundColor: '#2a2a2a', 
-                padding: '20px', 
-                borderRadius: '8px',
-                textAlign: 'center'
-            }}>
-                <div style={{ color: '#999' }}>Loading workout details...</div>
+            <div className={styles.loadingDesktop}>
+                <div className={styles.loadingText}>Loading workout details...</div>
             </div>
         );
     }
@@ -682,43 +568,22 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     }
 
     return (
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <div className={styles.desktopContainer}>
             {/* Header */}
             {(title || subtitle) && (
-                <div style={{ marginBottom: '20px' }}>
-                    {title && <h2 style={{ color: 'white', margin: '0 0 5px 0' }}>{title}</h2>}
-                    {subtitle && <p style={{ color: '#999', margin: 0, fontSize: '14px' }}>{subtitle}</p>}
+                <div className={styles.desktopHeader}>
+                    {title && <h2 className={styles.desktopTitle}>{title}</h2>}
+                    {subtitle && <p className={styles.desktopSubtitle}>{subtitle}</p>}
                 </div>
             )}
 
             {/* Combined Scenario Power Profile */}
             {combinedWorkoutData && (
-                <div style={{
-                    backgroundColor: '#2a2a2a',
-                    border: '2px solid #4CAF50',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    marginBottom: '30px',
-                    position: 'sticky',
-                    top: '10px',
-                    zIndex: 100,
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-                }}>
-                    <h3 style={{
-                        margin: '0 0 8px 0',
-                        fontSize: '20px',
-                        fontWeight: '600',
-                        color: '#4CAF50',
-                        textAlign: 'center'
-                    }}>
+                <div className={styles.combinedScenarioProfile}>
+                    <h3 className={styles.combinedScenarioTitle}>
                         Complete Challenge Profile
                     </h3>
-                    <p style={{
-                        margin: '0 0 15px 0',
-                        fontSize: '14px',
-                        color: '#999',
-                        textAlign: 'center'
-                    }}>
+                    <p className={styles.combinedScenarioSubtitle}>
                         Full power profile showing all workouts in sequence with 10-minute rest periods between each workout
                     </p>
                     <WorkoutChart
@@ -730,36 +595,23 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
             )}
 
             {/* Reorderable Workout List */}
-            <div data-testid="reorderable-workout-list" style={{
-                backgroundColor: '#2a2a2a',
-                borderRadius: '8px',
-                border: '1px solid #444'
-            }}>
+            <div data-testid="reorderable-workout-list" className={styles.desktopTable}>
                 {/* Column Headers */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '15px 20px',
-                    backgroundColor: '#222',
-                    borderRadius: '8px 8px 0 0',
-                    fontSize: '14px',
-                    color: '#999',
-                    fontWeight: 'bold',
-                    borderBottom: '1px solid #444'
-                }}>
-                    <div style={{ width: '28px' }}></div> {/* Drag handle space */}
-                    <div style={{ width: '32px', marginRight: '12px' }}>#</div>
-                    <div style={{ flex: 1, marginRight: '20px' }}>Workout & Profile</div>
-                    <div style={{ width: '70px', textAlign: 'center', marginRight: '8px' }}>Duration</div>
-                    <div style={{ width: '55px', textAlign: 'center', marginRight: '8px' }}>Full TSS</div>
-                    <div style={{ width: '70px', textAlign: 'center', marginRight: '8px' }}>Target TSS  ({userProfile.targetIntensity}%)</div>
-                    <div style={{ width: '65px', textAlign: 'center', marginRight: '8px' }}>Cum TSS%</div>
-                    <div style={{ width: '40px', textAlign: 'center', marginRight: '8px' }}>Full IF</div>
-                    <div style={{ width: '55px', textAlign: 'center', marginRight: '8px' }}>Target IF  ({userProfile.targetIntensity}%)</div>
-                    <div style={{ width: '50px', textAlign: 'center' }}>NP</div>
+                <div className={styles.desktopTableHeader}>
+                    <div className={styles.headerDragSpace}></div> {/* Drag handle space */}
+                    <div className={styles.headerOrderCol}>#</div>
+                    <div className={styles.headerWorkoutCol}>Workout</div>
+                    <div className={styles.headerProfileCol}>Profile</div>
+                    <div className={styles.headerDurationCol}>Duration</div>
+                    <div className={styles.headerFullTssCol}>Full TSS</div>
+                    <div className={styles.headerTargetTssCol}>Target TSS  ({userProfile.targetIntensity}%)</div>
+                    <div className={styles.headerCumTssCol}>Cum TSS%</div>
+                    <div className={styles.headerFullIfCol}>Full IF</div>
+                    <div className={styles.headerTargetIfCol}>Target IF  ({userProfile.targetIntensity}%)</div>
+                    <div className={styles.headerNpCol}>NP</div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px' }}>
+                <div className={styles.desktopTableBody}>
                     {workoutRows.map((workout, index) => (
                         <div
                             key={workout.id}
@@ -771,29 +623,15 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             onDragOver={handleDragOver}
                             onDragEnter={(e) => handleDragEnter(e, index)}
                             onDrop={(e) => handleDrop(e, index)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                backgroundColor: dragOverIndex === index ? '#444' : (index % 2 === 0 ? '#333' : '#2a2a2a'),
-                                padding: '8px 12px',
-                                borderRadius: '4px',
-                                border: draggedIndex === index ? '2px dashed #4CAF50' : 'none',
-                                cursor: 'grab',
-                                transition: 'all 0.2s ease',
-                                transform: draggedIndex === index ? 'rotate(1deg)' : 'none',
-                                margin: '1px 0'
-                            }}
+                            className={`${styles.desktopTableRow} ${
+                                dragOverIndex === index ? styles.dragOver : 
+                                (index % 2 === 0 ? styles.evenRow : styles.oddRow)
+                            } ${draggedIndex === index ? styles.dragging : ''}`}
                         >
                             {/* Drag Handle */}
                             <div 
                                 data-testid={`drag-handle-${index}`}
-                                style={{
-                                    color: '#999',
-                                    width: '28px',
-                                    fontSize: '16px',
-                                    cursor: 'grab',
-                                    textAlign: 'center'
-                                }}
+                                className={styles.desktopDragHandle}
                             >
                                 ⋮⋮
                             </div>
@@ -801,57 +639,18 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             {/* Order Number */}
                             <div 
                                 data-testid={`order-number-${index}`}
-                                style={{
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    borderRadius: '50%',
-                                    width: '24px',
-                                    height: '24px',
-                                    display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                                marginRight: '12px'
-                            }}>
+                                className={styles.desktopOrderNumber}
+                            >
                                 {index + 1}
                             </div>
 
-                            {/* Workout Name and Chart on Same Line */}
-                            <div style={{ 
-                                flex: 1,
-                                marginRight: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px'
-                            }}>
-                                {/* Workout Name and Info */}
-                                <div style={{ 
-                                    minWidth: '200px',
-                                    maxWidth: '250px',
-                                    overflow: 'hidden'
-                                }}>
-                                    <div style={{ 
-                                        color: 'white', 
-                                        fontWeight: 'bold', 
-                                        fontSize: '13px',
-                                        marginBottom: '2px',
-                                        lineHeight: '1.2',
-                                        wordWrap: 'break-word',
-                                        overflowWrap: 'break-word',
-                                        hyphens: 'auto'
-                                    }}>
+                            {/* Workout Info Column */}
+                            <div className={styles.desktopWorkoutInfo}>
+                                <div className={styles.desktopWorkoutNameSection}>
+                                    <div className={styles.desktopWorkoutName}>
                                         {workout.name}
                                         {workout.usedOutdoorData && (
-                                            <span style={{ 
-                                                color: '#FF9800',
-                                                fontSize: '8px',
-                                                marginLeft: '4px',
-                                                padding: '1px 3px',
-                                                backgroundColor: 'rgba(255,152,0,0.2)',
-                                                borderRadius: '2px',
-                                                whiteSpace: 'nowrap'
-                                            }}>
+                                            <span className={styles.desktopOutdoorBadge}>
                                                 OUTDOOR
                                             </span>
                                         )}
@@ -861,17 +660,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                             rel="noopener noreferrer"
                                             onMouseDown={(e) => e.stopPropagation()}
                                             onClick={(e) => e.stopPropagation()}
-                                            style={{
-                                                color: '#4CAF50',
-                                                textDecoration: 'none',
-                                                fontSize: '11px',
-                                                padding: '1px 3px',
-                                                marginLeft: '4px',
-                                                borderRadius: '2px',
-                                                transition: 'background-color 0.2s',
-                                                display: 'inline-flex',
-                                                alignItems: 'center'
-                                            }}
+                                            className={styles.desktopSystmLink}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
                                             }}
@@ -883,25 +672,18 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                             ↗
                                         </a>
                                     </div>
-                                    <div style={{ 
-                                        color: '#999', 
-                                        fontSize: '10px',
-                                        wordWrap: 'break-word',
-                                        overflowWrap: 'break-word'
-                                    }}>
+                                    <div className={styles.desktopWorkoutId}>
                                         ID: {workout.id}
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Workout Chart */}
-                                <div style={{ 
-                                    flex: 1,
-                                    minWidth: '250px',
-                                    maxWidth: '400px'
-                                }}>
+                            {/* Profile Chart Column */}
+                            <div className={styles.desktopProfileColumn}>
+                                <div className={styles.desktopChartSection}>
                                     {workout.workoutData ? (
                                         <div 
-                                            style={{ cursor: 'pointer' }}
+                                            className={styles.desktopChartContainer}
                                             onClick={() => handleChartClick(workout)}
                                         >
                                             <WorkoutChart 
@@ -911,15 +693,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                             />
                                         </div>
                                     ) : (
-                                        <div style={{
-                                            height: '50px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#666',
-                                            fontSize: '11px',
-                                            fontStyle: 'italic'
-                                        }}>
+                                        <div className={styles.desktopNoChart}>
                                             {workout.error || 'No workout data available'}
                                         </div>
                                     )}
@@ -928,74 +702,36 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
                             {/* Metrics */}
                             <>
-                                <div style={{ 
-                                    color: 'white', 
-                                    textAlign: 'center',
-                                    width: '70px',
-                                    marginRight: '8px',
-                                    fontSize: '13px'
-                                }}>
+                                <div className={styles.desktopDurationCol}>
                                     {workout.metrics?.duration || '-'}
                                 </div>
-                                <div style={{ 
-                                    color: workout.metrics ? getTSSColor(workout.metrics.tss, minTSS, maxTSS) : 'white', 
-                                    textAlign: 'center',
-                                    width: '55px',
-                                    marginRight: '8px',
-                                    fontSize: '13px',
-                                    fontWeight: 'bold'
-                                }}>
+                                <div 
+                                    className={styles.desktopTssCol}
+                                    style={{ 
+                                        color: workout.metrics ? getTSSColor(workout.metrics.tss, minTSS, maxTSS) : 'white'
+                                    }}>
                                     {workout.metrics ? Math.round(workout.metrics.tss) : '-'}
                                 </div>
-                                <div style={{ 
-                                    color: 'white', 
-                                    textAlign: 'center',
-                                    width: '70px',
-                                    marginRight: '8px',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold'
-                                }}>
+                                <div className={styles.desktopTargetTssCol}>
                                     {workout.metrics ? `${Math.round(workout.metrics.targetTss)}` : '-'}
                                 </div>
-                                <div style={{ 
-                                    color: workout.cumulativeTSSPercentage ? getVarianceColor(workout.cumulativeTSSPercentage - (index + 1) * 10) : 'white', 
-                                    textAlign: 'center',
-                                    width: '65px',
-                                    marginRight: '8px',
-                                    fontSize: '10px',
-                                    fontWeight: 'bold',
-                                    whiteSpace: 'nowrap'
-                                }}>
+                                <div 
+                                    className={styles.desktopCumTssCol}
+                                    style={{ 
+                                        color: workout.cumulativeTSSPercentage ? getVarianceColor(workout.cumulativeTSSPercentage - (index + 1) * 10) : 'white'
+                                    }}>
                                     {workout.cumulativeTSSPercentage ? 
                                         `${Math.round(workout.cumulativeTSSPercentage)}% (${(workout.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(workout.cumulativeTSSPercentage - (index + 1) * 10)}%)` 
                                         : '-'
                                     }
                                 </div>
-                                <div style={{ 
-                                    color: 'white', 
-                                    textAlign: 'center',
-                                    width: '40px',
-                                    marginRight: '8px',
-                                    fontSize: '13px'
-                                }}>
+                                <div className={styles.desktopIfCol}>
                                     {workout.metrics ? workout.metrics.intensityFactor.toFixed(2) : '-'}
                                 </div>
-                                <div style={{ 
-                                    color: 'white', 
-                                    textAlign: 'center',
-                                    width: '55px',
-                                    marginRight: '8px',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold'
-                                }}>
+                                <div className={styles.desktopTargetIfCol}>
                                     {workout.metrics ? `${workout.metrics.targetIntensityFactor.toFixed(2)}` : '-'}
                                 </div>
-                                <div style={{ 
-                                    color: 'white', 
-                                    textAlign: 'center',
-                                    width: '50px',
-                                    fontSize: '13px'
-                                }}>
+                                <div className={styles.desktopNpCol}>
                                     {workout.metrics ? `${Math.round(workout.metrics.normalizedPower)}W` : '-'}
                                 </div>
                             </>
@@ -1004,17 +740,11 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                 </div>
 
                 {/* Instructions */}
-                <div style={{ 
-                    marginTop: '20px', 
-                    padding: '15px', 
-                    backgroundColor: '#1a1a1a',
-                    borderRadius: '6px',
-                    border: '1px solid #333'
-                }}>
-                    <div style={{ color: '#4CAF50', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                <div className={styles.instructionsContainer}>
+                    <div className={styles.instructionsTitle}>
                         💡 Drag & Drop Instructions
                     </div>
-                    <div style={{ color: '#999', fontSize: '12px' }}>
+                    <div className={styles.instructionsText}>
                         • Grab the ⋮⋮ handle or anywhere on a workout row to drag it<br/>
                         • Drop it at the desired position to reorder<br/>
                         • Hover over workout charts to see detailed power profiles<br/>

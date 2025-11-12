@@ -1,0 +1,245 @@
+/* SharedScenarioView Component Styles */
+
+.container {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+}
+
+/* Loading States */
+.loadingContainer {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.loadingContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.loadingTitle {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.loadingText {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+/* Invalid Share Link */
+.invalidContainer {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.invalidContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.invalidTitle {
+  color: white;
+}
+
+.invalidText {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+/* Header Section */
+.headerSection {
+  padding: 20px;
+}
+
+.headerContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.backButton {
+  padding: 8px 16px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Share Info Section */
+.shareInfoCard {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 2px solid #9C27B0;
+}
+
+.shareInfoHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.shareInfoIcon {
+  font-size: 24px;
+}
+
+.shareInfoTitle {
+  color: white;
+  margin: 0;
+}
+
+.shareInfoDescription {
+  color: #999;
+  margin: 0 0 16px 0;
+}
+
+/* Save As Section */
+.saveAsSection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.saveAsLabel {
+  color: white;
+  font-size: 14px;
+}
+
+.saveAsInput {
+  padding: 8px 12px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.saveAsButton {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Metrics Overview Grid */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Metric Cards */
+.metricCard {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  border-width: 2px;
+  border-style: solid;
+  text-align: center;
+}
+
+/* Metric Card Variants */
+.metricCardDuration {
+  border-color: #4CAF50;
+}
+
+.metricCardElapsed {
+  border-color: #FF5722;
+}
+
+.metricCardTss {
+  border-color: #2196F3;
+}
+
+.metricCardIf {
+  border-color: #FF9800;
+}
+
+.metricCardNp {
+  border-color: #9C27B0;
+}
+
+.metricCardTargetTss {
+  border-color: #E91E63;
+}
+
+.metricCardTargetIf {
+  border-color: #673AB7;
+}
+
+/* Metric Card Text */
+.metricLabel {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.metricValue {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.metricSubtext {
+  color: #999;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Color Classes for Labels */
+.colorDuration {
+  color: #4CAF50;
+}
+
+.colorElapsed {
+  color: #FF5722;
+}
+
+.colorTss {
+  color: #2196F3;
+}
+
+.colorIf {
+  color: #FF9800;
+}
+
+.colorNp {
+  color: #9C27B0;
+}
+
+.colorTargetTss {
+  color: #E91E63;
+}
+
+.colorTargetIf {
+  color: #673AB7;
+}
+
+/* Button Styles */
+.button {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.primaryButton {
+  padding: 12px 24px;
+  background-color: #4CAF50;
+  color: white;
+}

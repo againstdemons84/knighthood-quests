@@ -4,6 +4,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import ReorderableWorkoutList from './ReorderableWorkoutList';
 import { calculateCombinedMetricsDynamic, formatDuration, generateScenarioId } from '../utils/scenarioHelpers';
 import allWorkouts from '../data/workouts.json';
+import styles from './SharedScenarioView.module.css';
 
 interface SharedScenarioViewProps {
     workoutIds: string[];
@@ -97,9 +98,9 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
 
     if (loading) {
         return (
-            <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 style={{ color: 'white' }}>Loading shared challenge...</h2>
+            <div className={styles.loadingContainer}>
+                <div className={styles.loadingContent}>
+                    <h2 className={styles.loadingTitle}>Loading shared challenge...</h2>
                 </div>
             </div>
         );
@@ -107,23 +108,15 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
 
     if (workouts.length === 0) {
         return (
-            <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 style={{ color: 'white' }}>Invalid Share Link</h2>
-                    <p style={{ color: '#999', marginBottom: '20px' }}>
+            <div className={styles.invalidContainer}>
+                <div className={styles.invalidContent}>
+                    <h2 className={styles.invalidTitle}>Invalid Share Link</h2>
+                    <p className={styles.invalidText}>
                         This share link appears to be invalid or the workouts could not be loaded.
                     </p>
                     <button
                         onClick={onBackToApp}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '16px'
-                        }}
+                        className={`${styles.button} ${styles.primaryButton}`}
                     >
                         Back to App
                     </button>
@@ -133,52 +126,32 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
     }
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
+        <div className={styles.container}>
             {/* Header */}
-            <div style={{ padding: '20px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <div className={styles.headerSection}>
+                <div className={styles.headerContainer}>
                     {/* Back Button */}
                     <button
                         onClick={onBackToApp}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            marginBottom: '20px',
-                            fontSize: '14px'
-                        }}
+                        className={styles.backButton}
                     >
                         ← Back to App
                     </button>
 
                     {/* Title and Share Info */}
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        marginBottom: '20px',
-                        border: '2px solid #9C27B0'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                            <div style={{ fontSize: '24px' }}>🔗</div>
-                            <h1 style={{ color: 'white', margin: 0 }}>Shared Challenge: {scenarioName}</h1>
+                    <div className={styles.shareInfoCard}>
+                        <div className={styles.shareInfoHeader}>
+                            <div className={styles.shareInfoIcon}>🔗</div>
+                            <h1 className={styles.shareInfoTitle}>Shared Challenge: {scenarioName}</h1>
                         </div>
-                        <p style={{ color: '#999', margin: '0 0 16px 0' }}>
+                        <p className={styles.shareInfoDescription}>
                             Someone shared this Knight of Sufferlandria challenge with you. 
                             You can view the workout details and save it to your own collection.
                         </p>
 
                         {/* Save As Section */}
-                        <div style={{
-                            display: 'flex',
-                            gap: '12px',
-                            alignItems: 'center',
-                            flexWrap: 'wrap'
-                        }}>
-                            <label style={{ color: 'white', fontSize: '14px' }}>
+                        <div className={styles.saveAsSection}>
+                            <label className={styles.saveAsLabel}>
                                 Save as:
                             </label>
                             <input
@@ -186,28 +159,11 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
                                 value={saveAsName}
                                 onChange={(e) => setSaveAsName(e.target.value)}
                                 placeholder="Enter scenario name"
-                                style={{
-                                    padding: '8px 12px',
-                                    backgroundColor: '#333',
-                                    color: 'white',
-                                    border: '1px solid #555',
-                                    borderRadius: '4px',
-                                    fontSize: '14px',
-                                    minWidth: '200px'
-                                }}
+                                className={styles.saveAsInput}
                             />
                             <button
                                 onClick={handleSaveAs}
-                                style={{
-                                    padding: '10px 20px',
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: 'bold'
-                                }}
+                                className={styles.saveAsButton}
                             >
                                 💾 Save to My Scenarios
                             </button>
@@ -215,116 +171,69 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
                     </div>
 
                     {/* Metrics Overview */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '16px',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #4CAF50',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#4CAF50', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={styles.metricsGrid}>
+                        <div className={`${styles.metricCard} ${styles.metricCardDuration}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorDuration}`}>
                                 Total Duration
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {formatDuration(dynamicMetrics.totalDuration)}
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #FF5722',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#FF5722', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardElapsed}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorElapsed}`}>
                                 Total Elapsed Duration
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {formatDuration(dynamicMetrics.totalElapsedDuration)}
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px', marginTop: '5px' }}>
+                            <div className={styles.metricSubtext}>
                                 Includes rest periods
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #2196F3',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#2196F3', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardTss}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorTss}`}>
                                 Total TSS®
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {Math.round(dynamicMetrics.totalTSS)}
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #FF9800',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#FF9800', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardIf}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorIf}`}>
                                 Average IF®
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {dynamicMetrics.averageIF.toFixed(2)}
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #9C27B0',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#9C27B0', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardNp}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorNp}`}>
                                 Average NP®
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {Math.round(dynamicMetrics.totalNP)}W
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #E91E63',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#E91E63', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardTargetTss}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorTargetTss}`}>
                                 Target TSS® ({userProfile.targetIntensity}%)
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {Math.round(targetMetrics.totalTargetTSS)}
                             </div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '2px solid #673AB7',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#673AB7', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.metricCard} ${styles.metricCardTargetIf}`}>
+                            <div className={`${styles.metricLabel} ${styles.colorTargetIf}`}>
                                 Target IF® ({userProfile.targetIntensity}%)
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.metricValue}>
                                 {targetMetrics.averageTargetIF.toFixed(2)}
                             </div>
                         </div>

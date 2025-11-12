@@ -3,6 +3,7 @@ import { WorkoutData } from '../types/workout';
 import { UserProfile } from '../types/user';
 import { UserPowerProfile } from '../types/userProfile';
 import { generateSVG, generateWorkoutHeader } from '../utils/svgGenerator';
+import styles from './WorkoutChart.module.css';
 
 interface WorkoutChartProps {
     workoutData: WorkoutData;
@@ -23,13 +24,13 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
     const svgHeight = 370.7;
     
     return (
-        <div style={{ width: '100%', height: height, backgroundColor: '#2a2a2a' }}>
+        <div className={styles.container} style={{ height: height }}>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 3057 370.7"
                 preserveAspectRatio="xMidYMid meet"
                 shapeRendering="crispedges"
-                style={{ width: '100%', height: '100%' }}
+                className={styles.svg}
             >
                 {/* Background first */}
                 <rect
@@ -37,7 +38,7 @@ const WorkoutChart: React.FC<WorkoutChartProps> = ({
                     y={0}
                     width={svgWidth}
                     height={svgHeight}
-                    fill="#2a2a2a"
+                    className={styles.background}
                 />
                 {/* Chart elements (without background) */}
                 {generateSVG(workoutData, userProfile, showMetrics)}

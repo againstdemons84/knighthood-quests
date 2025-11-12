@@ -1,0 +1,54 @@
+/* Footer Component Styles */
+
+/* Main Footer Container */
+.footer {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  border-top: 3px solid #4CAF50;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  margin-top: 48px;
+  background-color: #1a1a1a;
+  position: relative;
+  /* Ensure footer extends full width */
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Footer Title */
+.footerTitle {
+  margin-bottom: 8px;
+}
+
+/* Links Container */
+.linksContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.linksContainerMobile {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.linksContainerDesktop {
+  flex-direction: row;
+  gap: 24px;
+}
+
+/* Footer Links */
+.footerLink {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}

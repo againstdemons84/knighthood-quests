@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Scenario, BasketState } from '../types/scenario';
 import { generateScenarioId, calculateCombinedMetrics, formatDuration } from '../utils/scenarioHelpers';
+import styles from './SaveScenarioModal.module.css';
 
 interface SaveScenarioModalProps {
     basketState: BasketState;
@@ -53,18 +54,7 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
 
     return (
         <div 
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1000
-            }}
+            className={styles.modalOverlay}
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     onCancel();
@@ -72,24 +62,16 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
             }}
         >
             <div 
-                style={{
-                    backgroundColor: '#2a2a2a',
-                    padding: '30px',
-                    borderRadius: '8px',
-                    maxWidth: '600px',
-                    width: '90%',
-                    maxHeight: '80vh',
-                    overflowY: 'auto'
-                }}
+                className={styles.modalContainer}
                 onClick={(e) => e.stopPropagation()}
             >
-                <h2 style={{ color: 'white', marginBottom: '20px', marginTop: 0 }}>
+                <h2 className={styles.modalTitle}>
                     {existingScenario ? 'Update Scenario' : 'Save New Scenario'}
                 </h2>
 
                 {/* Scenario Name Input */}
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', color: '#999', marginBottom: '8px' }}>
+                <div className={styles.formSection}>
+                    <label className={styles.formLabel}>
                         Scenario Name
                     </label>
                     <input
@@ -102,88 +84,67 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                         data-testid="scenario-name-input"
                         onKeyPress={handleKeyPress}
                         placeholder="Enter a name for your Knighthood challenge scenario..."
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: error ? '2px solid #d32f2f' : '1px solid #555',
-                            borderRadius: '4px',
-                            fontSize: '16px'
-                        }}
+                        className={`${styles.formInput} ${error ? styles.formInputError : ''}`}
                         autoFocus
                     />
                     {error && (
-                        <div style={{ color: '#d32f2f', fontSize: '14px', marginTop: '5px' }}>
+                        <div className={styles.errorMessage}>
                             {error}
                         </div>
                     )}
                 </div>
 
                 {/* Summary */}
-                <div style={{ 
-                    backgroundColor: '#333', 
-                    padding: '20px', 
-                    borderRadius: '8px',
-                    marginBottom: '20px'
-                }}>
-                    <h3 style={{ color: 'white', margin: '0 0 15px 0' }}>Challenge Summary</h3>
+                <div className={styles.summarySection}>
+                    <h3 className={styles.summaryTitle}>Challenge Summary</h3>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '15px', marginBottom: '15px' }}>
-                        <div>
-                            <div style={{ color: '#999', fontSize: '14px' }}>Workouts</div>
-                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                    <div className={styles.metricsGrid}>
+                        <div className={styles.metricItem}>
+                            <div className={styles.metricLabel}>Workouts</div>
+                            <div className={styles.metricValueComplete}>
                                 {basketState.selectedWorkouts.length}/10
                                 {basketState.isComplete && (
-                                    <span style={{ color: '#4CAF50', marginLeft: '8px' }}>✓</span>
+                                    <span className={styles.completeIcon}>✓</span>
                                 )}
                             </div>
                         </div>
-                        <div>
-                            <div style={{ color: '#999', fontSize: '14px' }}>Total Duration</div>
-                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                        <div className={styles.metricItem}>
+                            <div className={styles.metricLabel}>Total Duration</div>
+                            <div className={styles.metricValue}>
                                 {formatDuration(combinedMetrics.totalDuration)}
                             </div>
                         </div>
-                        <div>
-                            <div style={{ color: '#999', fontSize: '14px' }}>Total TSS®</div>
-                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                        <div className={styles.metricItem}>
+                            <div className={styles.metricLabel}>Total TSS®</div>
+                            <div className={styles.metricValue}>
                                 {Math.round(combinedMetrics.totalTSS)}
                             </div>
                         </div>
-                        <div>
-                            <div style={{ color: '#999', fontSize: '14px' }}>Average IF®</div>
-                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                        <div className={styles.metricItem}>
+                            <div className={styles.metricLabel}>Average IF®</div>
+                            <div className={styles.metricValue}>
                                 {combinedMetrics.averageIF.toFixed(2)}
                             </div>
                         </div>
                     </div>
 
                     {/* Workout List */}
-                    <div style={{ marginTop: '15px' }}>
-                        <div style={{ color: '#999', fontSize: '14px', marginBottom: '10px' }}>
+                    <div className={styles.workoutListSection}>
+                        <div className={styles.workoutListLabel}>
                             Selected Workouts:
                         </div>
-                        <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <div className={styles.workoutListContainer}>
                             {basketState.selectedWorkouts.map((workout, index) => (
                                 <div 
                                     key={workout.id}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#444',
-                                        borderRadius: '4px',
-                                        marginBottom: '4px',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}
+                                    className={styles.workoutItem}
                                 >
                                     <div>
-                                        <span style={{ color: 'white', fontSize: '14px' }}>
+                                        <span className={styles.workoutName}>
                                             {index + 1}. {workout.name}
                                         </span>
                                     </div>
-                                    <div style={{ color: '#999', fontSize: '12px' }}>
+                                    <div className={styles.workoutDuration}>
                                         {workout.metrics ? formatDuration(workout.metrics.duration) : 'N/A'}
                                     </div>
                                 </div>
@@ -193,18 +154,10 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                 </div>
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end' }}>
+                <div className={styles.actionButtons}>
                     <button
                         onClick={onCancel}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '16px'
-                        }}
+                        className={styles.cancelButton}
                     >
                         Cancel
                     </button>
@@ -212,23 +165,18 @@ const SaveScenarioModal: React.FC<SaveScenarioModalProps> = ({
                         onClick={handleSave}
                         disabled={!basketState.isComplete || !scenarioName.trim()}
                         data-testid="save-scenario-modal-button"
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: basketState.isComplete && scenarioName.trim() ? '#4CAF50' : '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: basketState.isComplete && scenarioName.trim() ? 'pointer' : 'not-allowed',
-                            fontSize: '16px',
-                            fontWeight: 'bold'
-                        }}
+                        className={`${styles.saveButton} ${
+                            basketState.isComplete && scenarioName.trim() 
+                                ? styles.saveButtonEnabled 
+                                : styles.saveButtonDisabled
+                        }`}
                     >
                         {existingScenario ? 'Update Scenario' : 'Save Scenario'}
                     </button>
                 </div>
 
-                <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#1a3d1a', borderRadius: '4px' }}>
-                    <p style={{ color: '#4CAF50', margin: 0, fontSize: '14px' }}>
+                <div className={styles.infoSection}>
+                    <p className={styles.infoText}>
                         <strong>About the Knight of Sufferlandria Challenge:</strong><br />
                         Complete these 10 workouts back-to-back to earn your knighthood. 
                         Plan your challenge carefully - the order and combination matter for your success!

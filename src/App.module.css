@@ -1,0 +1,112 @@
+/* App Component Styles */
+
+/* Main Container */
+.appContainer {
+  background-color: #1a1a1a;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.appContainerMobile {
+  padding-top: 12px;
+}
+
+/* Navigation Styles */
+.navigation {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.navigationMobile {
+  padding: 12px 12px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+}
+
+.navigationDesktop {
+  padding: 15px 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+/* Tab Container */
+.tabContainer {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tabContainerMobile {
+  gap: 8px;
+}
+
+/* Tab Buttons */
+.tabButton {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  background-color: #555;
+  transition: background-color 0.2s ease;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.tabButtonMobile {
+  padding: 12px 16px;
+  font-size: 14px;
+  min-height: 44px;
+  flex: 1;
+}
+
+.tabButton:hover:not(.active):not(.warning) {
+  background-color: #666;
+}
+
+.tabButton:global(.active) {
+  background-color: #4CAF50;
+}
+
+.tabButton:global(.warning) {
+  background-color: #FF9800;
+}
+
+.tabButton:global(.warning.active) {
+  background-color: #4CAF50;
+}
+
+.tabButton:global(.warning):hover:not(.active) {
+  background-color: #FFB74D;
+}
+
+/* Content Wrapper */
+.contentWrapper {
+  margin: 0 20px 20px 20px;
+}
+
+.contentWrapperMobile {
+  margin: 0 12px 12px 12px;
+}
+
+/* Workout Checkbox Styles (for global injection) */
+.workoutCheckbox {
+  cursor: pointer;
+}
+
+.workoutCheckboxSelected {
+  background-color: #4CAF50 !important;
+}
+
+.workoutCheckboxUnselected {
+  background-color: transparent !important;
+}

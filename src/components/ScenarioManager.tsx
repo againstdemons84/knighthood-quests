@@ -4,6 +4,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
 import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
+import styles from './ScenarioManager.module.css';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
@@ -216,70 +217,44 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
     // Mobile card layout
     const renderMobileLayout = () => (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '16px' }}>
-                <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
+        <div className={styles.containerMobile}>
+                <h1 className={styles.titleMobile}>
                     My Paths to KNIGHTHOOD
                 </h1>
-                <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
+                <p className={styles.subtitleMobile}>
                     Manage your various quests and recipes for SUFFERING
                 </p>            {isLoadingMetrics && (
-                <div style={{ 
-                    textAlign: 'center', 
-                    color: '#999', 
-                    padding: '20px',
-                    backgroundColor: '#2a2a2a',
-                    borderRadius: '8px',
-                    marginBottom: '16px'
-                }}>
-                    <div style={{ fontSize: '16px', marginBottom: '8px' }}>
+                <div className={styles.loadingContainerMobile}>
+                    <div className={styles.loadingTextLarge}>
                         📊 Calculating metrics...
                     </div>
-                    <div style={{ fontSize: '12px' }}>
+                    <div className={styles.loadingTextSmall}>
                         Loading workout data
                     </div>
                 </div>
             )}
 
             {scenariosWithMetrics.length === 0 && !isLoadingMetrics ? (
-                <div style={{ 
-                    backgroundColor: '#2a2a2a', 
-                    padding: '40px 20px', 
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                }}>
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏆</div>
-                    <h3 style={{ color: 'white', marginBottom: '12px' }}>No Scenarios Yet</h3>
-                    <p style={{ color: '#999', fontSize: '14px' }}>
+                <div className={styles.emptyStateMobile}>
+                    <div className={styles.emptyIcon}>🏆</div>
+                    <h3 className={styles.emptyTitle}>No Scenarios Yet</h3>
+                    <p className={styles.emptyDescription}>
                         Create your first Knighthood challenge by selecting 10 workouts in the "Plan Challenge" tab.
                     </p>
                 </div>
             ) : (
                 <>
                     {/* Sort Controls */}
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: '12px',
-                        borderRadius: '8px',
-                        marginBottom: '16px'
-                    }}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                            <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
+                    <div className={styles.controlsMobile}>
+                        <div className={styles.sortControls}>
+                            <span className={styles.sortLabel}>Sort:</span>
                             {(['name', 'created', 'duration', 'tss'] as const).map(col => (
                                 <button
                                     key={col}
                                     onClick={() => handleSort(col)}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: sortBy === col ? '#4CAF50' : '#555',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
+                                    className={`${styles.sortButton} ${
+                                        sortBy === col ? styles.sortButtonActive : styles.sortButtonInactive
+                                    }`}
                                 >
                                     {col === 'name' ? 'Name' : 
                                      col === 'created' ? 'Date' :
@@ -291,169 +266,88 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     </div>
 
                     {/* Scenario Cards */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className={styles.scenarioListMobile}>
                         {sortedScenarios.map((scenario, index) => (
-                            <div key={scenario.id} style={{
-                                backgroundColor: '#2a2a2a',
-                                borderRadius: '8px',
-                                padding: '16px',
-                                border: '1px solid #333'
-                            }}>
+                            <div key={scenario.id} className={styles.scenarioCardMobile}>
                                 {/* Header */}
-                                <div style={{ marginBottom: '12px' }}>
-                                    <h3 style={{ color: 'white', margin: '0 0 4px 0', fontSize: '16px' }}>
+                                <div className={styles.scenarioHeader}>
+                                    <h3 className={styles.scenarioTitle}>
                                         {scenario.name}
                                     </h3>
-                                    <div style={{ color: '#999', fontSize: '12px' }}>
+                                    <div className={styles.scenarioDate}>
                                         Created: {new Date(scenario.createdAt).toLocaleDateString()}
                                     </div>
                                 </div>
 
                                 {/* Metrics Grid */}
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(4, 1fr)',
-                                    gap: '8px',
-                                    marginBottom: '16px'
-                                }}>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#4CAF50', fontSize: '10px', marginBottom: '2px' }}>Duration</div>
-                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                <div className={styles.metricsGrid}>
+                                    <div className={styles.metricItem}>
+                                        <div className={styles.metricLabelDuration}>Duration</div>
+                                        <div className={styles.metricValue}>
                                             {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                         </div>
                                     </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#2196F3', fontSize: '10px', marginBottom: '2px' }}>TSS®</div>
-                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                    <div className={styles.metricItem}>
+                                        <div className={styles.metricLabelTSS}>TSS®</div>
+                                        <div className={styles.metricValue}>
                                             {Math.round(scenario.dynamicMetrics.totalTSS)}
                                         </div>
                                     </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#FF9800', fontSize: '10px', marginBottom: '2px' }}>Avg IF®</div>
-                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                    <div className={styles.metricItem}>
+                                        <div className={styles.metricLabelIF}>Avg IF®</div>
+                                        <div className={styles.metricValue}>
                                             {scenario.dynamicMetrics.averageIF.toFixed(2)}
                                         </div>
                                     </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ color: '#9C27B0', fontSize: '10px', marginBottom: '2px' }}>Workouts</div>
-                                        <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                    <div className={styles.metricItem}>
+                                        <div className={styles.metricLabelWorkouts}>Workouts</div>
+                                        <div className={styles.metricValue}>
                                             {scenario.workouts.length}/10
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '8px',
-                                    flexWrap: 'wrap'
-                                }}>
+                                <div className={styles.actionButtonsMobile}>
                                     <button
                                         data-testid={`view-scenario-${scenario.id}`}
                                         onClick={() => onViewScenario?.(scenario)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#4CAF50',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px',
-                                            fontWeight: 'bold'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.viewButtonMobile}`}
                                     >
                                         👁️ View
                                     </button>
                                     <button
                                         data-testid={`edit-scenario-${scenario.id}`}
                                         onClick={() => onEditScenario(scenario)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#FF9800',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.editButtonMobile}`}
                                     >
                                         ✏️ Edit
                                     </button>
                                     <button
                                         data-testid={`print-scenario-${scenario.id}`}
                                         onClick={() => setShowPrintModal(scenario)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#607D8B',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.printButtonMobile}`}
                                     >
                                         🖨️ Print
                                     </button>
                                     <button
                                         data-testid={`share-scenario-${scenario.id}`}
                                         onClick={() => shareScenario(scenario)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#9C27B0',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.shareButtonMobile}`}
                                     >
                                         🔗 Share
                                     </button>
                                     <button
                                         data-testid={`duplicate-scenario-${scenario.id}`}
                                         onClick={() => duplicateScenario(scenario)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#2196F3',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.duplicateButtonMobile}`}
                                     >
                                         📋 Copy
                                     </button>
                                     <button
                                         data-testid={`delete-scenario-${scenario.id}`}
                                         onClick={() => deleteScenario(scenario.id)}
-                                        style={{
-                                            flex: '1',
-                                            minWidth: '80px',
-                                            minHeight: '44px',
-                                            padding: '10px 16px',
-                                            backgroundColor: '#d32f2f',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px'
-                                        }}
+                                        className={`${styles.actionButtonMobile} ${styles.deleteButtonMobile}`}
                                     >
                                         🗑️ Delete
                                     </button>
@@ -476,28 +370,21 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
     );
 
     return viewport.isMobile ? renderMobileLayout() : (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                <h1 style={{ color: 'white', marginBottom: '10px' }}>
+        <div className={styles.containerDesktop}>
+            <div className={styles.containerInner}>
+                <h1 className={styles.titleDesktop}>
                     Your Arsenal of KNIGHTHOOD Quests
                 </h1>
-                <p style={{ color: '#999', marginBottom: '30px' }}>
+                <p className={styles.subtitleDesktop}>
                     Manage and compare your different recipes for SUFFERING in pursuit of the highest HONOUR in Sufferlandria
                 </p>
 
                 {isLoadingMetrics && (
-                    <div style={{ 
-                        textAlign: 'center', 
-                        color: '#999', 
-                        padding: '40px',
-                        backgroundColor: '#2a2a2a',
-                        borderRadius: '8px',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{ fontSize: '18px', marginBottom: '10px' }}>
+                    <div className={styles.loadingContainerDesktop}>
+                        <div className={styles.loadingTextLargeDesktop}>
                             📊 Calculating workout metrics dynamically...
                         </div>
-                        <div style={{ fontSize: '14px' }}>
+                        <div className={styles.loadingTextSmallDesktop}>
                             Loading duration, TSS, and intensity data from workout files
                         </div>
                     </div>
@@ -505,70 +392,51 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
                 {/* Comparison Section */}
                 {selectedScenarios.size > 0 && (
-                    <div style={{ 
-                        backgroundColor: '#2a2a2a', 
-                        padding: '20px', 
-                        borderRadius: '8px',
-                        marginBottom: '20px',
-                        border: '1px solid #333'
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                            <h3 style={{ color: 'white', margin: 0 }}>
+                    <div className={styles.comparisonSection}>
+                        <div className={styles.comparisonHeader}>
+                            <h3 className={styles.comparisonTitle}>
                                 Comparing {selectedScenarios.size} Scenario{selectedScenarios.size > 1 ? 's' : ''}
                             </h3>
                             <button
                                 onClick={clearSelection}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: '#555',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
+                                className={styles.clearSelectionButton}
                             >
                                 Clear Selection
                             </button>
                         </div>
                         
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ 
-                                width: '100%', 
-                                borderCollapse: 'collapse',
-                                backgroundColor: '#333',
-                                borderRadius: '4px',
-                                overflow: 'hidden'
-                            }}>
+                        <div className={styles.comparisonTableContainer}>
+                            <table className={styles.comparisonTable}>
                                 <thead>
-                                    <tr style={{ backgroundColor: '#444' }}>
-                                        <th style={{ padding: '12px', color: 'white', textAlign: 'left' }}>Scenario</th>
-                                        <th style={{ padding: '12px', color: 'white', textAlign: 'center' }}>Duration</th>
-                                        <th style={{ padding: '12px', color: 'white', textAlign: 'center' }}>TSS®</th>
-                                        <th style={{ padding: '12px', color: 'white', textAlign: 'center' }}>Avg IF®</th>
-                                        <th style={{ padding: '12px', color: 'white', textAlign: 'center' }}>Avg NP®</th>
+                                    <tr className={styles.comparisonTableHeader}>
+                                        <th className={styles.comparisonTableHeaderCell}>Scenario</th>
+                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Duration</th>
+                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>TSS®</th>
+                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Avg IF®</th>
+                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Avg NP®</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {selectedScenariosList.map((scenario, index) => (
                                         <tr 
                                             key={scenario.id}
-                                            style={{ 
-                                                backgroundColor: index % 2 === 0 ? '#333' : '#3a3a3a'
-                                            }}
+                                            className={`${styles.comparisonTableRow} ${
+                                                index % 2 === 0 ? styles.comparisonTableRowEven : styles.comparisonTableRowOdd
+                                            }`}
                                         >
-                                            <td style={{ padding: '12px', color: 'white' }}>
+                                            <td className={styles.comparisonTableCell}>
                                                 <strong>{scenario.name}</strong>
                                             </td>
-                                                                                        <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
+                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
                                                 {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                             </td>
-                                            <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
+                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
                                                 {Math.round(scenario.dynamicMetrics.totalTSS)}
                                             </td>
-                                            <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
+                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
                                                 {scenario.dynamicMetrics.averageIF.toFixed(2)}
                                             </td>
-                                            <td style={{ padding: '12px', color: 'white', textAlign: 'center' }}>
+                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
                                                 {Math.round(scenario.dynamicMetrics.totalNP)}W
                                             </td>
                                         </tr>
@@ -580,23 +448,11 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                 )}
 
                 {/* Controls */}
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '20px', 
-                    marginBottom: '20px',
-                    flexWrap: 'wrap',
-                    alignItems: 'center'
-                }}>
+                <div className={styles.controlsSection}>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        style={{
-                            padding: '10px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '4px'
-                        }}
+                        className={styles.sortSelect}
                     >
                         <option value="created">Sort by Created Date</option>
                         <option value="name">Sort by Name</option>
@@ -608,20 +464,13 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     
                     <button
                         onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                        style={{
-                            padding: '10px 15px',
-                            backgroundColor: '#444',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
+                        className={styles.sortOrderButton}
                     >
                         {sortOrder === 'asc' ? '↑' : '↓'}
                     </button>
 
                     {selectedScenarios.size > 0 && (
-                        <div style={{ color: '#999', fontSize: '14px' }}>
+                        <div className={styles.selectionInfo}>
                             {selectedScenarios.size} scenario{selectedScenarios.size > 1 ? 's' : ''} selected for comparison
                         </div>
                     )}
@@ -629,118 +478,57 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
                 {/* Scenarios List */}
                 {scenarios.length === 0 ? (
-                    <div style={{ 
-                        backgroundColor: '#2a2a2a', 
-                        padding: '40px', 
-                        borderRadius: '8px',
-                        textAlign: 'center'
-                    }}>
-                        <h3 style={{ color: 'white', marginBottom: '10px' }}>No Scenarios Yet</h3>
-                        <p style={{ color: '#999', marginBottom: '20px' }}>
+                    <div className={styles.emptyStateDesktopAlt}>
+                        <h3 className={styles.emptyTitleDesktop}>No Scenarios Yet</h3>
+                        <p className={styles.emptyDescriptionDesktop}>
                             Forge your first path to KNIGHTHOOD by assembling an arsenal of 10 instruments of SUFFERING.
                         </p>
                     </div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ 
-                            width: '100%', 
-                            borderCollapse: 'collapse',
-                            backgroundColor: '#2a2a2a',
-                            borderRadius: '8px',
-                            overflow: 'hidden'
-                        }}>
+                    <div className={styles.mainTableContainer}>
+                        <table className={styles.mainTable}>
                             <thead>
-                                <tr style={{ backgroundColor: '#333' }}>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', width: '60px' }}>
+                                <tr className={styles.mainTableHeader}>
+                                    <th className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter} ${styles.mainTableHeaderCellCheckbox}`}>
                                         Compare
                                     </th>
                                     <th 
-                                        style={{ 
-                                            padding: '15px', 
-                                            color: 'white', 
-                                            textAlign: 'left', 
-                                            borderBottom: '2px solid #444',
-                                            cursor: 'pointer',
-                                            userSelect: 'none',
-                                            transition: 'background-color 0.2s'
-                                        }}
+                                        className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellSortable}`}
                                         onClick={() => handleSort('name')}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
                                         Scenario {getSortIcon('name')}
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                    <th className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter}`}>
                                         Workouts
                                     </th>
                                     <th 
-                                        style={{ 
-                                            padding: '15px', 
-                                            color: 'white', 
-                                            textAlign: 'center', 
-                                            borderBottom: '2px solid #444',
-                                            cursor: 'pointer',
-                                            userSelect: 'none',
-                                            transition: 'background-color 0.2s'
-                                        }}
+                                        className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter} ${styles.mainTableHeaderCellSortable}`}
                                         onClick={() => handleSort('duration')}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
                                         Workout Duration {getSortIcon('duration')}
                                     </th>
                                     <th 
-                                        style={{ 
-                                            padding: '15px', 
-                                            color: 'white', 
-                                            textAlign: 'center', 
-                                            borderBottom: '2px solid #444',
-                                            cursor: 'pointer',
-                                            userSelect: 'none',
-                                            transition: 'background-color 0.2s'
-                                        }}
+                                        className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter} ${styles.mainTableHeaderCellSortable}`}
                                         onClick={() => handleSort('elapsed')}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
                                         Elapsed Duration {getSortIcon('elapsed')}
                                     </th>
                                     <th 
-                                        style={{ 
-                                            padding: '15px', 
-                                            color: 'white', 
-                                            textAlign: 'center', 
-                                            borderBottom: '2px solid #444',
-                                            cursor: 'pointer',
-                                            userSelect: 'none',
-                                            transition: 'background-color 0.2s'
-                                        }}
+                                        className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter} ${styles.mainTableHeaderCellSortable}`}
                                         onClick={() => handleSort('tss')}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
                                         TSS® {getSortIcon('tss')}
                                     </th>
                                     <th 
-                                        style={{ 
-                                            padding: '15px', 
-                                            color: 'white', 
-                                            textAlign: 'center', 
-                                            borderBottom: '2px solid #444',
-                                            cursor: 'pointer',
-                                            userSelect: 'none',
-                                            transition: 'background-color 0.2s'
-                                        }}
+                                        className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter} ${styles.mainTableHeaderCellSortable}`}
                                         onClick={() => handleSort('if')}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                     >
                                         Avg IF® {getSortIcon('if')}
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                    <th className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter}`}>
                                         Avg NP®
                                     </th>
-                                    <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                    <th className={`${styles.mainTableHeaderCell} ${styles.mainTableHeaderCellCenter}`}>
                                         Actions
                                     </th>
                                 </tr>
@@ -748,141 +536,91 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                             <tbody>
                                 {sortedScenarios.map((scenario, index) => {
                                     const isSelected = selectedScenarios.has(scenario.id);
+                                    const isLastRow = index >= sortedScenarios.length - 1;
                                     
                                     return (
                                         <tr 
                                             key={scenario.id}
-                                            style={{ 
-                                                borderBottom: index < sortedScenarios.length - 1 ? '1px solid #333' : 'none',
-                                                backgroundColor: isSelected ? '#1e3a4d' : (index % 2 === 0 ? '#2a2a2a' : '#252525')
-                                            }}
+                                            className={`${styles.mainTableRow} ${
+                                                isSelected ? styles.mainTableRowSelected : 
+                                                (index % 2 === 0 ? styles.mainTableRowEven : styles.mainTableRowOdd)
+                                            } ${isLastRow ? styles.mainTableRowLast : ''}`}
                                         >
-                                            <td style={{ padding: '15px', textAlign: 'center' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 <input
                                                     type="checkbox"
                                                     checked={isSelected}
                                                     onChange={() => toggleScenarioSelection(scenario.id)}
-                                                    style={{
-                                                        transform: 'scale(1.2)',
-                                                        cursor: 'pointer'
-                                                    }}
+                                                    className={styles.scenarioCheckbox}
                                                 />
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellTop}`}>
                                                 <div>
-                                                    <strong>{scenario.name}</strong>
-                                                    <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+                                                    <div className={styles.scenarioNameDesktop}>{scenario.name}</div>
+                                                    <div className={styles.scenarioDateDesktop}>
                                                         Created: {new Date(scenario.createdAt).toLocaleDateString()}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {scenario.workouts.length}/10
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {formatDuration(scenario.dynamicMetrics.totalDuration)}
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {formatDuration(scenario.dynamicMetrics.totalElapsedDuration)}
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {Math.round(scenario.dynamicMetrics.totalTSS)}
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {scenario.dynamicMetrics.averageIF.toFixed(2)}
                                             </td>
-                                            <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
                                                 {Math.round(scenario.dynamicMetrics.totalNP)}W
                                             </td>
-                                            <td style={{ padding: '15px', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                            <td className={`${styles.mainTableCell} ${styles.mainTableCellCenter}`}>
+                                                <div className={styles.actionButtonsDesktopContainer}>
                                                     <button
                                                         data-testid={`view-scenario-${scenario.id}`}
                                                         onClick={() => onViewScenario?.(scenario)}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#4CAF50',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.viewButtonDesktop}`}
                                                     >
                                                         View
                                                     </button>
                                                     <button
                                                         onClick={() => onEditScenario(scenario)}
                                                         data-testid={`edit-scenario-${scenario.id}`}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#2196F3',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.editButtonDesktop}`}
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         onClick={() => duplicateScenario(scenario)}
                                                         data-testid={`duplicate-scenario-${scenario.id}`}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#FF9800',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.copyButtonDesktop}`}
                                                     >
                                                         Copy
                                                     </button>
                                                     <button
                                                         onClick={() => setShowPrintModal(scenario)}
                                                         data-testid={`print-scenario-${scenario.id}`}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#607D8B',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.printButtonDesktop}`}
                                                     >
                                                         Print
                                                     </button>
                                                     <button
                                                         onClick={() => shareScenario(scenario)}
                                                         data-testid={`share-scenario-${scenario.id}`}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#9C27B0',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.shareButtonDesktop}`}
                                                     >
                                                         Share
                                                     </button>
                                                     <button
                                                         onClick={() => deleteScenario(scenario.id)}
                                                         data-testid={`delete-scenario-${scenario.id}`}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            backgroundColor: '#d32f2f',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '4px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '12px'
-                                                        }}
+                                                        className={`${styles.actionButtonDesktop} ${styles.deleteButtonDesktop}`}
                                                     >
                                                         Delete
                                                     </button>

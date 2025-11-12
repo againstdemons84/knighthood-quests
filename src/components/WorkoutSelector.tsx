@@ -11,6 +11,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import { useViewport } from '../hooks/useViewport';
 import WorkoutChart from './WorkoutChart';
+import styles from './WorkoutSelector.module.css';
 
 interface WorkoutSelectorProps {
     onBasketChange: (basket: BasketState) => void;
@@ -256,54 +257,43 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
     if (loading) {
         return (
-            <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-                <h2 style={{ color: 'white' }}>Loading workouts...</h2>
+            <div className={styles.loadingContainer}>
+                <h2 className={styles.loadingTitle}>Loading workouts...</h2>
             </div>
         );
     }
 
     // Mobile card layout
     const renderMobileLayout = () => (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
+        <div className={styles.containerMobile}>
             {/* Header Section */}
-            <div style={{ padding: '16px' }}>
-                <h1 style={{ color: 'white', marginBottom: '8px', fontSize: '20px', textAlign: 'center' }}>
+            <div className={styles.headerMobile}>
+                <h1 className={styles.titleMobile}>
                     Plan Your Assault on the Castle
                 </h1>
-                <p style={{ color: '#999', marginBottom: '16px', fontSize: '14px', textAlign: 'center' }}>
+                <p className={styles.subtitleMobile}>
                     Assemble 10 instruments of Suffering for your siezing of the highest HONOUR in Sufferlandria
                 </p>
 
                 {/* Basket Summary - Mobile */}
-                <div style={{ 
-                    backgroundColor: basket.length === MAX_WORKOUTS ? '#1e3a1e' : '#2a2a2a', 
-                    padding: '15px', 
-                    borderRadius: '8px',
-                    marginBottom: '16px',
-                    border: basket.length === MAX_WORKOUTS ? '2px solid #4CAF50' : '1px solid #333'
-                }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <h3 style={{ color: 'white', margin: '0 0 8px 0', fontSize: '16px' }}>
+                <div className={`${styles.basketSummaryMobile} ${
+                    basket.length === MAX_WORKOUTS ? styles.basketSummaryComplete : styles.basketSummaryIncomplete
+                }`}>
+                    <div className={styles.basketSummaryHeader}>
+                        <h3 className={styles.basketTitle}>
                             Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                         </h3>
                         {basket.length === MAX_WORKOUTS && (
                             <>
-                                <div style={{ color: '#4CAF50', fontWeight: 'bold', fontSize: '14px', marginBottom: '12px' }}>
+                                <div className={styles.basketCompleteMessage}>
                                     ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
                                 </div>
                                 {onSaveScenario && (
                                     <button
                                         data-testid="save-scenario-button"
                                         onClick={onSaveScenario}
+                                        className={styles.saveButton}
                                         style={{
-                                            padding: '14px 24px',
-                                            backgroundColor: '#4CAF50',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            fontSize: '16px',
                                             minHeight: '48px',
                                             marginBottom: editingScenario ? '8px' : '12px',
                                             width: '100%'
@@ -315,14 +305,8 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 {editingScenario && onCancelEdit && (
                                     <button
                                         onClick={onCancelEdit}
+                                        className={styles.cancelButton}
                                         style={{
-                                            padding: '12px 24px',
-                                            backgroundColor: '#666',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px',
                                             marginBottom: '8px',
                                             width: '100%'
                                         }}
@@ -335,16 +319,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         {basket.length > 0 && (
                             <button
                                 onClick={clearBasket}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: '#666',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px',
-                                    marginTop: '8px'
-                                }}
+                                className={styles.clearAllButton}
                             >
                                 Clear All ({basket.length})
                             </button>

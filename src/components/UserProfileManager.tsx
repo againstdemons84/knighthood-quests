@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserPowerProfile } from '../types/userProfile';
 import { getUserProfile, clearUserProfile, isUsingDefaultProfile } from '../utils/userProfileHelpers';
 import UserProfileSetup from './UserProfileSetup';
+import styles from './UserProfileManager.module.css';
 
 interface UserProfileManagerProps {
     currentProfile: UserPowerProfile;
@@ -31,28 +32,22 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
     };
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '20px' }}>
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                <h1 style={{ color: 'white', marginBottom: '10px' }}>
+        <div className={styles.container}>
+            <div className={styles.containerInner}>
+                <h1 className={styles.title}>
                     Power Profile Settings
                 </h1>
-                <p style={{ color: '#999', marginBottom: isUsingDefaultProfile() ? '15px' : '30px' }}>
+                <p className={isUsingDefaultProfile() ? styles.subtitleWithWarning : styles.subtitle}>
                     Manage your 4DP power profile values used for training metrics calculations
                 </p>
                 
                 {isUsingDefaultProfile() && (
-                    <div style={{
-                        backgroundColor: '#2a1a00',
-                        border: '2px solid #FF9800',
-                        padding: '15px',
-                        borderRadius: '8px',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '18px' }}>⚡</span>
-                            <strong style={{ color: '#FF9800' }}>Using Default Power Profile</strong>
+                    <div className={styles.warningBanner}>
+                        <div className={styles.warningHeader}>
+                            <span className={styles.warningIcon}>⚡</span>
+                            <strong className={styles.warningTitle}>Using Default Power Profile</strong>
                         </div>
-                        <p style={{ color: '#FFA726', margin: '0', fontSize: '14px', lineHeight: '1.4' }}>
+                        <p className={styles.warningText}>
                             You're currently using default power values (FTP: 200W, MAP: 260W, AC: 340W, NM: 450W). 
                             These are typical for recreational cyclists. For more accurate training metrics, 
                             customize these values based on your actual power profile or 4DP test results.
@@ -61,105 +56,64 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                 )}
 
                 {/* Current Profile Display */}
-                <div style={{
-                    backgroundColor: '#2a2a2a',
-                    padding: '25px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    border: '1px solid #333'
-                }}>
-                    <h3 style={{ color: 'white', margin: '0 0 20px 0' }}>Current Power Profile</h3>
+                <div className={styles.profileContainer}>
+                    <h3 className={styles.profileTitle}>Current Power Profile</h3>
                     
-                    <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
-                        gap: '20px',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '20px',
-                            borderRadius: '6px',
-                            border: '2px solid #FF1493',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#FF1493', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                    <div className={styles.profileGrid}>
+                        <div className={`${styles.powerCard} ${styles.powerCardNM}`}>
+                            <div className={`${styles.powerCardLabel} ${styles.powerCardLabelNM}`}>
                                 Neuromuscular Power
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.powerCardValue}>
                                 {currentProfile.nm}W
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px' }}>NM</div>
+                            <div className={styles.powerCardUnit}>NM</div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '20px',
-                            borderRadius: '6px',
-                            border: '2px solid #FFA500',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#FFA500', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.powerCard} ${styles.powerCardAC}`}>
+                            <div className={`${styles.powerCardLabel} ${styles.powerCardLabelAC}`}>
                                 Anaerobic Capacity
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.powerCardValue}>
                                 {currentProfile.ac}W
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px' }}>AC</div>
+                            <div className={styles.powerCardUnit}>AC</div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '20px',
-                            borderRadius: '6px',
-                            border: '2px solid #FFD700',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#FFD700', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.powerCard} ${styles.powerCardMAP}`}>
+                            <div className={`${styles.powerCardLabel} ${styles.powerCardLabelMAP}`}>
                                 Maximum Aerobic Power
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.powerCardValue}>
                                 {currentProfile.map}W
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px' }}>MAP</div>
+                            <div className={styles.powerCardUnit}>MAP</div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '20px',
-                            borderRadius: '6px',
-                            border: '2px solid #0BBEEB',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#0BBEEB', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.powerCard} ${styles.powerCardFTP}`}>
+                            <div className={`${styles.powerCardLabel} ${styles.powerCardLabelFTP}`}>
                                 Functional Threshold Power
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.powerCardValue}>
                                 {currentProfile.ftp}W
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px' }}>FTP</div>
+                            <div className={styles.powerCardUnit}>FTP</div>
                         </div>
 
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '20px',
-                            borderRadius: '6px',
-                            border: '2px solid #9C27B0',
-                            textAlign: 'center'
-                        }}>
-                            <div style={{ color: '#9C27B0', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                        <div className={`${styles.powerCard} ${styles.powerCardTarget}`}>
+                            <div className={`${styles.powerCardLabel} ${styles.powerCardLabelTarget}`}>
                                 Target Intensity
                             </div>
-                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                            <div className={styles.powerCardValue}>
                                 {currentProfile.targetIntensity || 70}%
                             </div>
-                            <div style={{ color: '#999', fontSize: '12px' }}>Training Level</div>
+                            <div className={styles.powerCardUnit}>Training Level</div>
                         </div>
                     </div>
 
                     {profileData && (
-                        <div style={{ borderTop: '1px solid #444', paddingTop: '15px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: '#999' }}>
+                        <div className={styles.profileMetadata}>
+                            <div className={styles.profileDates}>
                                 <span>Created: {new Date(profileData.createdAt).toLocaleDateString()}</span>
                                 <span>Last Updated: {new Date(profileData.updatedAt).toLocaleDateString()}</span>
                             </div>
@@ -168,65 +122,43 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                 </div>
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end', marginBottom: '30px' }}>
+                <div className={styles.actionsContainer}>
                     <button
                         onClick={() => setShowSetup(true)}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#2196F3',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            fontWeight: 'bold'
-                        }}
+                        className={styles.updateButton}
                     >
                         Update Power Profile
                     </button>
                     <button
                         onClick={() => setShowDeleteConfirm(true)}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#d32f2f',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '16px'
-                        }}
+                        className={styles.clearButton}
                     >
                         Clear Profile
                     </button>
                 </div>
 
                 {/* Information Section */}
-                <div style={{
-                    backgroundColor: '#2a2a2a',
-                    padding: '25px',
-                    borderRadius: '8px',
-                    border: '1px solid #333'
-                }}>
-                    <h3 style={{ color: 'white', margin: '0 0 15px 0' }}>About 4DP Power Profile</h3>
-                    <div style={{ color: '#999', lineHeight: '1.6' }}>
-                        <p style={{ marginBottom: '15px' }}>
+                <div className={styles.infoContainer}>
+                    <h3 className={styles.infoTitle}>About 4DP Power Profile</h3>
+                    <div className={styles.infoContent}>
+                        <p className={styles.infoText}>
                             The Four Dimensional Power (4DP) profile captures your power across different energy systems:
                         </p>
-                        <ul style={{ paddingLeft: '20px', marginBottom: '15px' }}>
-                            <li style={{ marginBottom: '8px' }}>
-                                <strong style={{ color: '#FF1493' }}>NM (Neuromuscular Power):</strong> Peak 5-15 second power output
+                        <ul className={styles.infoList}>
+                            <li className={styles.infoListItem}>
+                                <strong className={styles.infoListItemNM}>NM (Neuromuscular Power):</strong> Peak 5-15 second power output
                             </li>
-                            <li style={{ marginBottom: '8px' }}>
-                                <strong style={{ color: '#FFA500' }}>AC (Anaerobic Capacity):</strong> Power at VO2max (1-2 minutes)
+                            <li className={styles.infoListItem}>
+                                <strong className={styles.infoListItemAC}>AC (Anaerobic Capacity):</strong> Power at VO2max (1-2 minutes)
                             </li>
-                            <li style={{ marginBottom: '8px' }}>
-                                <strong style={{ color: '#FFD700' }}>MAP (Maximum Aerobic Power):</strong> Sustainable aerobic power (3-8 minutes)
+                            <li className={styles.infoListItem}>
+                                <strong className={styles.infoListItemMAP}>MAP (Maximum Aerobic Power):</strong> Sustainable aerobic power (3-8 minutes)
                             </li>
-                            <li style={{ marginBottom: '8px' }}>
-                                <strong style={{ color: '#0BBEEB' }}>FTP (Functional Threshold Power):</strong> One-hour sustainable power
+                            <li className={styles.infoListItem}>
+                                <strong className={styles.infoListItemFTP}>FTP (Functional Threshold Power):</strong> One-hour sustainable power
                             </li>
-                            <li style={{ marginBottom: '8px' }}>
-                                <strong style={{ color: '#9C27B0' }}>Target Intensity:</strong> Your preferred training intensity level (30-100%)
+                            <li className={styles.infoListItem}>
+                                <strong className={styles.infoListItemTarget}>Target Intensity:</strong> Your preferred training intensity level (30-100%)
                             </li>
                         </ul>
                         <p>
@@ -238,55 +170,23 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
 
                 {/* Delete Confirmation Dialog */}
                 {showDeleteConfirm && (
-                    <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        zIndex: 1000
-                    }}>
-                        <div style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '30px',
-                            borderRadius: '8px',
-                            maxWidth: '400px',
-                            textAlign: 'center'
-                        }}>
-                            <h3 style={{ color: 'white', marginBottom: '15px' }}>Clear Power Profile?</h3>
-                            <p style={{ color: '#999', marginBottom: '25px' }}>
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modalContent}>
+                            <h3 className={styles.modalTitle}>Clear Power Profile?</h3>
+                            <p className={styles.modalText}>
                                 This will permanently delete your power profile and refresh the app. 
                                 You'll need to set up your profile again.
                             </p>
-                            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                            <div className={styles.modalActions}>
                                 <button
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    style={{
-                                        padding: '10px 20px',
-                                        backgroundColor: '#555',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                    }}
+                                    className={styles.modalCancelButton}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleClearProfile}
-                                    style={{
-                                        padding: '10px 20px',
-                                        backgroundColor: '#d32f2f',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontWeight: 'bold'
-                                    }}
+                                    className={styles.modalConfirmButton}
                                 >
                                     Clear Profile
                                 </button>
