@@ -29,6 +29,10 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
         averageIF: 0,
         totalNP: 0
     });
+    const [targetMetrics, setTargetMetrics] = useState({
+        totalTargetTSS: 0,
+        averageTargetIF: 0
+    });
     const [saveAsName, setSaveAsName] = useState(scenarioName || 'Shared Challenge');
 
     const findWorkoutTitle = (contentId: string): string => {
@@ -51,6 +55,17 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
                 // Calculate metrics dynamically
                 const metrics = await calculateCombinedMetricsDynamic(workoutSelections, userProfile);
                 setDynamicMetrics(metrics);
+
+                // Calculate target metrics based on user's target intensity
+                const targetIntensity = userProfile.targetIntensity / 100; // Convert percentage to decimal
+                const totalTargetTSS = metrics.totalTSS * targetIntensity;
+                const averageTargetIF = metrics.averageIF * targetIntensity;
+
+                setTargetMetrics({
+                    totalTargetTSS,
+                    averageTargetIF
+                });
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error loading shared scenario:', error);
@@ -281,6 +296,36 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
                             </div>
                             <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
                                 {Math.round(dynamicMetrics.totalNP)}W
+                            </div>
+                        </div>
+
+                        <div style={{
+                            backgroundColor: '#2a2a2a',
+                            padding: '20px',
+                            borderRadius: '8px',
+                            border: '2px solid #E91E63',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{ color: '#E91E63', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                                Target TSS® ({userProfile.targetIntensity}%)
+                            </div>
+                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                                {Math.round(targetMetrics.totalTargetTSS)}
+                            </div>
+                        </div>
+
+                        <div style={{
+                            backgroundColor: '#2a2a2a',
+                            padding: '20px',
+                            borderRadius: '8px',
+                            border: '2px solid #673AB7',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{ color: '#673AB7', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                                Target IF® ({userProfile.targetIntensity}%)
+                            </div>
+                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                                {targetMetrics.averageTargetIF.toFixed(2)}
                             </div>
                         </div>
                     </div>

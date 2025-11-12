@@ -1243,6 +1243,22 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                                 <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
                                                     ID: {row.id}
                                                 </div>
+                                                
+                                                {/* Workout Profile Chart */}
+                                                {row.workoutData && row.metrics && (
+                                                    <div style={{
+                                                        backgroundColor: '#1a1a1a',
+                                                        borderRadius: '6px',
+                                                        padding: '8px',
+                                                        marginTop: '12px'
+                                                    }}>
+                                                        <WorkoutChart
+                                                            workoutData={row.workoutData}
+                                                            userProfile={userProfile}
+                                                            height={60}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
                                         <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>

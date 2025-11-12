@@ -7,7 +7,8 @@ describe('SVG Generation', () => {
     nm: 1000,
     ac: 400,
     map: 320,
-    ftp: 250
+    ftp: 250,
+    targetIntensity: 70
   };
 
   const mockWorkoutData: WorkoutData = {
@@ -205,7 +206,8 @@ describe('SVG Generation', () => {
         nm: 1200,
         ac: 500,
         map: 400,
-        ftp: 300
+        ftp: 300,
+        targetIntensity: 70
       };
       
       const headerElements = generateWorkoutHeader(mockWorkoutData, alternativeProfile, true);

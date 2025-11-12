@@ -31,7 +31,8 @@ export const hasUserProfile = (): boolean => {
            profile.powerProfile.nm > 0 && 
            profile.powerProfile.ac > 0 && 
            profile.powerProfile.map > 0 && 
-           profile.powerProfile.ftp > 0;
+           profile.powerProfile.ftp > 0 &&
+           (profile.powerProfile.targetIntensity === undefined || profile.powerProfile.targetIntensity >= 30);
 };
 
 export const clearUserProfile = (): void => {
@@ -48,13 +49,24 @@ export const getDefaultPowerProfile = (): UserPowerProfile => {
         ftp: 200,   // Functional Threshold Power (base level)
         map: 260,   // Maximum Aerobic Power (typically ~30% higher than FTP)
         ac: 340,    // Anaerobic Capacity (typically ~30% higher than MAP)
-        nm: 450     // Neuromuscular Power (typically ~30% higher than AC)
+        nm: 450,    // Neuromuscular Power (typically ~30% higher than AC)
+        targetIntensity: 70  // Target training intensity percentage
     };
 };
 
 export const getUserProfileWithDefaults = (): UserPowerProfile => {
     const profile = getUserProfile();
-    return profile ? profile.powerProfile : getDefaultPowerProfile();
+    if (!profile) {
+        return getDefaultPowerProfile();
+    }
+    
+    // Migrate existing profiles that might not have targetIntensity
+    const powerProfile = profile.powerProfile;
+    if (powerProfile.targetIntensity === undefined) {
+        powerProfile.targetIntensity = 70; // Default to 70% for existing profiles
+    }
+    
+    return powerProfile;
 };
 
 export const isUsingDefaultProfile = (): boolean => {
@@ -76,6 +88,9 @@ export const validatePowerProfile = (profile: UserPowerProfile): string[] => {
     }
     if (!profile.ftp || profile.ftp <= 0) {
         errors.push('Functional Threshold Power (FTP) must be greater than 0');
+    }
+    if (profile.targetIntensity == null || profile.targetIntensity < 30 || profile.targetIntensity > 100) {
+        errors.push('Target Intensity must be between 30% and 100%');
     }
     
     // Logical validation: NM >= AC >= MAP >= FTP (typical power curve)

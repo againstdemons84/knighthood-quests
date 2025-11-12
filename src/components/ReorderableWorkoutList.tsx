@@ -55,7 +55,9 @@ interface WorkoutRowData {
     metrics: {
         duration: string;
         tss: number;
+        targetTss: number;
         intensityFactor: number;
+        targetIntensityFactor: number;
         normalizedPower: number;
     } | null;
     error?: string;
@@ -78,6 +80,10 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const [minTSS, setMinTSS] = useState<number>(0);
     const [maxTSS, setMaxTSS] = useState<number>(0);
     const [totalTSS, setTotalTSS] = useState<number>(0);
+    const [totalTargetTSS, setTotalTargetTSS] = useState<number>(0);
+    const [averageTargetIF, setAverageTargetIF] = useState<number>(0);
+    const [totalDuration, setTotalDuration] = useState<number>(0);
+    const [averageIF, setAverageIF] = useState<number>(0);
     const [combinedWorkoutData, setCombinedWorkoutData] = useState<WorkoutData | null>(null);
 
 
@@ -113,6 +119,17 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         } else {
             return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+    };
+
+    const formatTotalDuration = (totalSeconds: number): string => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else {
+            return `${minutes}m`;
         }
     };
 
@@ -180,7 +197,9 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                         metrics = {
                             duration: formatDurationFromSeconds(calculatedMetrics.duration),
                             tss: calculatedMetrics.trainingStressScore,
+                            targetTss: calculatedMetrics.trainingStressScore * (userProfile.targetIntensity / 100),
                             intensityFactor: calculatedMetrics.intensityFactor,
+                            targetIntensityFactor: calculatedMetrics.intensityFactor * (userProfile.targetIntensity / 100),
                             normalizedPower: calculatedMetrics.normalizedPower
                         };
                     } catch (error) {
@@ -208,6 +227,45 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                 setMinTSS(minTSSValue);
                 setMaxTSS(maxTSSValue);
                 setTotalTSS(totalTSSValue);
+
+                // Calculate target TSS and average target IF
+                const validTargetTSSValues = rows.filter(row => row.metrics?.targetTss).map(row => row.metrics!.targetTss);
+                const validTargetIFValues = rows.filter(row => row.metrics?.targetIntensityFactor).map(row => row.metrics!.targetIntensityFactor);
+                
+                if (validTargetTSSValues.length > 0) {
+                    const totalTargetTSSValue = validTargetTSSValues.reduce((sum, targetTss) => sum + targetTss, 0);
+                    setTotalTargetTSS(totalTargetTSSValue);
+                }
+                
+                if (validTargetIFValues.length > 0) {
+                    const averageTargetIFValue = validTargetIFValues.reduce((sum, targetIf) => sum + targetIf, 0) / validTargetIFValues.length;
+                    setAverageTargetIF(averageTargetIFValue);
+                }
+
+                // Calculate total duration and average IF
+                const validDurationValues = rows.filter(row => row.metrics?.duration).map(row => {
+                    const duration = row.metrics!.duration;
+                    // Convert duration string (HH:MM:SS or MM:SS) to seconds
+                    const parts = duration.split(':').map(Number);
+                    if (parts.length === 3) {
+                        return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                    } else if (parts.length === 2) {
+                        return parts[0] * 60 + parts[1];
+                    }
+                    return 0;
+                });
+                
+                const validIFValues = rows.filter(row => row.metrics?.intensityFactor).map(row => row.metrics!.intensityFactor);
+                
+                if (validDurationValues.length > 0) {
+                    const totalDurationValue = validDurationValues.reduce((sum, duration) => sum + duration, 0);
+                    setTotalDuration(totalDurationValue);
+                }
+                
+                if (validIFValues.length > 0) {
+                    const averageIFValue = validIFValues.reduce((sum, if_val) => sum + if_val, 0) / validIFValues.length;
+                    setAverageIF(averageIFValue);
+                }
 
                 // Calculate cumulative TSS percentages
                 let cumulativeTSS = 0;
@@ -290,7 +348,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const handleChartClick = (workoutRow: WorkoutRowData) => {
         // For now, just show an alert with workout info
         if (workoutRow.workoutData) {
-            alert(`Workout: ${workoutRow.name}\nDuration: ${workoutRow.metrics?.duration || 'N/A'}\nTSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.tss) : 'N/A'}`);
+            alert(`Workout: ${workoutRow.name}\nDuration: ${workoutRow.metrics?.duration || 'N/A'}\nFull TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.tss) : 'N/A'}\nTarget TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.targetTss) : 'N/A'} (${userProfile.targetIntensity}%)\nFull IF: ${workoutRow.metrics ? workoutRow.metrics.intensityFactor.toFixed(2) : 'N/A'}\nTarget IF: ${workoutRow.metrics ? workoutRow.metrics.targetIntensityFactor.toFixed(2) : 'N/A'} (${userProfile.targetIntensity}%)`);
         }
     };
 
@@ -463,7 +521,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             </h3>
 
                             {/* Metrics Grid */}
-                            {/* First Row: Duration and TSS */}
+                            {/* First Row: Duration and Full TSS */}
                             <div style={{
                                 display: "grid",
                                 gridTemplateColumns: "repeat(2, 1fr)",
@@ -487,12 +545,33 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                         {row.metrics ? Math.round(row.metrics.tss) : '-'}
                                     </div>
                                     <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
-                                        TSS
+                                        Full TSS
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Second Row: Cumulative TSS and Power metrics */}
+                            {/* Second Row: Target TSS */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr",
+                                gap: "8px",
+                                marginBottom: "12px"
+                            }}>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ 
+                                        fontSize: "14px", 
+                                        fontWeight: "600", 
+                                        color: "#9C27B0"
+                                    }}>
+                                        {row.metrics ? `${Math.round(row.metrics.targetTss)} (${userProfile.targetIntensity}%)` : '-'}
+                                    </div>
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                        Target TSS  ({userProfile.targetIntensity}%)
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Third Row: Cumulative TSS and Power metrics */}
                             <div style={{
                                 display: "grid",
                                 gridTemplateColumns: "repeat(3, 1fr)",
@@ -532,7 +611,28 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                         {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
                                     </div>
                                     <div style={{ fontSize: "9px", color: "#999", marginTop: "2px" }}>
-                                        IF®
+                                        Full IF®
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Fourth Row: Target IF */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr",
+                                gap: "8px",
+                                marginBottom: "16px"
+                            }}>
+                                <div style={{ textAlign: "center" }}>
+                                    <div style={{ 
+                                        fontSize: "14px", 
+                                        fontWeight: "600", 
+                                        color: "#9C27B0"
+                                    }}>
+                                        {row.metrics ? `${row.metrics.targetIntensityFactor.toFixed(2)} (${userProfile.targetIntensity}%)` : '-'}
+                                    </div>
+                                    <div style={{ fontSize: "10px", color: "#999", marginTop: "2px" }}>
+                                        Target IF® (${userProfile.targetIntensity}%)
                                     </div>
                                 </div>
                             </div>
@@ -648,14 +748,15 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     borderBottom: '1px solid #444'
                 }}>
                     <div style={{ width: '28px' }}></div> {/* Drag handle space */}
-                    <div style={{ width: '44px', marginRight: '16px' }}>#</div>
-                    <div style={{ width: '280px', marginRight: '20px' }}>Workout</div>
-                    <div style={{ flex: 1, marginRight: '20px' }}>Power Profile</div>
-                    <div style={{ width: '90px', textAlign: 'center', marginRight: '12px' }}>Duration</div>
-                    <div style={{ width: '70px', textAlign: 'center', marginRight: '12px' }}>TSS</div>
-                    <div style={{ width: '80px', textAlign: 'center', marginRight: '12px' }}>Cum TSS%</div>
-                    <div style={{ width: '50px', textAlign: 'center', marginRight: '12px' }}>IF</div>
-                    <div style={{ width: '70px', textAlign: 'center' }}>NP</div>
+                    <div style={{ width: '32px', marginRight: '12px' }}>#</div>
+                    <div style={{ flex: 1, marginRight: '20px' }}>Workout & Profile</div>
+                    <div style={{ width: '70px', textAlign: 'center', marginRight: '8px' }}>Duration</div>
+                    <div style={{ width: '55px', textAlign: 'center', marginRight: '8px' }}>Full TSS</div>
+                    <div style={{ width: '70px', textAlign: 'center', marginRight: '8px' }}>Target TSS  ({userProfile.targetIntensity}%)</div>
+                    <div style={{ width: '65px', textAlign: 'center', marginRight: '8px' }}>Cum TSS%</div>
+                    <div style={{ width: '40px', textAlign: 'center', marginRight: '8px' }}>Full IF</div>
+                    <div style={{ width: '55px', textAlign: 'center', marginRight: '8px' }}>Target IF  ({userProfile.targetIntensity}%)</div>
+                    <div style={{ width: '50px', textAlign: 'center' }}>NP</div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px' }}>
@@ -674,7 +775,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 backgroundColor: dragOverIndex === index ? '#444' : (index % 2 === 0 ? '#333' : '#2a2a2a'),
-                                padding: '12px 15px',
+                                padding: '8px 12px',
                                 borderRadius: '4px',
                                 border: draggedIndex === index ? '2px dashed #4CAF50' : 'none',
                                 cursor: 'grab',
@@ -704,116 +805,125 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     backgroundColor: '#4CAF50',
                                     color: 'white',
                                     borderRadius: '50%',
-                                    width: '26px',
-                                    height: '26px',
+                                    width: '24px',
+                                    height: '24px',
                                     display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '13px',
+                                fontSize: '12px',
                                 fontWeight: 'bold',
-                                marginRight: '16px'
+                                marginRight: '12px'
                             }}>
                                 {index + 1}
                             </div>
 
-                            {/* Workout Name and Info */}
-                            <div style={{ 
-                                width: '280px', 
-                                marginRight: '20px',
-                                overflow: 'hidden'
-                            }}>
-                                <div style={{ 
-                                    color: 'white', 
-                                    fontWeight: 'bold', 
-                                    fontSize: '14px',
-                                    marginBottom: '4px',
-                                    lineHeight: '1.3',
-                                    wordWrap: 'break-word',
-                                    overflowWrap: 'break-word',
-                                    hyphens: 'auto'
-                                }}>
-                                    {workout.name}
-                                    {workout.usedOutdoorData && (
-                                        <span style={{ 
-                                            color: '#FF9800',
-                                            fontSize: '9px',
-                                            marginLeft: '4px',
-                                            padding: '1px 3px',
-                                            backgroundColor: 'rgba(255,152,0,0.2)',
-                                            borderRadius: '2px',
-                                            whiteSpace: 'nowrap'
-                                        }}>
-                                            OUTDOOR
-                                        </span>
-                                    )}
-                                    <a 
-                                        href={`https://systm.wahoofitness.com/content-details/${workout.id}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        onClick={(e) => e.stopPropagation()}
-                                        style={{
-                                            color: '#4CAF50',
-                                            textDecoration: 'none',
-                                            fontSize: '12px',
-                                            padding: '2px 4px',
-                                            marginLeft: '6px',
-                                            borderRadius: '3px',
-                                            transition: 'background-color 0.2s',
-                                            display: 'inline-flex',
-                                            alignItems: 'center'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                        }}
-                                        title={`View ${workout.name} on SYSTM`}
-                                    >
-                                        ↗
-                                    </a>
-                                </div>
-                                <div style={{ 
-                                    color: '#999', 
-                                    fontSize: '11px',
-                                    wordWrap: 'break-word',
-                                    overflowWrap: 'break-word'
-                                }}>
-                                    ID: {workout.id}
-                                </div>
-                            </div>
-
-                            {/* Workout Chart */}
+                            {/* Workout Name and Chart on Same Line */}
                             <div style={{ 
                                 flex: 1,
                                 marginRight: '20px',
-                                minWidth: '300px'
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px'
                             }}>
-                                {workout.workoutData ? (
-                                    <div 
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => handleChartClick(workout)}
-                                    >
-                                        <WorkoutChart 
-                                            workoutData={workout.workoutData}
-                                            userProfile={userProfile}
-                                            height={80}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div style={{
-                                        height: '80px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: '#666',
-                                        fontSize: '12px',
-                                        fontStyle: 'italic'
+                                {/* Workout Name and Info */}
+                                <div style={{ 
+                                    minWidth: '200px',
+                                    maxWidth: '250px',
+                                    overflow: 'hidden'
+                                }}>
+                                    <div style={{ 
+                                        color: 'white', 
+                                        fontWeight: 'bold', 
+                                        fontSize: '13px',
+                                        marginBottom: '2px',
+                                        lineHeight: '1.2',
+                                        wordWrap: 'break-word',
+                                        overflowWrap: 'break-word',
+                                        hyphens: 'auto'
                                     }}>
-                                        {workout.error || 'No workout data available'}
+                                        {workout.name}
+                                        {workout.usedOutdoorData && (
+                                            <span style={{ 
+                                                color: '#FF9800',
+                                                fontSize: '8px',
+                                                marginLeft: '4px',
+                                                padding: '1px 3px',
+                                                backgroundColor: 'rgba(255,152,0,0.2)',
+                                                borderRadius: '2px',
+                                                whiteSpace: 'nowrap'
+                                            }}>
+                                                OUTDOOR
+                                            </span>
+                                        )}
+                                        <a 
+                                            href={`https://systm.wahoofitness.com/content-details/${workout.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onMouseDown={(e) => e.stopPropagation()}
+                                            onClick={(e) => e.stopPropagation()}
+                                            style={{
+                                                color: '#4CAF50',
+                                                textDecoration: 'none',
+                                                fontSize: '11px',
+                                                padding: '1px 3px',
+                                                marginLeft: '4px',
+                                                borderRadius: '2px',
+                                                transition: 'background-color 0.2s',
+                                                display: 'inline-flex',
+                                                alignItems: 'center'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = 'transparent';
+                                            }}
+                                            title={`View ${workout.name} on SYSTM`}
+                                        >
+                                            ↗
+                                        </a>
                                     </div>
-                                )}
+                                    <div style={{ 
+                                        color: '#999', 
+                                        fontSize: '10px',
+                                        wordWrap: 'break-word',
+                                        overflowWrap: 'break-word'
+                                    }}>
+                                        ID: {workout.id}
+                                    </div>
+                                </div>
+
+                                {/* Workout Chart */}
+                                <div style={{ 
+                                    flex: 1,
+                                    minWidth: '250px',
+                                    maxWidth: '400px'
+                                }}>
+                                    {workout.workoutData ? (
+                                        <div 
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => handleChartClick(workout)}
+                                        >
+                                            <WorkoutChart 
+                                                workoutData={workout.workoutData}
+                                                userProfile={userProfile}
+                                                height={50}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div style={{
+                                            height: '50px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#666',
+                                            fontSize: '11px',
+                                            fontStyle: 'italic'
+                                        }}>
+                                            {workout.error || 'No workout data available'}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Metrics */}
@@ -821,28 +931,38 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '90px',
-                                    marginRight: '12px',
-                                    fontSize: '14px'
+                                    width: '70px',
+                                    marginRight: '8px',
+                                    fontSize: '13px'
                                 }}>
                                     {workout.metrics?.duration || '-'}
                                 </div>
                                 <div style={{ 
                                     color: workout.metrics ? getTSSColor(workout.metrics.tss, minTSS, maxTSS) : 'white', 
                                     textAlign: 'center',
-                                    width: '70px',
-                                    marginRight: '12px',
-                                    fontSize: '14px',
+                                    width: '55px',
+                                    marginRight: '8px',
+                                    fontSize: '13px',
                                     fontWeight: 'bold'
                                 }}>
                                     {workout.metrics ? Math.round(workout.metrics.tss) : '-'}
                                 </div>
                                 <div style={{ 
+                                    color: 'white', 
+                                    textAlign: 'center',
+                                    width: '70px',
+                                    marginRight: '8px',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold'
+                                }}>
+                                    {workout.metrics ? `${Math.round(workout.metrics.targetTss)}` : '-'}
+                                </div>
+                                <div style={{ 
                                     color: workout.cumulativeTSSPercentage ? getVarianceColor(workout.cumulativeTSSPercentage - (index + 1) * 10) : 'white', 
                                     textAlign: 'center',
-                                    width: '80px',
-                                    marginRight: '12px',
-                                    fontSize: '12px',
+                                    width: '65px',
+                                    marginRight: '8px',
+                                    fontSize: '10px',
                                     fontWeight: 'bold',
                                     whiteSpace: 'nowrap'
                                 }}>
@@ -854,17 +974,27 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '50px',
-                                    marginRight: '12px',
-                                    fontSize: '14px'
+                                    width: '40px',
+                                    marginRight: '8px',
+                                    fontSize: '13px'
                                 }}>
                                     {workout.metrics ? workout.metrics.intensityFactor.toFixed(2) : '-'}
                                 </div>
                                 <div style={{ 
                                     color: 'white', 
                                     textAlign: 'center',
-                                    width: '70px',
-                                    fontSize: '14px'
+                                    width: '55px',
+                                    marginRight: '8px',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold'
+                                }}>
+                                    {workout.metrics ? `${workout.metrics.targetIntensityFactor.toFixed(2)}` : '-'}
+                                </div>
+                                <div style={{ 
+                                    color: 'white', 
+                                    textAlign: 'center',
+                                    width: '50px',
+                                    fontSize: '13px'
                                 }}>
                                     {workout.metrics ? `${Math.round(workout.metrics.normalizedPower)}W` : '-'}
                                 </div>

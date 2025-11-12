@@ -30,6 +30,10 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
         averageIF: 0,
         totalNP: 0
     });
+    const [targetMetrics, setTargetMetrics] = useState({
+        totalTargetTSS: 0,
+        averageTargetIF: 0
+    });
     const [showPrintModal, setShowPrintModal] = useState(false);
 
 
@@ -61,6 +65,16 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
             try {
                 const calculatedMetrics = await calculateCombinedMetricsDynamic(scenario.workouts, userProfile);
                 setDynamicMetrics(calculatedMetrics);
+
+                // Calculate target metrics based on user's target intensity
+                const targetIntensity = userProfile.targetIntensity / 100; // Convert percentage to decimal
+                const totalTargetTSS = calculatedMetrics.totalTSS * targetIntensity;
+                const averageTargetIF = calculatedMetrics.averageIF * targetIntensity;
+
+                setTargetMetrics({
+                    totalTargetTSS,
+                    averageTargetIF
+                });
             } catch (error) {
                 console.error('Error calculating dynamic metrics:', error);
                 // Keep default zero values on error
@@ -242,6 +256,36 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                         </div>
                         <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
                             {Math.round(dynamicMetrics.totalNP)}W
+                        </div>
+                    </div>
+
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: viewport.isMobile ? '16px' : '20px',
+                        borderRadius: '8px',
+                        border: '2px solid #E91E63',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ color: '#E91E63', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Target TSS® ({userProfile.targetIntensity}%)
+                        </div>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                            {Math.round(targetMetrics.totalTargetTSS)}
+                        </div>
+                    </div>
+
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: viewport.isMobile ? '16px' : '20px',
+                        borderRadius: '8px',
+                        border: '2px solid #673AB7',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ color: '#673AB7', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            Target IF® ({userProfile.targetIntensity}%)
+                        </div>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                            {targetMetrics.averageTargetIF.toFixed(2)}
                         </div>
                     </div>
                 </div>

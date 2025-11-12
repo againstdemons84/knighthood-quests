@@ -13,7 +13,8 @@ describe('trainingMetrics', () => {
         nm: 1000,
         ac: 400,
         map: 320,
-        ftp: 250
+        ftp: 250,
+        targetIntensity: 70
     };
 
     const mockWorkoutData: WorkoutData = {

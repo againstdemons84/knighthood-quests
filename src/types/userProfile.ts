@@ -3,6 +3,7 @@ export interface UserPowerProfile {
     ac: number;    // Anaerobic Capacity (watts) 
     map: number;   // Maximum Aerobic Power (watts)
     ftp: number;   // Functional Threshold Power (watts)
+    targetIntensity: number;  // Target training intensity percentage (0-100)
 }
 
 export interface UserProfileData {

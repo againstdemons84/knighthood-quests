@@ -139,6 +139,22 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                             </div>
                             <div style={{ color: '#999', fontSize: '12px' }}>FTP</div>
                         </div>
+
+                        <div style={{
+                            backgroundColor: '#333',
+                            padding: '20px',
+                            borderRadius: '6px',
+                            border: '2px solid #9C27B0',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{ color: '#9C27B0', fontSize: '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                                Target Intensity
+                            </div>
+                            <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
+                                {currentProfile.targetIntensity || 70}%
+                            </div>
+                            <div style={{ color: '#999', fontSize: '12px' }}>Training Level</div>
+                        </div>
                     </div>
 
                     {profileData && (
@@ -208,6 +224,9 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                             </li>
                             <li style={{ marginBottom: '8px' }}>
                                 <strong style={{ color: '#0BBEEB' }}>FTP (Functional Threshold Power):</strong> One-hour sustainable power
+                            </li>
+                            <li style={{ marginBottom: '8px' }}>
+                                <strong style={{ color: '#9C27B0' }}>Target Intensity:</strong> Your preferred training intensity level (30-100%)
                             </li>
                         </ul>
                         <p>

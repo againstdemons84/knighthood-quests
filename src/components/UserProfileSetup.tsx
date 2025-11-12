@@ -16,7 +16,7 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
 }) => {
     const viewport = useViewport();
     const [profile, setProfile] = useState<UserPowerProfile>(
-        initialProfile || { nm: 0, ac: 0, map: 0, ftp: 0 }
+        initialProfile || { nm: 0, ac: 0, map: 0, ftp: 0, targetIntensity: 70 }
     );
     const [errors, setErrors] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -222,6 +222,39 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
                             />
                             <p style={{ color: '#999', fontSize: '14px', margin: '5px 0 0 0' }}>
                                 One-hour sustainable power - Your threshold endurance
+                            </p>
+                        </div>
+
+                        {/* Target Intensity Input */}
+                        <div>
+                            <label style={{ 
+                                display: 'block', 
+                                color: '#9C27B0', 
+                                marginBottom: '8px', 
+                                fontWeight: 'bold',
+                                fontSize: '16px'
+                            }}>
+                                Target Intensity (%)
+                            </label>
+                            <input
+                                type="number"
+                                min="30"
+                                max="100"
+                                value={profile.targetIntensity || ''}
+                                onChange={(e) => handleInputChange('targetIntensity', e.target.value)}
+                                placeholder="e.g. 70"
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    backgroundColor: '#333',
+                                    color: 'white',
+                                    border: '2px solid #9C27B0',
+                                    borderRadius: '6px',
+                                    fontSize: '16px'
+                                }}
+                            />
+                            <p style={{ color: '#999', fontSize: '14px', margin: '5px 0 0 0' }}>
+                                Your preferred training intensity level (30-100%)
                             </p>
                         </div>
                     </div>
