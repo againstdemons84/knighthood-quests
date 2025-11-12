@@ -64,6 +64,10 @@ export const useUrlFragment = (): UseUrlFragmentResult => {
         // Listen for hash changes
         const handleHashChange = () => {
             parseHash();
+            // Scroll to top on hash change (browser back/forward, direct URL navigation)
+            requestAnimationFrame(() => {
+                window.scrollTo(0, 0);
+            });
         };
 
         window.addEventListener('hashchange', handleHashChange);
@@ -114,6 +118,12 @@ export const useUrlFragment = (): UseUrlFragmentResult => {
             setScenarioId(null);
             setSharedScenarioData(null);
         }
+
+        // Scroll to top on page navigation
+        // Use requestAnimationFrame to ensure DOM updates have completed
+        requestAnimationFrame(() => {
+            window.scrollTo(0, 0);
+        });
     };
 
     return {

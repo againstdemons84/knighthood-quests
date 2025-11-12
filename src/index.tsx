@@ -10,6 +10,7 @@ import WorkoutTable from './components/WorkoutTable';
 import ScenarioDetailsView from './components/ScenarioDetailsView';
 import SharedScenarioView from './components/SharedScenarioView';
 import IntroPage from './components/IntroPage';
+import Footer from './components/Footer';
 import knighthoodWorkouts from './data/knighthood-workouts.json';
 import allWorkouts from './data/workouts.json';
 import { calculateAllTrainingMetrics } from './utils/trainingMetrics';
@@ -437,10 +438,21 @@ const App = () => {
     };
 
     return (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', padding: '0', paddingTop: viewport.isMobile ? '12px' : '0' }}>
+        <div style={{ 
+            backgroundColor: '#1a1a1a', 
+            minHeight: '100vh', 
+            padding: '0', 
+            paddingTop: viewport.isMobile ? '12px' : '0',
+            // Prevent any white space at bottom
+            paddingBottom: '0',
+            margin: '0'
+        }}>
             <style dangerouslySetInnerHTML={{ __html: tabStyles }} />
             {currentPage !== 'shared-scenario' && renderNavigation()}
             {renderContent()}
+            
+            {/* Footer appears on all pages except shared scenarios */}
+            {currentPage !== 'shared-scenario' && <Footer />}
             
             {showSaveModal && (
                 <SaveScenarioModal

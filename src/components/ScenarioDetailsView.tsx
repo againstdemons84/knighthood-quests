@@ -132,14 +132,28 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                     >
                         🖨️ Print Quest Plan
                     </button>
-                    <div style={{ textAlign: viewport.isMobile ? 'center' : 'left' }}>
-                        <h1 style={{ color: 'white', margin: 0, fontSize: viewport.isMobile ? '20px' : '24px' }}>
-                            {scenario.name}
-                        </h1>
-                        <div style={{ color: '#999', fontSize: viewport.isMobile ? '12px' : '14px', marginTop: '5px' }}>
-                            Created: {new Date(scenario.createdAt).toLocaleDateString()} • {scenario.workouts.length} workouts
-                        </div>
-                    </div>
+                </div>
+
+                {/* Scenario Title and Description */}
+                <div style={{ 
+                    marginBottom: viewport.isMobile ? '16px' : '24px',
+                    textAlign: viewport.isMobile ? 'center' : 'left'
+                }}>
+                    <h1 style={{ 
+                        color: 'white', 
+                        margin: '0 0 8px 0', 
+                        fontSize: viewport.isMobile ? '20px' : '28px',
+                        fontWeight: '600'
+                    }}>
+                        {scenario.name} - Arsenal of SUFFERING
+                    </h1>
+                    <p style={{ 
+                        color: '#999', 
+                        margin: 0, 
+                        fontSize: viewport.isMobile ? '12px' : '14px' 
+                    }}>
+                        Drag and drop to reorder your {scenario.workouts.length} instruments of pain for KNIGHTHOOD
+                    </p>
                 </div>
 
                 {/* Scenario Summary Cards */}
@@ -164,21 +178,6 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                         </div>
                     </div>
 
-                    <div style={{
-                        backgroundColor: '#2a2a2a',
-                        padding: viewport.isMobile ? '16px' : '20px',
-                        borderRadius: '8px',
-                        border: '2px solid #2196F3',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#2196F3', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
-                            TSS®
-                        </div>
-                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
-                            {Math.round(dynamicMetrics.totalTSS)}
-                        </div>
-                    </div>
-
                     {!viewport.isMobile && (
                         <>
                             <div style={{
@@ -200,6 +199,21 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                             </div>
                         </>
                     )}
+
+                    <div style={{
+                        backgroundColor: '#2a2a2a',
+                        padding: viewport.isMobile ? '16px' : '20px',
+                        borderRadius: '8px',
+                        border: '2px solid #2196F3',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ color: '#2196F3', fontSize: viewport.isMobile ? '12px' : '14px', fontWeight: 'bold', marginBottom: '5px' }}>
+                            TSS®
+                        </div>
+                        <div style={{ color: 'white', fontSize: viewport.isMobile ? '18px' : '24px', fontWeight: 'bold' }}>
+                            {Math.round(dynamicMetrics.totalTSS)}
+                        </div>
+                    </div>
 
                     <div style={{
                         backgroundColor: '#2a2a2a',
@@ -238,8 +252,8 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 workouts={scenario.workouts}
                 userProfile={userProfile}
                 onReorder={handleWorkoutReorder}
-                title={`${scenario.name} - Arsenal of SUFFERING`}
-                subtitle={`Drag and drop to reorder your ${scenario.workouts.length} instruments of pain for KNIGHTHOOD`}
+                title=""
+                subtitle=""
             />
             
             {/* Print Modal */}

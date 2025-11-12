@@ -81,6 +81,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const [combinedWorkoutData, setCombinedWorkoutData] = useState<WorkoutData | null>(null);
 
 
+
     const findWorkoutTitle = (contentId: string): string => {
         const workout = allWorkouts.data.library.content.find((item: any) => item.id === contentId);
         return workout?.name || 'Unknown Workout';
@@ -238,6 +239,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
         }
     }, [workoutRows]);
 
+
+
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
         setDraggedIndex(index);
         e.dataTransfer.effectAllowed = 'move';
@@ -250,6 +253,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
         setDraggedIndex(null);
         setDragOverIndex(null);
     };
+
+
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -291,14 +296,16 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
 
     const renderMobileLayout = () => (
         <div data-testid="reorderable-workout-list" style={{ margin: "20px 0" }}>
-            <div style={{ marginBottom: "16px" }}>
-                <h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "600", color: "white" }}>{title}</h2>
-                {subtitle && (
-                    <p style={{ margin: 0, color: "#999", fontSize: "14px" }}>
-                        Tap and hold to reorder • Tap charts to see detailed workout profiles
-                    </p>
-                )}
-            </div>
+            {(title || subtitle) && (
+                <div style={{ marginBottom: "16px" }}>
+                    {title && <h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "600", color: "white" }}>{title}</h2>}
+                    {subtitle && (
+                        <p style={{ margin: 0, color: "#999", fontSize: "14px" }}>
+                            Tap and hold to reorder • Tap charts to see detailed workout profiles
+                        </p>
+                    )}
+                </div>
+            )}
             
             {loading ? (
                 <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
@@ -577,10 +584,12 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     return (
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
             {/* Header */}
-            <div style={{ marginBottom: '20px' }}>
-                <h2 style={{ color: 'white', margin: '0 0 5px 0' }}>{title}</h2>
-                <p style={{ color: '#999', margin: 0, fontSize: '14px' }}>{subtitle}</p>
-            </div>
+            {(title || subtitle) && (
+                <div style={{ marginBottom: '20px' }}>
+                    {title && <h2 style={{ color: 'white', margin: '0 0 5px 0' }}>{title}</h2>}
+                    {subtitle && <p style={{ color: '#999', margin: 0, fontSize: '14px' }}>{subtitle}</p>}
+                </div>
+            )}
 
             {/* Combined Scenario Power Profile */}
             {combinedWorkoutData && (
@@ -589,7 +598,11 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     border: '2px solid #4CAF50',
                     borderRadius: '8px',
                     padding: '20px',
-                    marginBottom: '30px'
+                    marginBottom: '30px',
+                    position: 'sticky',
+                    top: '10px',
+                    zIndex: 100,
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
                 }}>
                     <h3 style={{
                         margin: '0 0 8px 0',

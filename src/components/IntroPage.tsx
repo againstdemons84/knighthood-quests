@@ -172,41 +172,6 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                 </div>
             </div>
 
-            {/* Tips Section */}
-            <div style={{
-                backgroundColor: '#2a2a2a',
-                padding: viewport.isMobile ? '24px' : '32px',
-                borderRadius: '12px',
-                marginBottom: '32px'
-            }}>
-                <h2 style={{
-                    fontSize: viewport.isMobile ? '24px' : '28px',
-                    marginBottom: '16px',
-                    color: '#FF9800'
-                }}>
-                    💡 Wisdom from Fellow Knights
-                </h2>
-                <ul style={{
-                    fontSize: '16px',
-                    lineHeight: '1.7',
-                    color: '#ccc',
-                    paddingLeft: '20px'
-                }}>
-                    <li style={{ marginBottom: '8px' }}>
-                        <strong>Embrace Humility:</strong> Choose the Merciful Path for your first quest into KNIGHTHOOD
-                    </li>
-                    <li style={{ marginBottom: '8px' }}>
-                        <strong>Fuel for Battle:</strong> 6+ hours in your Bicycle Torture Chamber demands serious nutrition strategy
-                    </li>
-                    <li style={{ marginBottom: '8px' }}>
-                        <strong>Respect the TSS:</strong> Aim for 400-600 TSS based on your tolerance for SUFFERING
-                    </li>
-                    <li style={{ marginBottom: '8px' }}>
-                        <strong>Train for Pain:</strong> Test shorter combinations before attempting the full symphony of SUFFERING
-                    </li>
-                </ul>
-            </div>
-
             {/* Action Buttons */}
             <div style={{
                 display: 'flex',
@@ -259,50 +224,6 @@ const IntroPage: React.FC<IntroPageProps> = ({ onGetStarted }) => {
                 </a>
             </div>
 
-            {/* Footer Links */}
-            <div style={{
-                textAlign: 'center',
-                fontSize: '14px',
-                color: '#666',
-                borderTop: '1px solid #333',
-                paddingTop: '24px'
-            }}>
-                <p style={{ marginBottom: '8px' }}>
-                    <strong>Helpful Resources:</strong>
-                </p>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: viewport.isMobile ? 'column' : 'row',
-                    gap: viewport.isMobile ? '8px' : '24px',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <a 
-                        href="https://wahooligan.com/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#4CAF50', textDecoration: 'none' }}
-                    >
-                        Wahooligan Community
-                    </a>
-                    <a 
-                        href="https://www.wahoofitness.com/devices/indoor-cycling/bike-trainers" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#4CAF50', textDecoration: 'none' }}
-                    >
-                        SYSTM Training App
-                    </a>
-                    <a 
-                        href="https://thesufferfest.com/pages/four-dimensional-power" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#4CAF50', textDecoration: 'none' }}
-                    >
-                        4DP Power Profile
-                    </a>
-                </div>
-            </div>
         </div>
     );
 };

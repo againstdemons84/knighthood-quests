@@ -8,3 +8,4 @@ export { default as UserProfileManager } from './UserProfileManager';
 export { default as WorkoutTable } from './WorkoutTable';
 export { default as ScenarioDetailsView } from './ScenarioDetailsView';
 export { default as ReorderableWorkoutList } from './ReorderableWorkoutList';
+export { default as Footer } from './Footer';

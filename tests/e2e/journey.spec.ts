@@ -501,4 +501,103 @@ test.describe('Cross-Device Journey Tests', () => {
     // Verify static button is still visible
     await expect(staticSaveButton).toBeVisible();
   });
+
+  test('Mobile navigation scroll reset functionality', async ({ page }) => {
+    // Clear any existing scenarios from previous test runs
+    await page.evaluate(() => {
+      localStorage.removeItem('knighthood-scenarios');
+    });
+    
+    // Start from intro page
+    const introTitle = page.locator('h1:has-text("Assault on the Castle")');
+    await expect(introTitle).toBeVisible();
+    
+    // Scroll down significantly on the intro page
+    await page.evaluate(() => {
+      window.scrollTo(0, 1000);
+    });
+    
+    // Verify we're scrolled down
+    let scrollPosition = await page.evaluate(() => window.pageYOffset);
+    expect(scrollPosition).toBeGreaterThan(300); // More lenient threshold
+    
+    // Click "Begin Your Assault on the Castle" button
+    const beginButton = page.locator('[data-testid="begin-quest-button"]');
+    await DeviceHelpers.ensureVisible(page, beginButton);
+    await beginButton.click();
+    
+    // Wait for navigation to complete
+    const searchInput = page.locator('[data-testid="workout-search"]');
+    await DeviceHelpers.ensureVisible(page, searchInput);
+    
+    // Verify scroll position is reset to top
+    scrollPosition = await page.evaluate(() => window.pageYOffset);
+    expect(scrollPosition).toBeLessThan(50); // Should be at or near the top
+    
+    // Test navigation between tabs also resets scroll
+    // Scroll down on the selector page
+    await page.evaluate(() => {
+      window.scrollTo(0, 800);
+    });
+    
+    // Verify we're scrolled down
+    scrollPosition = await page.evaluate(() => window.pageYOffset);
+    expect(scrollPosition).toBeGreaterThan(300); // More lenient threshold
+    
+    // Navigate to scenarios tab
+    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
+    await scenariosTab.click();
+    
+    // Wait for navigation
+    await page.waitForTimeout(300);
+    
+    // Verify scroll position is reset to top
+    scrollPosition = await page.evaluate(() => window.pageYOffset);
+    expect(scrollPosition).toBeLessThan(50);
+    
+    // Test back navigation also resets scroll
+    // Navigate back to quest tab
+    const questTab = page.locator('[data-testid="quest-tab"]');
+    await questTab.click();
+    
+    // Wait for navigation
+    await DeviceHelpers.ensureVisible(page, searchInput);
+    
+    // Verify scroll position is still at top
+    scrollPosition = await page.evaluate(() => window.pageYOffset);
+    expect(scrollPosition).toBeLessThan(50);
+  });
+
+  test('Footer appears on all pages', async ({ page }) => {
+    // Test footer on intro page
+    const footerLinks = page.locator('a:has-text("Wahooligan Community")');
+    await expect(footerLinks).toBeVisible();
+    
+    // Navigate to quest page
+    const beginButton = page.locator('[data-testid="begin-quest-button"]');
+    await beginButton.click();
+    
+    // Wait for navigation and verify footer still appears
+    const searchInput = page.locator('[data-testid="workout-search"]');
+    await DeviceHelpers.ensureVisible(page, searchInput);
+    await expect(footerLinks).toBeVisible();
+    
+    // Navigate to scenarios tab
+    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
+    await scenariosTab.click();
+    await page.waitForTimeout(300);
+    await expect(footerLinks).toBeVisible();
+    
+    // Navigate back to home
+    const homeTab = page.locator('[data-testid="home-tab"]');
+    await homeTab.click();
+    await page.waitForTimeout(300);
+    await expect(footerLinks).toBeVisible();
+    
+    // Verify all footer links are present
+    await expect(page.locator('a:has-text("SYSTM Training App")')).toBeVisible();
+    await expect(page.locator('a:has-text("4DP Power Profile")')).toBeVisible();
+    await expect(page.locator('a:has-text("Raise an Issue")')).toBeVisible();
+    await expect(page.locator('a:has-text("Contribute on GitHub")')).toBeVisible();
+  });
 });
