@@ -211,6 +211,10 @@
     background-color: #795548;
 }
 
+.pathChaos {
+    background-color: #8E24AA;
+}
+
 /* Search and Sort Controls */
 .searchSortContainer {
     margin-bottom: 16px;
@@ -1119,6 +1123,10 @@
 
 .pathEnduranceDesktop {
     background-color: #795548;
+}
+
+.pathChaosDesktop {
+    background-color: #8E24AA;
 }
 
 /* Desktop search controls */

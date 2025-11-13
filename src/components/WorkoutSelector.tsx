@@ -214,6 +214,34 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
         });
     };
 
+    const randomKnighthoodQuest = () => {
+        // First clear all selections
+        setBasket([]);
+        
+        // Get all workouts with valid metrics (excluding those with errors)
+        const validWorkouts = workoutRows.filter(workout => 
+            workout.metrics && !workout.error
+        );
+        
+        // Randomly shuffle and select 10 workouts
+        const shuffled = [...validWorkouts].sort(() => Math.random() - 0.5);
+        const selectedWorkouts = shuffled.slice(0, Math.min(10, shuffled.length));
+        
+        // Convert to WorkoutSelection format
+        const newBasket: WorkoutSelection[] = selectedWorkouts.map(workout => ({
+            id: workout.id,
+            name: workout.name,
+            metrics: workout.metrics!,
+            usedOutdoorData: workout.usedOutdoorData || false
+        }));
+        
+        setBasket(newBasket);
+        onBasketChange({
+            selectedWorkouts: newBasket,
+            isComplete: newBasket.length === MAX_WORKOUTS
+        });
+    };
+
     const filteredWorkouts = workoutRows.filter(workout => 
         workout.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -282,51 +310,6 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 <p className={styles.subtitleMobile}>
                     Assemble 10 instruments of Suffering for your siezing of the highest HONOUR in Sufferlandria
                 </p>
-
-                {/* Basket Summary - Mobile */}
-                <div className={`${styles.basketSummaryMobile} ${
-                    basket.length === MAX_WORKOUTS ? styles.basketSummaryComplete : styles.basketSummaryIncomplete
-                }`}>
-                    <div className={styles.basketSummaryHeader}>
-                        <h3 className={styles.basketTitle}>
-                            Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
-                        </h3>
-                        {basket.length === MAX_WORKOUTS && (
-                            <>
-                                <div className={styles.basketCompleteMessage}>
-                                    ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
-                                </div>
-                                {onSaveScenario && (
-                                    <button
-                                        data-testid="save-scenario-button"
-                                        onClick={onSaveScenario}
-                                        className={`${styles.saveButton} ${styles.saveButtonMobile} ${
-                                            editingScenario ? styles.saveButtonEditMargin : styles.saveButtonNormalMargin
-                                        }`}
-                                    >
-                                        {editingScenario ? 'Update Scenario' : 'Save Scenario'}
-                                    </button>
-                                )}
-                                {editingScenario && onCancelEdit && (
-                                    <button
-                                        onClick={onCancelEdit}
-                                        className={`${styles.cancelButton} ${styles.cancelButtonMobile}`}
-                                    >
-                                        Cancel Edit
-                                    </button>
-                                )}
-                            </>
-                        )}
-                        {basket.length > 0 && (
-                            <button
-                                onClick={clearBasket}
-                                className={styles.clearAllButton}
-                            >
-                                Clear All ({basket.length})
-                            </button>
-                        )}
-                    </div>
-                </div>
 
                 {/* Quick Selection Options - Mobile */}
                 {optimalSelections && (
@@ -401,9 +384,61 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             >
                                 ⏰ Epic Endurance
                             </button>
+                            <button
+                                onClick={randomKnighthoodQuest}
+                                className={`${styles.quickSelectionButton} ${styles.pathChaos}`}
+                                title="Let fate decide your suffering"
+                            >
+                                🎲 Trial by Chaos
+                            </button>
                         </div>
                     </div>
                 )}
+
+                {/* Basket Summary - Mobile */}
+                <div className={`${styles.basketSummaryMobile} ${
+                    basket.length === MAX_WORKOUTS ? styles.basketSummaryComplete : styles.basketSummaryIncomplete
+                }`}>
+                    <div className={styles.basketSummaryHeader}>
+                        <h3 className={styles.basketTitle}>
+                            Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
+                        </h3>
+                        {basket.length === MAX_WORKOUTS && (
+                            <>
+                                <div className={styles.basketCompleteMessage}>
+                                    ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness awaits your Suffering!
+                                </div>
+                                {onSaveScenario && (
+                                    <button
+                                        data-testid="save-scenario-button"
+                                        onClick={onSaveScenario}
+                                        className={`${styles.saveButton} ${styles.saveButtonMobile} ${
+                                            editingScenario ? styles.saveButtonEditMargin : styles.saveButtonNormalMargin
+                                        }`}
+                                    >
+                                        {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                                    </button>
+                                )}
+                                {editingScenario && onCancelEdit && (
+                                    <button
+                                        onClick={onCancelEdit}
+                                        className={`${styles.cancelButton} ${styles.cancelButtonMobile}`}
+                                    >
+                                        Cancel Edit
+                                    </button>
+                                )}
+                            </>
+                        )}
+                        {basket.length > 0 && (
+                            <button
+                                onClick={clearBasket}
+                                className={styles.clearAllButton}
+                            >
+                                Clear All ({basket.length})
+                            </button>
+                        )}
+                    </div>
+                </div>
                 
                 {/* Search and Sort Controls */}
                 <div className={styles.searchSortContainer}>
@@ -647,6 +682,13 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             title="Test your mental fortitude"
                         >
                             ⏰ Epic Endurance
+                        </button>
+                        <button
+                            onClick={randomKnighthoodQuest}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathChaosDesktop}`}
+                            title="Let fate decide your suffering"
+                        >
+                            🎲 Trial by Chaos
                         </button>
                     </div>
                 </div>
