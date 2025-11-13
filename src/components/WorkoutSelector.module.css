@@ -967,11 +967,14 @@
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    display: block;
-    margin: 0 auto;
 }
 
 .clearBasketButtonDisabled {
+    background-color: #555 !important;
+    cursor: not-allowed !important;
+}
+
+.saveBasketButtonDisabled {
     background-color: #555 !important;
     cursor: not-allowed !important;
 }
@@ -984,13 +987,38 @@
 }
 
 .metricCard {
-    background-color: #333;
+    background-color: #2a2a2a;
     padding: 15px;
-    border-radius: 4px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-style: solid;
+    text-align: center;
+}
+
+/* Metric Card Variants */
+.metricCardDuration {
+    border-color: #4CAF50;
+}
+
+.metricCardElapsed {
+    border-color: #FF5722;
+}
+
+.metricCardTss {
+    border-color: #2196F3;
+}
+
+.metricCardIf {
+    border-color: #FF9800;
+}
+
+.metricCardNp {
+    border-color: #9C27B0;
 }
 
 .metricLabel {
-    color: #999;
+    font-weight: bold;
+    margin-bottom: 5px;
     font-size: 14px;
 }
 
@@ -1003,7 +1031,28 @@
 .metricSubtext {
     color: #999;
     font-size: 12px;
-    margin-top: 4px;
+    margin-top: 5px;
+}
+
+/* Color Classes for Labels */
+.colorDuration {
+    color: #4CAF50;
+}
+
+.colorElapsed {
+    color: #FF5722;
+}
+
+.colorTss {
+    color: #2196F3;
+}
+
+.colorIf {
+    color: #FF9800;
+}
+
+.colorNp {
+    color: #9C27B0;
 }
 
 /* Desktop quick selection */

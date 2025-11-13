@@ -13,7 +13,7 @@ const DeviceHelpers = {
     if (DeviceHelpers.isMobile(page)) {
       // Mobile: use click and verify with CSS class
       await checkbox.click();
-      await expect(checkbox).toHaveClass(/selected/);
+      await expect(checkbox).toHaveClass(/workoutCheckboxSelected/);
     } else {
       // Desktop: use check and verify with checked state
       await checkbox.check();
@@ -310,7 +310,7 @@ test.describe('Cross-Device Journey Tests', () => {
     
     // Verify 10 checkboxes are selected with timeout (different selectors for mobile vs desktop)
     if (DeviceHelpers.isMobile(page)) {
-      await expect(page.locator('[data-testid^="workout-checkbox-"].selected')).toHaveCount(10, { timeout: 1000 });
+      await expect(page.locator('[data-testid^="workout-checkbox-"][class*="workoutCheckboxSelected"]')).toHaveCount(10, { timeout: 1000 });
     } else {
       await expect(page.locator('[data-testid^="workout-checkbox-"]:checked')).toHaveCount(10, { timeout: 1000 });
     }
@@ -469,7 +469,7 @@ test.describe('Cross-Device Journey Tests', () => {
     await DeviceHelpers.selectWorkouts(page, 10);
     
     // Verify 10 checkboxes are selected
-    await expect(page.locator('[data-testid^="workout-checkbox-"].selected')).toHaveCount(10, { timeout: 2000 });
+    await expect(page.locator('[data-testid^="workout-checkbox-"][class*="workoutCheckboxSelected"]')).toHaveCount(10, { timeout: 2000 });
     
     // Verify the static save button exists in the Arsenal section
     const staticSaveButton = page.locator('[data-testid="save-scenario-button"]');

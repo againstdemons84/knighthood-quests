@@ -254,6 +254,14 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     });
 
     const combinedMetrics = calculateCombinedMetrics(basket);
+    
+    // Calculate target intensity metrics
+    const targetIntensity = userProfile.targetIntensity / 100;
+    const targetMetrics = {
+        totalTargetTSS: combinedMetrics.totalTSS * targetIntensity,
+        averageTargetIF: combinedMetrics.averageIF * targetIntensity,
+        totalTargetNP: combinedMetrics.totalNP * targetIntensity
+    };
 
     if (loading) {
         return (
@@ -577,86 +585,93 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
             <div className={styles.desktopControlsSticky}>
                 <div className={styles.desktopControlsContainer}>
                     {/* Basket Summary */}
-                    <div className={`${styles.basketSummaryDesktop} ${
-                        basket.length === MAX_WORKOUTS ? styles.basketSummaryDesktopComplete : ''
-                    }`}>
-                    <div className={styles.basketSummaryDesktopHeader}>
-                        <div>
-                            <h3 className={styles.basketSummaryDesktopTitle}>
-                                Your Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
-                            </h3>
-                            {basket.length === MAX_WORKOUTS && (
-                                <div className={styles.basketCompleteMessage}>
-                                    ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness acknowledges your commitment to SUFFERING!
-                                </div>
-                            )}
-                            {basket.length === MAX_WORKOUTS && onSaveScenario && (
-                                <div className={styles.desktopSaveButtonContainer}>
-                                    <button
-                                        data-testid="save-scenario-button"
-                                        onClick={onSaveScenario}
-                                        className={styles.saveButton}
-                                    >
-                                        {editingScenario ? 'Update Scenario' : 'Save Scenario'}
-                                    </button>
-                                    {editingScenario && onCancelEdit && (
-                                        <button
-                                            onClick={onCancelEdit}
-                                            className={styles.cancelButton}
-                                        >
-                                            Cancel Edit
-                                        </button>
+                    {basket.length > 0 && (
+                        <div className={`${styles.basketSummaryWrapper}`}>  
+                            <div className={`${styles.basketSummaryDesktop} ${
+                                basket.length === MAX_WORKOUTS ? styles.basketSummaryDesktopComplete : ''
+                            }`}>
+                            <div className={styles.basketSummaryDesktopHeader}>
+                                <div>
+                                    <h3 className={styles.basketSummaryDesktopTitle}>
+                                        Your Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
+                                    </h3>
+                                    {basket.length === MAX_WORKOUTS && (
+                                        <div className={styles.basketCompleteMessage}>
+                                            ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness acknowledges your commitment to SUFFERING!
+                                        </div>
+                                    )}
+                                    {onSaveScenario && (
+                                        <div className={styles.desktopSaveButtonContainer}>
+                                            <button
+                                                onClick={clearBasket}
+                                                className={`${styles.clearBasketButton}`}
+                                            >
+                                                Clear All
+                                            </button>
+                                            <button
+                                                data-testid="save-scenario-button"
+                                                onClick={basket.length === MAX_WORKOUTS ? onSaveScenario : undefined}
+                                                className={`${styles.saveButton} ${MAX_WORKOUTS > basket.length ? styles.saveBasketButtonDisabled : ''}`}
+                                            >
+                                                {editingScenario ? 'Update Scenario' : 'Save Scenario'}
+                                            </button>
+                                            {editingScenario && onCancelEdit && (
+                                                <button
+                                                    onClick={onCancelEdit}
+                                                    className={styles.cancelButton}
+                                                >
+                                                    Cancel Edit
+                                                </button>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
-                            )}
+                            </div>
+                            
+                            <div className={styles.basketMetricsGrid}>
+                                <div className={`${styles.metricCard} ${styles.metricCardDuration}`}>
+                                    <div className={`${styles.metricLabel} ${styles.colorDuration}`}>Workout Duration</div>
+                                    <div className={styles.metricValue}>
+                                        {formatDuration(combinedMetrics.totalDuration)}
+                                    </div>
+                                </div>
+                                <div className={`${styles.metricCard} ${styles.metricCardElapsed}`}>
+                                    <div className={`${styles.metricLabel} ${styles.colorElapsed}`}>Elapsed Duration</div>
+                                    <div className={styles.metricValue}>
+                                        {formatDuration(combinedMetrics.totalElapsedDuration)}
+                                    </div>
+                                    <div className={styles.metricSubtext}>
+                                        +{Math.max(0, basket.length - 1) * 10}min rest
+                                    </div>
+                                </div>
+                                <div className={`${styles.metricCard} ${styles.metricCardTss}`}>
+                                    <div className={`${styles.metricLabel} ${styles.colorTss}`}>
+                                        TSS® ({userProfile.targetIntensity}%)
+                                    </div>
+                                    <div className={styles.metricValue}>
+                                        {Math.round(combinedMetrics.totalTSS)} ({Math.round(targetMetrics.totalTargetTSS)})
+                                    </div>
+                                </div>
+                                <div className={`${styles.metricCard} ${styles.metricCardIf}`}>
+                                    <div className={`${styles.metricLabel} ${styles.colorIf}`}>
+                                        Avg IF® ({userProfile.targetIntensity}%)
+                                    </div>
+                                    <div className={styles.metricValue}>
+                                        {combinedMetrics.averageIF.toFixed(2)} ({targetMetrics.averageTargetIF.toFixed(2)})
+                                    </div>
+                                </div>
+                                <div className={`${styles.metricCard} ${styles.metricCardNp}`}>
+                                    <div className={`${styles.metricLabel} ${styles.colorNp}`}>
+                                        Avg NP® ({userProfile.targetIntensity}%)
+                                    </div>
+                                    <div className={styles.metricValue}>
+                                        {Math.round(combinedMetrics.totalNP)}W ({Math.round(targetMetrics.totalTargetNP)}W)
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <button
-                            onClick={clearBasket}
-                            disabled={basket.length === 0}
-                            className={`${styles.clearBasketButton} ${basket.length === 0 ? styles.clearBasketButtonDisabled : ''}`}
-                        >
-                            Clear All
-                        </button>
                     </div>
-                    
-                    {basket.length > 0 && (
-                        <div className={styles.basketMetricsGrid}>
-                            <div className={styles.metricCard}>
-                                <div className={styles.metricLabel}>Workout Duration</div>
-                                <div className={styles.metricValue}>
-                                    {formatDuration(combinedMetrics.totalDuration)}
-                                </div>
-                            </div>
-                            <div className={styles.metricCard}>
-                                <div className={styles.metricLabel}>Elapsed Duration</div>
-                                <div className={styles.metricValue}>
-                                    {formatDuration(combinedMetrics.totalElapsedDuration)}
-                                </div>
-                                <div className={styles.metricSubtext}>
-                                    +{Math.max(0, basket.length - 1) * 10}min rest
-                                </div>
-                            </div>
-                            <div className={styles.metricCard}>
-                                <div className={styles.metricLabel}>Total TSS®</div>
-                                <div className={styles.metricValue}>
-                                    {Math.round(combinedMetrics.totalTSS)}
-                                </div>
-                            </div>
-                            <div className={styles.metricCard}>
-                                <div className={styles.metricLabel}>Average IF®</div>
-                                <div className={styles.metricValue}>
-                                    {combinedMetrics.averageIF.toFixed(2)}
-                                </div>
-                            </div>
-                            <div className={styles.metricCard}>
-                                <div className={styles.metricLabel}>Average NP®</div>
-                                <div className={styles.metricValue}>
-                                    {Math.round(combinedMetrics.totalNP)}W
-                                </div>
-                            </div>
-                        </div>
                     )}
-                </div>
 
                     {/* Quick Selection Options */}
                     {optimalSelections && (
