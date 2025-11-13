@@ -342,10 +342,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathMerciful}`}
+                                title="For those new to SUFFERING"
                             >
                                 🏃‍♂️ Merciful Path
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(For those new to SUFFERING)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -354,10 +353,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathSwift}`}
+                                title="Get it over with quickly"
                             >
                                 ⚡ Swift Strike
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(Get it over with quickly)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -366,10 +364,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathGentle}`}
+                                title="Less pain, more endurance"
                             >
                                 💚 Gentle Suffering
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(Less pain, more endurance)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -378,10 +375,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathBalanced}`}
+                                title="The way GvA intended"
                             >
                                 ⚖️ True Sufferlandrian
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(The way GvA intended)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -390,10 +386,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathMaxSuffering}`}
+                                title="Please see a doctor first"
                             >
                                 🔥 Path of MAXIMUM SUFFERING
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(Please see a doctor first)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -402,10 +397,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
                                 className={`${styles.quickSelectionButton} ${styles.pathEndurance}`}
+                                title="Test your mental fortitude"
                             >
                                 ⏰ Epic Endurance
-                                <br />
-                                <span className={styles.quickSelectionButtonSubtext}>(Test your mental fortitude)</span>
                             </button>
                         </div>
                     </div>
@@ -581,8 +575,85 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 </div>
             </div>
 
+            {/* Quick Selection Options */}
+            {optimalSelections && (
+                <div className={styles.quickSelectionDesktop}>
+                    <div className={styles.quickSelectionTitleDesktop}>
+                        PATHS TO KNIGHTHOOD (Choose your destiny of SUFFERING):
+                    </div>
+                    <div className={styles.quickSelectionButtonsDesktop}>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathMercifulDesktop}`}
+                            title="For those new to SUFFERING"
+                        >
+                            🏃‍♂️ Merciful Path
+                        </button>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.shortestDuration);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathSwiftDesktop}`}
+                            title="Get it over with quickly"
+                        >
+                            ⚡ Swift Strike
+                        </button>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.lowestIF);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathGentleDesktop}`}
+                            title="Less pain, more endurance"
+                        >
+                            💚 Gentle Suffering
+                        </button>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.balanced);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathBalancedDesktop}`}
+                            title="The way GvA intended"
+                        >
+                            ⚖️ True Sufferlandrian
+                        </button>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.highestTSS);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathMaximumDesktop}`}
+                            title="Please see a doctor first"
+                        >
+                            🔥 Path of MAXIMUM SUFFERING
+                        </button>
+                        <button
+                            onClick={() => {
+                                const selections = convertToWorkoutSelections(optimalSelections.longestDuration);
+                                setBasket(selections);
+                                onBasketChange({ selectedWorkouts: selections, isComplete: true });
+                            }}
+                            className={`${styles.quickSelectionButtonDesktop} ${styles.pathEnduranceDesktop}`}
+                            title="Test your mental fortitude"
+                        >
+                            ⏰ Epic Endurance
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Sticky Controls Container */}
-            <div className={styles.desktopControlsSticky}>
+            <div className={styles.desktopControlsSticky}> ho
                 <div className={styles.desktopControlsContainer}>
                     {/* Basket Summary */}
                     {basket.length > 0 && (
@@ -671,77 +742,6 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             </div>
                         </div>
                     </div>
-                    )}
-
-                    {/* Quick Selection Options */}
-                    {optimalSelections && (
-                        <div className={styles.quickSelectionDesktop}>
-                            <div className={styles.quickSelectionTitleDesktop}>
-                                PATHS TO KNIGHTHOOD (Choose your destiny of SUFFERING):
-                            </div>
-                            <div className={styles.quickSelectionButtonsDesktop}>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathMercifulDesktop}`}
-                                >
-                                    🏃‍♂️ Merciful Path (For Suffering Beginners)
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.shortestDuration);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathSwiftDesktop}`}
-                                >
-                                    ⚡ Swift Strike (Get it over with quickly)
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.lowestIF);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathGentleDesktop}`}
-                                >
-                                    💚 Gentle Suffering (Less pain, more endurance)
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.balanced);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathBalancedDesktop}`}
-                                >
-                                    ⚖️ True Sufferlandrian (The way GvA intended)
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.highestTSS);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathMaximumDesktop}`}
-                                >
-                                    🔥 Path of MAXIMUM SUFFERING (Please see a doctor first)
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const selections = convertToWorkoutSelections(optimalSelections.longestDuration);
-                                        setBasket(selections);
-                                        onBasketChange({ selectedWorkouts: selections, isComplete: true });
-                                    }}
-                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathEnduranceDesktop}`}
-                                >
-                                    ⏰ Epic Endurance (Test your mental fortitude)
-                                </button>
-                            </div>
-                        </div>
                     )}
 
                     {/* Controls */}
@@ -849,40 +849,40 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         </td>
                                         <td className={styles.tableCell}>
                                             <div>
-                                                <div className={styles.workoutNameCell}>
-                                                    <span className={styles.workoutName}>{row.name}</span>
-                                                    {row.usedOutdoorData && (
-                                                        <span 
-                                                            className={styles.outdoorDataWarning}
-                                                            title="Indoor power profile data unavailable, using outdoor power profile."
+                                                {/* Workout Details Container - Description and Chart side by side */}
+                                                <div className={styles.workoutDescriptionFlexItem}>
+                                                    <div className={styles.workoutNameCell}>
+                                                        <span className={styles.workoutName}>{row.name}</span>
+                                                        {row.usedOutdoorData && (
+                                                            <span 
+                                                                className={styles.outdoorDataWarning}
+                                                                title="Indoor power profile data unavailable, using outdoor power profile."
+                                                            >
+                                                                ⚠️
+                                                            </span>
+                                                        )}
+                                                        <a 
+                                                            href={`https://systm.wahoofitness.com/content-details/${row.id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={styles.workoutLink}
+                                                            title={`View ${row.name} on SYSTM`}
                                                         >
-                                                            ⚠️
-                                                        </span>
-                                                    )}
-                                                    <a 
-                                                        href={`https://systm.wahoofitness.com/content-details/${row.id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={styles.workoutLink}
-                                                        title={`View ${row.name} on SYSTM`}
-                                                    >
-                                                        ↗
-                                                    </a>
-                                                </div>
-                                                <div className={styles.workoutDescription}>
-                                                    ID: {row.id}
-                                                </div>
-                                                
-                                                {/* Workout Profile Chart */}
-                                                {row.workoutData && row.metrics && (
-                                                    <div className={styles.workoutChartContainer}>
-                                                        <WorkoutChart
-                                                            workoutData={row.workoutData}
-                                                            userProfile={userProfile}
-                                                            height={60}
-                                                        />
+                                                            ↗
+                                                        </a>
                                                     </div>
-                                                )}
+                                                    
+                                                    {/* Workout Profile Chart */}
+                                                    {row.workoutData && row.metrics && (
+                                                        <div className={styles.workoutChartContainerFlexItem}>
+                                                            <WorkoutChart
+                                                                workoutData={row.workoutData}
+                                                                userProfile={userProfile}
+                                                                height={60}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className={`${styles.tableCell} ${styles.centerColumn}`}>
