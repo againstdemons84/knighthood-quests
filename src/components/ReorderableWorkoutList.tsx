@@ -60,6 +60,7 @@ interface WorkoutRowData {
         intensityFactor: number;
         targetIntensityFactor: number;
         normalizedPower: number;
+        targetNormalizedPower: number;
     } | null;
     error?: string;
     usedOutdoorData?: boolean;
@@ -201,7 +202,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             targetTss: calculatedMetrics.trainingStressScore * (userProfile.targetIntensity / 100),
                             intensityFactor: calculatedMetrics.intensityFactor,
                             targetIntensityFactor: calculatedMetrics.intensityFactor * (userProfile.targetIntensity / 100),
-                            normalizedPower: calculatedMetrics.normalizedPower
+                            normalizedPower: calculatedMetrics.normalizedPower,
+                            targetNormalizedPower: calculatedMetrics.normalizedPower * (userProfile.targetIntensity / 100)
                         };
                     } catch (error) {
                         console.error(`Error calculating metrics for ${workout.id}:`, error);
@@ -349,7 +351,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
     const handleChartClick = (workoutRow: WorkoutRowData) => {
         // For now, just show an alert with workout info
         if (workoutRow.workoutData) {
-            alert(`Workout: ${workoutRow.name}\nDuration: ${workoutRow.metrics?.duration || 'N/A'}\nFull TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.tss) : 'N/A'}\nTarget TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.targetTss) : 'N/A'} (${userProfile.targetIntensity}%)\nFull IF: ${workoutRow.metrics ? workoutRow.metrics.intensityFactor.toFixed(2) : 'N/A'}\nTarget IF: ${workoutRow.metrics ? workoutRow.metrics.targetIntensityFactor.toFixed(2) : 'N/A'} (${userProfile.targetIntensity}%)`);
+            alert(`Workout: ${workoutRow.name}\nDuration: ${workoutRow.metrics?.duration || 'N/A'}\nFull TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.tss) : 'N/A'}\nTarget TSS: ${workoutRow.metrics ? Math.round(workoutRow.metrics.targetTss) : 'N/A'} (${userProfile.targetIntensity}%)\nFull IF: ${workoutRow.metrics ? workoutRow.metrics.intensityFactor.toFixed(2) : 'N/A'}\nTarget IF: ${workoutRow.metrics ? workoutRow.metrics.targetIntensityFactor.toFixed(2) : 'N/A'} (${userProfile.targetIntensity}%)\nFull NP: ${workoutRow.metrics ? Math.round(workoutRow.metrics.normalizedPower) : 'N/A'}W\nTarget NP: ${workoutRow.metrics ? Math.round(workoutRow.metrics.targetNormalizedPower) : 'N/A'}W (${userProfile.targetIntensity}%)`);
         }
     };
 
@@ -402,7 +404,11 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                             onDragOver={handleDragOver}
                             onDragEnter={(e) => handleDragEnter(e, index)}
                             onDrop={(e) => handleDrop(e, index)}
-                            className={`${styles.mobileWorkoutItem} ${draggedIndex === index ? styles.mobileWorkoutItemDragging : ''} ${dragOverIndex === index ? styles.mobileWorkoutItemDragOver : ''}`}
+                            className={[
+                                styles.mobileWorkoutItem,
+                                draggedIndex === index ? styles.mobileWorkoutItemDragging : '',
+                                dragOverIndex === index ? styles.mobileWorkoutItemDragOver : ''
+                            ].filter(Boolean).join(' ')}
                         >
                             {/* Order Number and Drag Handle */}
                             <div className={styles.mobileHeader}>
@@ -448,9 +454,8 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                 </a>
                             </h3>
 
-                            {/* Metrics Grid */}
-                            {/* First Row: Duration and Full TSS */}
-                            <div className={styles.mobileDurationTssRow}>
+                            {/* Metrics Grid - Row 1: Duration, Full TSS, Target TSS */}
+                            <div className={styles.mobileMetricsRowOne}>
                                 <div className={styles.mobileMetricItem}>
                                     <div className={styles.mobileMetricValue}>
                                         {row.metrics?.duration || '-'}
@@ -460,74 +465,34 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     </div>
                                 </div>
                                 <div className={styles.mobileMetricItem}>
+                                    <div className={styles.mobileMetricValue}>
+                                        {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}&nbsp;
+                                        ({row.metrics ? `${Math.round(row.metrics.targetNormalizedPower)}W` : '-'})
+                                    </div>
+                                    <div className={styles.mobileMetricLabel}>
+                                        NP® ({userProfile.targetIntensity}%)
+                                    </div>
+                                </div>
+                                <div className={styles.mobileMetricItem}>
                                     <div 
                                         className={styles.mobileMetricValue}
                                         style={{ 
                                             color: row.metrics ? getTSSColor(row.metrics.tss, minTSS, maxTSS) : "white"
                                         }}>
-                                        {row.metrics ? Math.round(row.metrics.tss) : '-'}
+                                        {row.metrics ? Math.round(row.metrics.tss) : '-'}&nbsp;
+                                        ({row.metrics ? Math.round(row.metrics.targetTss) : '-'})
                                     </div>
                                     <div className={styles.mobileMetricLabel}>
-                                        Full TSS
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Second Row: Target TSS */}
-                            <div className={styles.mobileTargetTssRow}>
-                                <div className={styles.mobileMetricItem}>
-                                    <div className={styles.mobileTargetValue}>
-                                        {row.metrics ? `${Math.round(row.metrics.targetTss)} (${userProfile.targetIntensity}%)` : '-'}
-                                    </div>
-                                    <div className={styles.mobileMetricLabel}>
-                                        Target TSS  ({userProfile.targetIntensity}%)
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Third Row: Cumulative TSS and Power metrics */}
-                            <div className={styles.mobileCumulativePowerRow}>
-                                <div className={styles.mobileMetricItem}>
-                                    <div 
-                                        className={styles.mobileCumulativeValue}
-                                        style={{ 
-                                            color: row.cumulativeTSSPercentage ? getVarianceColor(row.cumulativeTSSPercentage - (index + 1) * 10) : "white"
-                                        }}>
-                                        {row.cumulativeTSSPercentage ? 
-                                            `${Math.round(row.cumulativeTSSPercentage)}% (${(row.cumulativeTSSPercentage - (index + 1) * 10) >= 0 ? '+' : ''}${Math.round(row.cumulativeTSSPercentage - (index + 1) * 10)}%)` 
-                                            : '-'
-                                        }
-                                    </div>
-                                    <div className={styles.mobileCumulativeLabel}>
-                                        Cum TSS%
+                                        TSS ({userProfile.targetIntensity}%)
                                     </div>
                                 </div>
                                 <div className={styles.mobileMetricItem}>
                                     <div className={styles.mobileMetricValue}>
-                                        {row.metrics ? `${Math.round(row.metrics.normalizedPower)}W` : '-'}
-                                    </div>
-                                    <div className={styles.mobileNpLabel}>
-                                        NP®
-                                    </div>
-                                </div>
-                                <div className={styles.mobileMetricItem}>
-                                    <div className={styles.mobileMetricValue}>
-                                        {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}
-                                    </div>
-                                    <div className={styles.mobileNpLabel}>
-                                        Full IF®
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Fourth Row: Target IF */}
-                            <div className={styles.mobileTargetIfRow}>
-                                <div className={styles.mobileMetricItem}>
-                                    <div className={styles.mobileTargetValue}>
-                                        {row.metrics ? `${row.metrics.targetIntensityFactor.toFixed(2)} (${userProfile.targetIntensity}%)` : '-'}
+                                        {row.metrics ? row.metrics.intensityFactor.toFixed(2) : '-'}&nbsp;
+                                        ({row.metrics ? `${row.metrics.targetIntensityFactor.toFixed(2)}` : '-'})
                                     </div>
                                     <div className={styles.mobileMetricLabel}>
-                                        Target IF® (${userProfile.targetIntensity}%)
+                                        IF® ({userProfile.targetIntensity}%)
                                     </div>
                                 </div>
                             </div>
@@ -608,7 +573,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                     <div className={styles.headerCumTssCol}>Cum TSS%</div>
                     <div className={styles.headerFullIfCol}>Full IF</div>
                     <div className={styles.headerTargetIfCol}>Target IF  ({userProfile.targetIntensity}%)</div>
-                    <div className={styles.headerNpCol}>NP</div>
+                    <div className={styles.headerNpCol}>NP® ({userProfile.targetIntensity}%)</div>
                 </div>
 
                 <div className={styles.desktopTableBody}>
@@ -732,7 +697,7 @@ const ReorderableWorkoutList: React.FC<ReorderableWorkoutListProps> = ({
                                     {workout.metrics ? `${workout.metrics.targetIntensityFactor.toFixed(2)}` : '-'}
                                 </div>
                                 <div className={styles.desktopNpCol}>
-                                    {workout.metrics ? `${Math.round(workout.metrics.normalizedPower)}W` : '-'}
+                                    {workout.metrics ? `${Math.round(workout.metrics.normalizedPower)}W (${Math.round(workout.metrics.targetNormalizedPower)}W)` : '-'}
                                 </div>
                             </>
                         </div>

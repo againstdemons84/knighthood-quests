@@ -69,12 +69,12 @@
   flex: 1;
 }
 
-.tabButton:hover:not(.active):not(.warning) {
-  background-color: #666;
-}
-
 .tabButton:global(.active) {
   background-color: #4CAF50;
+}
+
+.tabButton:hover:not(:global(.active)):not(:global(.warning)) {
+  background-color: #666;
 }
 
 .tabButton:global(.warning) {
@@ -85,7 +85,7 @@
   background-color: #4CAF50;
 }
 
-.tabButton:global(.warning):hover:not(.active) {
+.tabButton:global(.warning):hover:not(:global(.active)) {
   background-color: #FFB74D;
 }
 

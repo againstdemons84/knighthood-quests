@@ -33,7 +33,8 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     });
     const [targetMetrics, setTargetMetrics] = useState({
         totalTargetTSS: 0,
-        averageTargetIF: 0
+        averageTargetIF: 0,
+        totalTargetNP: 0
     });
     const [showPrintModal, setShowPrintModal] = useState(false);
 
@@ -71,10 +72,12 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 const targetIntensity = userProfile.targetIntensity / 100; // Convert percentage to decimal
                 const totalTargetTSS = calculatedMetrics.totalTSS * targetIntensity;
                 const averageTargetIF = calculatedMetrics.averageIF * targetIntensity;
+                const totalTargetNP = calculatedMetrics.totalNP * targetIntensity;
 
                 setTargetMetrics({
                     totalTargetTSS,
-                    averageTargetIF
+                    averageTargetIF,
+                    totalTargetNP
                 });
             } catch (error) {
                 console.error('Error calculating dynamic metrics:', error);
@@ -155,46 +158,28 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
                     <div className={`${styles.metricCard} ${styles.metricCardTss} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorTss} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            TSS®
+                            TSS® ({userProfile.targetIntensity}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {Math.round(dynamicMetrics.totalTSS)}
+                            {Math.round(dynamicMetrics.totalTSS)} ({Math.round(targetMetrics.totalTargetTSS)})
                         </div>
                     </div>
 
                     <div className={`${styles.metricCard} ${styles.metricCardIf} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorIf} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Avg IF®
+                            Avg IF® ({userProfile.targetIntensity}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {dynamicMetrics.averageIF.toFixed(2)}
+                            {dynamicMetrics.averageIF.toFixed(2)} {targetMetrics.averageTargetIF.toFixed(2)}
                         </div>
                     </div>
 
                     <div className={`${styles.metricCard} ${styles.metricCardNp} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorNp} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Avg NP®
+                            Avg NP® ({userProfile.targetIntensity}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {Math.round(dynamicMetrics.totalNP)}W
-                        </div>
-                    </div>
-
-                    <div className={`${styles.metricCard} ${styles.metricCardTargetTss} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
-                        <div className={`${styles.metricLabel} ${styles.colorTargetTss} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Target TSS® ({userProfile.targetIntensity}%)
-                        </div>
-                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {Math.round(targetMetrics.totalTargetTSS)}
-                        </div>
-                    </div>
-
-                    <div className={`${styles.metricCard} ${styles.metricCardTargetIf} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
-                        <div className={`${styles.metricLabel} ${styles.colorTargetIf} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Target IF® ({userProfile.targetIntensity}%)
-                        </div>
-                        <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {targetMetrics.averageTargetIF.toFixed(2)}
+                            {Math.round(dynamicMetrics.totalNP)}W ({Math.round(targetMetrics.totalTargetNP)}W)
                         </div>
                     </div>
                 </div>

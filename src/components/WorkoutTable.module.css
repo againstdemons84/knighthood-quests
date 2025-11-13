@@ -1,0 +1,344 @@
+/* === WORKOUT TABLE CSS MODULE === */
+
+/* Layout containers */
+.container {
+    color: white;
+}
+
+/* Mobile layout */
+.mobileTitle {
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.mobileSubtitle {
+    color: #999;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Sort controls */
+.sortControlsContainer {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.sortLabel {
+    color: white;
+    font-size: 14px;
+    min-width: 70px;
+}
+
+.sortButtonsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+}
+
+.sortButton {
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sortButtonActive {
+    background-color: #4CAF50;
+}
+
+.sortButtonInactive {
+    background-color: #555;
+}
+
+/* Mobile workout cards */
+.mobileCardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.workoutCard {
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.workoutCard:hover {
+    background-color: #333;
+}
+
+.workoutCardHeader {
+    margin-bottom: 10px;
+}
+
+.workoutNameContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.workoutName {
+    color: white;
+    font-size: 16px;
+    flex: 1;
+    font-weight: bold;
+}
+
+.outdoorDataWarning {
+    color: #FFA726;
+    font-size: 16px;
+    cursor: help;
+}
+
+.workoutId {
+    color: #999;
+    font-size: 12px;
+}
+
+.workoutMetricsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.workoutMetricsGridNoProfiles {
+    margin-bottom: 0;
+}
+
+.workoutmetricsgridShowProfiles {
+    margin-bottom: 15px;
+}
+
+.metricItem {
+    text-align: center;
+}
+
+.metricLabelDuration {
+    color: #4CAF50;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.metricLabelTSS {
+    color: #2196F3;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.metricLabelIF {
+    color: #FF9800;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.metricValue {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.workoutChartContainer {
+    background-color: #1a1a1a;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 12px;
+}
+
+/* Desktop table layout */
+.desktopTitle {
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 28px;
+}
+
+.desktopSubtitle {
+    color: #999;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.tableContainer {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.workoutTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2a2a2a;
+}
+
+.tableHeader {
+    background-color: #333;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.tableHeaderCell {
+    padding: 15px;
+    color: white;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+table
+
+.tableHeaderCell:hover {
+    background-color: #444;
+}
+
+.tableHeaderLeft {
+    text-align: left;
+}
+
+.tableHeaderCenter {
+    text-align: center;
+}
+
+.tableWorkoutProfile {
+    min-width: 400px;
+}
+
+.tableRow {
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s ease;
+}
+
+.tableRowEven {
+    background-color: #2a2a2a;
+}
+
+.tableRowOdd {
+    background-color: #252525;
+}
+
+.tableRow:hover {
+    background-color: #333;
+}
+
+.tableCell {
+    padding: 15px;
+    color: white;
+    vertical-align: top;
+}
+
+.tableCellCenter {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.workoutNameCell {
+    min-width: 200px;
+}
+
+.workoutNameHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.workoutNameTitle {
+    font-weight: bold;
+    flex: 1;
+}
+
+.workoutNameId {
+    color: #999;
+    font-size: 12px;
+}
+
+.desktopChartContainer {
+    background-color: #1a1a1a;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.metricCell {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.errorMessage {
+    color: #999;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Responsive container */
+.responsiveContainer {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.mobileContainer {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Workout name link styling */
+.workoutNameLink {
+    color: #4CAF50;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s;
+}
+
+.workoutNameLink:hover {
+    border-bottom-color: #4CAF50;
+}
+
+.outdoorDataWarningSpaced {
+    margin-left: 8px;
+}
+
+/* Table row without bottom border */
+.tableRowNoBorder {
+    border-bottom: none;
+}
+
+/* About section */
+.aboutSection {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    color: #999;
+}
+
+.aboutTitle {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.questText {
+    margin-top: 10px;
+    font-size: 14px;
+}

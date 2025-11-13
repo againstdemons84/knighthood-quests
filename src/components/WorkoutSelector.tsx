@@ -292,12 +292,9 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     <button
                                         data-testid="save-scenario-button"
                                         onClick={onSaveScenario}
-                                        className={styles.saveButton}
-                                        style={{
-                                            minHeight: '48px',
-                                            marginBottom: editingScenario ? '8px' : '12px',
-                                            width: '100%'
-                                        }}
+                                        className={`${styles.saveButton} ${styles.saveButtonMobile} ${
+                                            editingScenario ? styles.saveButtonEditMargin : styles.saveButtonNormalMargin
+                                        }`}
                                     >
                                         {editingScenario ? 'Update Scenario' : 'Save Scenario'}
                                     </button>
@@ -305,11 +302,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 {editingScenario && onCancelEdit && (
                                     <button
                                         onClick={onCancelEdit}
-                                        className={styles.cancelButton}
-                                        style={{
-                                            marginBottom: '8px',
-                                            width: '100%'
-                                        }}
+                                        className={`${styles.cancelButton} ${styles.cancelButtonMobile}`}
                                     >
                                         Cancel Edit
                                     </button>
@@ -329,37 +322,22 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
                 {/* Quick Selection Options - Mobile */}
                 {optimalSelections && (
-                    <div style={{
-                        backgroundColor: '#333',
-                        padding: '15px',
-                        borderRadius: '8px',
-                        marginBottom: '16px',
-                        border: '1px solid #444'
-                    }}>
-                        <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
+                    <div className={styles.quickSelectionMobile}>
+                        <div className={styles.quickSelectionTitle}>
                             PATHS TO KNIGHTHOOD (Choose your destiny):
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                        <div className={styles.quickSelectionGrid}>
                             <button
                                 onClick={() => {
                                     const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#2196F3',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathMerciful}`}
                             >
                                 🏃‍♂️ Merciful Path
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(For those new to SUFFERING)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(For those new to SUFFERING)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -367,20 +345,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#FF9800',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathSwift}`}
                             >
                                 ⚡ Swift Strike
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Get it over with quickly)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(Get it over with quickly)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -388,20 +357,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#4CAF50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathGentle}`}
                             >
                                 💚 Gentle Suffering
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Less pain, more endurance)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(Less pain, more endurance)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -409,20 +369,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#9C27B0',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathBalanced}`}
                             >
                                 ⚖️ True Sufferlandrian
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(The way GvA intended)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(The way GvA intended)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -430,20 +381,11 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#d32f2f',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathMaxSuffering}`}
                             >
                                 🔥 Path of MAXIMUM SUFFERING
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Please see a doctor first)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(Please see a doctor first)</span>
                             </button>
                             <button
                                 onClick={() => {
@@ -451,27 +393,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                     setBasket(selections);
                                     onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                 }}
-                                style={{
-                                    padding: '10px 8px',
-                                    backgroundColor: '#795548',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '11px',
-                                    textAlign: 'center'
-                                }}
+                                className={`${styles.quickSelectionButton} ${styles.pathEndurance}`}
                             >
                                 ⏰ Epic Endurance
                                 <br />
-                                <span style={{ fontSize: '10px', opacity: 0.8 }}>(Test your mental fortitude)</span>
+                                <span className={styles.quickSelectionButtonSubtext}>(Test your mental fortitude)</span>
                             </button>
                         </div>
                     </div>
                 )}
                 
                 {/* Search and Sort Controls */}
-                <div style={{ marginBottom: '16px' }}>
+                <div className={styles.searchSortContainer}>
                     <input
                         ref={searchInputRef}
                         data-testid="workout-search"
@@ -479,41 +412,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         placeholder="Search workouts..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '8px',
-                            marginBottom: '12px',
-                            fontSize: '16px'
-                        }}
+                        className={styles.searchInput}
                     />
                     
-                    <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                        alignItems: 'center'
-                    }}>
-                        <span style={{ color: 'white', fontSize: '14px', minWidth: '60px' }}>Sort:</span>
+                    <div className={styles.sortContainer}>
+                        <span className={styles.sortLabel}>Sort:</span>
                         {(['name', 'duration', 'tss', 'if'] as const).map(col => (
                             <button
                                 key={col}
                                 onClick={() => handleSort(col)}
-                                style={{
-                                    padding: '8px 12px',
-                                    backgroundColor: sortBy === col ? '#4CAF50' : '#555',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px'
-                                }}
+                                className={`${styles.sortButton} ${
+                                    sortBy === col ? styles.sortButtonActive : styles.sortButtonInactive
+                                }`}
                             >
                                 {col === 'name' ? 'Name' : 
                                  col === 'duration' ? 'Duration' :
@@ -525,7 +435,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                 </div>
 
                 {/* Workout Cards */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className={styles.workoutCardsContainer}>
                     {sortedWorkouts.map((row, index) => {
                         const isSelected = row.isSelected;
                         const canSelect = !isSelected && basket.length < MAX_WORKOUTS && row.metrics;
@@ -536,89 +446,68 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             <div 
                                 key={row.id}
                                 onClick={() => isClickable ? toggleWorkoutSelection(row.id) : undefined}
-                                style={{
-                                    backgroundColor: isSelected ? '#1e4d1e' : '#2a2a2a',
-                                    borderRadius: '8px',
-                                    padding: '15px',
-                                    border: isSelected ? '2px solid #4CAF50' : '1px solid #333',
-                                    opacity: row.metrics ? 1 : 0.6,
-                                    cursor: isClickable ? 'pointer' : 'not-allowed',
-                                    transition: 'all 0.2s ease',
-                                    position: 'relative'
-                                }}
+                                className={`${styles.workoutCard} ${
+                                    isSelected ? styles.workoutCardSelected : ''
+                                } ${
+                                    !row.metrics ? styles.workoutCardDisabled : ''
+                                } ${
+                                    isClickable ? styles.workoutCardClickable : styles.workoutCardNotClickable
+                                }`}
                             >
                                 {/* Selection Indicator */}
                                 <div 
                                     data-testid={`workout-checkbox-${row.id}`} 
-                                    className={`workout-checkbox ${isSelected ? 'selected' : 'unselected'}`}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '12px',
-                                        right: '12px',
-                                        width: '24px',
-                                        height: '24px',
-                                        borderRadius: '4px',
-                                        border: '2px solid #555',
-                                        backgroundColor: isSelected ? '#4CAF50' : 'transparent',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
+                                    className={`${styles.workoutCheckbox} ${
+                                        isSelected ? styles.workoutCheckboxSelected : ''
+                                    }`}
                                 >
-                                    {isSelected && <span style={{ color: 'white', fontSize: '16px' }}>✓</span>}
+                                    {isSelected && <span className={styles.workoutCheckboxIcon}>✓</span>}
                                 </div>
 
                                 {/* Workout Header */}
-                                <div style={{ marginBottom: '12px', paddingRight: '40px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                        <strong style={{ color: 'white', fontSize: '16px', flex: 1 }}>
+                                <div className={styles.workoutHeader}>
+                                    <div className={styles.workoutNameContainer}>
+                                        <strong className={styles.workoutName}>
                                             {row.name}
                                         </strong>
                                         {row.usedOutdoorData && (
                                             <span 
-                                                style={{ 
-                                                    color: '#FFA726',
-                                                    fontSize: '16px'
-                                                }}
+                                                className={styles.workoutOutdoorIcon}
                                                 title="Using outdoor power profile data"
                                             >
                                                 ⚠️
                                             </span>
                                         )}
                                     </div>
-                                    <div style={{ color: '#999', fontSize: '12px' }}>
+                                    <div className={styles.workoutId}>
                                         ID: {row.id}
                                     </div>
                                 </div>
 
                                 {/* Metrics Grid */}
                                 {row.metrics && (
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(4, 1fr)',
-                                        gap: '8px'
-                                    }}>
-                                        <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#4CAF50', fontSize: '10px', marginBottom: '2px' }}>Duration</div>
-                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                    <div className={styles.workoutMetricsGrid}>
+                                        <div className={styles.workoutMetricItem}>
+                                            <div className={`${styles.workoutMetricLabel} ${styles.metricDuration}`}>Duration</div>
+                                            <div className={styles.workoutMetricValue}>
                                                 {formatDuration(row.metrics.duration)}
                                             </div>
                                         </div>
-                                        <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#2196F3', fontSize: '10px', marginBottom: '2px' }}>TSS®</div>
-                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                        <div className={styles.workoutMetricItem}>
+                                            <div className={`${styles.workoutMetricLabel} ${styles.metricTss}`}>TSS®</div>
+                                            <div className={styles.workoutMetricValue}>
                                                 {Math.round(row.metrics.tss)}
                                             </div>
                                         </div>
-                                        <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#FF9800', fontSize: '10px', marginBottom: '2px' }}>IF®</div>
-                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                        <div className={styles.workoutMetricItem}>
+                                            <div className={`${styles.workoutMetricLabel} ${styles.metricIf}`}>IF®</div>
+                                            <div className={styles.workoutMetricValue}>
                                                 {row.metrics.intensityFactor.toFixed(2)}
                                             </div>
                                         </div>
-                                        <div style={{ textAlign: 'center' }}>
-                                            <div style={{ color: '#9C27B0', fontSize: '10px', marginBottom: '2px' }}>NP®</div>
-                                            <div style={{ color: 'white', fontSize: '14px', fontWeight: 'bold' }}>
+                                        <div className={styles.workoutMetricItem}>
+                                            <div className={`${styles.workoutMetricLabel} ${styles.metricNp}`}>NP®</div>
+                                            <div className={styles.workoutMetricValue}>
                                                 {Math.round(row.metrics.normalizedPower)}W
                                             </div>
                                         </div>
@@ -627,12 +516,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
                                 {/* Workout Profile Chart */}
                                 {row.workoutData && row.metrics && (
-                                    <div style={{
-                                        backgroundColor: '#1a1a1a',
-                                        borderRadius: '6px',
-                                        padding: '8px',
-                                        marginTop: '12px'
-                                    }}>
+                                    <div className={styles.workoutChartContainer}>
                                         <WorkoutChart
                                             workoutData={row.workoutData}
                                             userProfile={userProfile}
@@ -642,12 +526,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 )}
 
                                 {!row.metrics && (
-                                    <div style={{ 
-                                        color: '#999', 
-                                        textAlign: 'center',
-                                        padding: '20px',
-                                        fontStyle: 'italic'
-                                    }}>
+                                    <div className={styles.workoutErrorMessage}>
                                         {row.error || 'No workout data available'}
                                     </div>
                                 )}
@@ -659,51 +538,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
             
             {/* Floating Save Button */}
             {showFloatingSave && onSaveScenario && (
-                <div style={{
-                    position: 'fixed',
-                    bottom: '16px',
-                    left: '16px',
-                    right: '16px',
-                    zIndex: 1000,
-                    display: 'flex',
-                    gap: '8px'
-                }}>
+                <div className={styles.floatingSaveContainer}>
                     <button
                         data-testid="floating-save-scenario-button"
                         onClick={onSaveScenario}
-                        style={{
-                            flex: 1,
-                            padding: '16px 24px',
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-                        }}
+                        className={styles.floatingSaveButton}
                     >
                         💾 {editingScenario ? 'Update Scenario' : 'Save Scenario'}
                     </button>
                     {editingScenario && onCancelEdit && (
                         <button
                             onClick={onCancelEdit}
-                            style={{
-                                padding: '16px 20px',
-                                backgroundColor: '#666',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: '16px',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-                            }}
+                            className={styles.floatingCancelButton}
                         >
                             Cancel
                         </button>
@@ -714,80 +560,49 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     );
 
     return viewport.isMobile ? renderMobileLayout() : (
-        <div style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }}>
+        <div className={styles.desktopContainer}>
             {/* Header Section */}
-            <div style={{ padding: '20px 20px 0 20px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                    <h1 style={{ color: 'white', marginBottom: '10px' }}>
+            <div className={styles.desktopHeader}>
+                <div className={styles.desktopHeaderInner}>
+                    <h1 className={styles.desktopTitle}>
                         Plan Your Assault on the Castle
                     </h1>
-                    <p style={{ color: '#999', marginBottom: '30px' }}>
+                    <p className={styles.desktopSubtitle}>
                         Assemble 10 instruments of SUFFERING for your siezing of the highest HONOUR in Sufferlandria
                     </p>
                 </div>
             </div>
 
             {/* Sticky Controls Container */}
-            <div style={{
-                position: viewport.isMobile ? 'relative' : 'sticky',
-                top: viewport.isMobile ? 'auto' : 0,
-                zIndex: 100,
-                backgroundColor: '#1a1a1a',
-                borderBottom: '2px solid #333',
-                paddingTop: viewport.isMobile ? '0' : '10px',
-                paddingBottom: '10px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-            }}>
-                <div style={{ padding: '0 20px', maxWidth: '1400px', margin: '0 auto' }}>
+            <div className={styles.desktopControlsSticky}>
+                <div className={styles.desktopControlsContainer}>
                     {/* Basket Summary */}
-                    <div style={{ 
-                        backgroundColor: basket.length === MAX_WORKOUTS ? '#1e3a1e' : '#2a2a2a', 
-                        padding: '20px', 
-                        borderRadius: '8px',
-                        marginBottom: '20px',
-                        border: basket.length === MAX_WORKOUTS ? '2px solid #4CAF50' : '1px solid #333',
-                        transition: 'all 0.3s ease'
-                    }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className={`${styles.basketSummaryDesktop} ${
+                        basket.length === MAX_WORKOUTS ? styles.basketSummaryDesktopComplete : ''
+                    }`}>
+                    <div className={styles.basketSummaryDesktopHeader}>
                         <div>
-                            <h3 style={{ color: 'white', margin: '0 0 10px 0' }}>
+                            <h3 className={styles.basketSummaryDesktopTitle}>
                                 Your Arsenal of SUFFERING ({basket.length}/{MAX_WORKOUTS})
                             </h3>
                             {basket.length === MAX_WORKOUTS && (
-                                <div style={{ color: '#4CAF50', fontWeight: 'bold', marginBottom: '15px' }}>
+                                <div className={styles.basketCompleteMessage}>
                                     ⚔️ Ready for KNIGHTHOOD! The Ministry of Madness acknowledges your commitment to SUFFERING!
                                 </div>
                             )}
                             {basket.length === MAX_WORKOUTS && onSaveScenario && (
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                <div className={styles.desktopSaveButtonContainer}>
                                     <button
                                         data-testid="save-scenario-button"
                                         onClick={onSaveScenario}
-                                        style={{
-                                            padding: '12px 24px',
-                                            backgroundColor: '#4CAF50',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            fontSize: '16px'
-                                        }}
+                                        className={styles.saveButton}
                                     >
                                         {editingScenario ? 'Update Scenario' : 'Save Scenario'}
                                     </button>
                                     {editingScenario && onCancelEdit && (
                                         <button
                                             onClick={onCancelEdit}
-                                            style={{
-                                                padding: '12px 24px',
-                                                backgroundColor: '#666',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontSize: '14px'
-                                            }}
+                                            className={styles.cancelButton}
                                         >
                                             Cancel Edit
                                         </button>
@@ -798,51 +613,44 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                         <button
                             onClick={clearBasket}
                             disabled={basket.length === 0}
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: basket.length === 0 ? '#555' : '#d32f2f',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: basket.length === 0 ? 'not-allowed' : 'pointer'
-                            }}
+                            className={`${styles.clearBasketButton} ${basket.length === 0 ? styles.clearBasketButtonDisabled : ''}`}
                         >
                             Clear All
                         </button>
                     </div>
                     
                     {basket.length > 0 && (
-                        <div style={{ marginTop: '15px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Workout Duration</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                        <div className={styles.basketMetricsGrid}>
+                            <div className={styles.metricCard}>
+                                <div className={styles.metricLabel}>Workout Duration</div>
+                                <div className={styles.metricValue}>
                                     {formatDuration(combinedMetrics.totalDuration)}
                                 </div>
                             </div>
-                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Elapsed Duration</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                            <div className={styles.metricCard}>
+                                <div className={styles.metricLabel}>Elapsed Duration</div>
+                                <div className={styles.metricValue}>
                                     {formatDuration(combinedMetrics.totalElapsedDuration)}
                                 </div>
-                                <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+                                <div className={styles.metricSubtext}>
                                     +{Math.max(0, basket.length - 1) * 10}min rest
                                 </div>
                             </div>
-                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Total TSS®</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                            <div className={styles.metricCard}>
+                                <div className={styles.metricLabel}>Total TSS®</div>
+                                <div className={styles.metricValue}>
                                     {Math.round(combinedMetrics.totalTSS)}
                                 </div>
                             </div>
-                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Average IF®</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                            <div className={styles.metricCard}>
+                                <div className={styles.metricLabel}>Average IF®</div>
+                                <div className={styles.metricValue}>
                                     {combinedMetrics.averageIF.toFixed(2)}
                                 </div>
                             </div>
-                            <div style={{ backgroundColor: '#333', padding: '15px', borderRadius: '4px' }}>
-                                <div style={{ color: '#999', fontSize: '14px' }}>Average NP®</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+                            <div className={styles.metricCard}>
+                                <div className={styles.metricLabel}>Average NP®</div>
+                                <div className={styles.metricValue}>
                                     {Math.round(combinedMetrics.totalNP)}W
                                 </div>
                             </div>
@@ -852,32 +660,18 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
                     {/* Quick Selection Options */}
                     {optimalSelections && (
-                        <div style={{
-                            backgroundColor: '#333',
-                            padding: '15px',
-                            borderRadius: '8px',
-                            marginBottom: '15px',
-                            border: '1px solid #444'
-                        }}>
-                            <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold', marginBottom: '10px' }}>
+                        <div className={styles.quickSelectionDesktop}>
+                            <div className={styles.quickSelectionTitleDesktop}>
                                 PATHS TO KNIGHTHOOD (Choose your destiny of SUFFERING):
                             </div>
-                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            <div className={styles.quickSelectionButtonsDesktop}>
                                 <button
                                     onClick={() => {
                                         const selections = convertToWorkoutSelections(optimalSelections.lowestTSS);
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#2196F3',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathMercifulDesktop}`}
                                 >
                                     🏃‍♂️ Merciful Path (For Suffering Beginners)
                                 </button>
@@ -887,15 +681,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#FF9800',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathSwiftDesktop}`}
                                 >
                                     ⚡ Swift Strike (Get it over with quickly)
                                 </button>
@@ -905,15 +691,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathGentleDesktop}`}
                                 >
                                     💚 Gentle Suffering (Less pain, more endurance)
                                 </button>
@@ -923,15 +701,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#9C27B0',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathBalancedDesktop}`}
                                 >
                                     ⚖️ True Sufferlandrian (The way GvA intended)
                                 </button>
@@ -941,15 +711,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#d32f2f',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathMaximumDesktop}`}
                                 >
                                     🔥 Path of MAXIMUM SUFFERING (Please see a doctor first)
                                 </button>
@@ -959,15 +721,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         setBasket(selections);
                                         onBasketChange({ selectedWorkouts: selections, isComplete: true });
                                     }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#795548',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
+                                    className={`${styles.quickSelectionButtonDesktop} ${styles.pathEnduranceDesktop}`}
                                 >
                                     ⏰ Epic Endurance (Test your mental fortitude)
                                 </button>
@@ -976,18 +730,8 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     )}
 
                     {/* Controls */}
-                    <div style={{ 
-                        display: 'flex', 
-                        gap: '20px', 
-                        marginBottom: '20px',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        backgroundColor: '#333',
-                        padding: '15px',
-                        borderRadius: '8px',
-                        border: '1px solid #444'
-                    }}>
-                        <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold' }}>
+                    <div className={styles.searchControlsDesktop}>
+                        <div className={styles.searchLabelDesktop}>
                             SEARCH & FILTER:
                         </div>
                         <input
@@ -996,133 +740,66 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             placeholder="Search workouts..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{
-                                padding: '10px',
-                                backgroundColor: '#444',
-                                color: 'white',
-                                border: '1px solid #555',
-                                borderRadius: '4px',
-                                minWidth: '250px',
-                                fontSize: '14px'
-                            }}
+                            className={styles.searchInputDesktop}
                         />
                     
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as any)}
-                        style={{
-                            padding: '10px',
-                            backgroundColor: '#333',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        <option value="name">Sort by Name</option>
-                        <option value="duration">Sort by Duration</option>
-                        <option value="tss">Sort by TSS</option>
-                        <option value="if">Sort by IF</option>
-                    </select>
-                    
-                    <button
-                        onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                        style={{
-                            padding: '10px 15px',
-                            backgroundColor: '#444',
-                            color: 'white',
-                            border: '1px solid #555',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        {sortOrder === 'asc' ? '↑' : '↓'}
-                    </button>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as any)}
+                            className={styles.sortSelectDesktop}
+                        >
+                            <option value="name">Sort by Name</option>
+                            <option value="duration">Sort by Duration</option>
+                            <option value="tss">Sort by TSS</option>
+                            <option value="if">Sort by IF</option>
+                        </select>
+                        
+                        <button
+                            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                            className={styles.sortOrderButtonDesktop}
+                        >
+                            {sortOrder === 'asc' ? '↑' : '↓'}
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Scrollable Content Area */}
-            <div style={{ padding: '0 20px 20px 20px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <div className={styles.desktopContentArea}>
+                <div className={styles.desktopContentWrapper}>
                     {/* Workout List */}
-                    <div style={{ overflowX: 'auto' }}>
-                    <table style={{ 
-                        width: '100%', 
-                        borderCollapse: 'collapse',
-                        backgroundColor: '#2a2a2a',
-                        borderRadius: '8px',
-                        overflow: 'hidden'
-                    }}>
+                    <div className={styles.tableScrollContainer}>
+                        <table className={styles.workoutTable}>
                         <thead>
-                            <tr style={{ backgroundColor: '#333' }}>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444', width: '60px' }}>
+                            <tr className={styles.tableHeaderRow}>
+                                <th className={`${styles.tableHeader} ${styles.selectColumn}`}>
                                     Select
                                 </th>
                                 <th 
-                                    style={{ 
-                                        padding: '15px', 
-                                        color: 'white', 
-                                        textAlign: 'left', 
-                                        borderBottom: '2px solid #444',
-                                        cursor: 'pointer',
-                                        userSelect: 'none',
-                                        transition: 'background-color 0.2s'
-                                    }}
+                                    className={`${styles.tableHeader} ${styles.sortableColumn} ${styles.workoutColumn}`}
                                     onClick={() => handleSort('name')}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                 >
                                     Workout {getSortIcon('name')}
                                 </th>
                                 <th 
-                                    style={{ 
-                                        padding: '15px', 
-                                        color: 'white', 
-                                        textAlign: 'center', 
-                                        borderBottom: '2px solid #444',
-                                        cursor: 'pointer',
-                                        userSelect: 'none',
-                                        transition: 'background-color 0.2s'
-                                    }}
+                                    className={`${styles.tableHeader} ${styles.sortableColumn} ${styles.centerColumn}`}
                                     onClick={() => handleSort('duration')}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                 >
                                     Duration {getSortIcon('duration')}
                                 </th>
                                 <th 
-                                    style={{ 
-                                        padding: '15px', 
-                                        color: 'white', 
-                                        textAlign: 'center', 
-                                        borderBottom: '2px solid #444',
-                                        cursor: 'pointer',
-                                        userSelect: 'none',
-                                        transition: 'background-color 0.2s'
-                                    }}
+                                    className={`${styles.tableHeader} ${styles.sortableColumn} ${styles.centerColumn}`}
                                     onClick={() => handleSort('tss')}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                 >
                                     TSS® {getSortIcon('tss')}
                                 </th>
                                 <th 
-                                    style={{ 
-                                        padding: '15px', 
-                                        color: 'white', 
-                                        textAlign: 'center', 
-                                        borderBottom: '2px solid #444',
-                                        cursor: 'pointer',
-                                        userSelect: 'none',
-                                        transition: 'background-color 0.2s'
-                                    }}
+                                    className={`${styles.tableHeader} ${styles.sortableColumn} ${styles.centerColumn}`}
                                     onClick={() => handleSort('if')}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#333'}
                                 >
                                     IF® {getSortIcon('if')}
                                 </th>
-                                <th style={{ padding: '15px', color: 'white', textAlign: 'center', borderBottom: '2px solid #444' }}>
+                                <th className={`${styles.tableHeader} ${styles.centerColumn}`}>
                                     NP®
                                 </th>
                             </tr>
@@ -1143,48 +820,25 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                                 toggleWorkoutSelection(row.id);
                                             }
                                         }}
-                                        style={{ 
-                                            borderBottom: index < sortedWorkouts.length - 1 ? '1px solid #333' : 'none',
-                                            backgroundColor: isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525'),
-                                            opacity: row.metrics ? 1 : 0.6,
-                                            cursor: (canSelect || canDeselect) ? 'pointer' : 'not-allowed',
-                                            transition: 'background-color 0.2s ease',
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            if (canSelect || canDeselect) {
-                                                const currentBg = isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525');
-                                                e.currentTarget.style.backgroundColor = isSelected ? '#2a5a2a' : '#333333';
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            const originalBg = isSelected ? '#1e4d1e' : (index % 2 === 0 ? '#2a2a2a' : '#252525');
-                                            e.currentTarget.style.backgroundColor = originalBg;
-                                        }}
+                                        className={`${styles.tableRow} ${isSelected ? styles.selectedRow : (index % 2 === 0 ? styles.evenRow : styles.oddRow)} ${!row.metrics ? styles.disabledRow : ''} ${(canSelect || canDeselect) ? styles.selectableRow : styles.nonSelectableRow}`}
                                     >
-                                        <td style={{ padding: '15px', textAlign: 'center' }}>
+                                        <td className={`${styles.tableCell} ${styles.checkboxCell}`}>
                                             <input
                                                 data-testid={`workout-checkbox-${row.id}`}
                                                 type="checkbox"
                                                 checked={isSelected}
                                                 onChange={() => toggleWorkoutSelection(row.id)}
                                                 disabled={!canSelect && !canDeselect}
-                                                style={{
-                                                    transform: 'scale(1.2)',
-                                                    cursor: (canSelect || canDeselect) ? 'pointer' : 'not-allowed'
-                                                }}
+                                                className={`${styles.workoutCheckboxDesktop} ${(canSelect || canDeselect) ? styles.enabledCheckbox : styles.disabledCheckbox}`}
                                             />
                                         </td>
-                                        <td style={{ padding: '15px', color: 'white', verticalAlign: 'top' }}>
+                                        <td className={styles.tableCell}>
                                             <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <strong>{row.name}</strong>
+                                                <div className={styles.workoutNameCell}>
+                                                    <span className={styles.workoutName}>{row.name}</span>
                                                     {row.usedOutdoorData && (
                                                         <span 
-                                                            style={{ 
-                                                                color: '#FFA726',
-                                                                fontSize: '16px',
-                                                                cursor: 'help'
-                                                            }}
+                                                            className={styles.outdoorDataWarning}
                                                             title="Indoor power profile data unavailable, using outdoor power profile."
                                                         >
                                                             ⚠️
@@ -1194,39 +848,19 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                                         href={`https://systm.wahoofitness.com/content-details/${row.id}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        style={{
-                                                            color: '#4CAF50',
-                                                            textDecoration: 'none',
-                                                            fontSize: '14px',
-                                                            padding: '2px 4px',
-                                                            borderRadius: '3px',
-                                                            transition: 'background-color 0.2s',
-                                                            display: 'inline-flex',
-                                                            alignItems: 'center'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                                        }}
+                                                        className={styles.workoutLink}
                                                         title={`View ${row.name} on SYSTM`}
                                                     >
                                                         ↗
                                                     </a>
                                                 </div>
-                                                <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+                                                <div className={styles.workoutDescription}>
                                                     ID: {row.id}
                                                 </div>
                                                 
                                                 {/* Workout Profile Chart */}
                                                 {row.workoutData && row.metrics && (
-                                                    <div style={{
-                                                        backgroundColor: '#1a1a1a',
-                                                        borderRadius: '6px',
-                                                        padding: '8px',
-                                                        marginTop: '12px'
-                                                    }}>
+                                                    <div className={styles.workoutChartContainer}>
                                                         <WorkoutChart
                                                             workoutData={row.workoutData}
                                                             userProfile={userProfile}
@@ -1236,24 +870,33 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                                 )}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                            {row.metrics ? formatDuration(row.metrics.duration) : 'N/A'}
+                                        <td className={`${styles.tableCell} ${styles.centerColumn}`}>
+                                            <span className={styles.workoutMetric}>
+                                                {row.metrics ? formatDuration(row.metrics.duration) : 'N/A'}
+                                            </span>
                                         </td>
-                                        <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                            {row.metrics ? Math.round(row.metrics.tss) : 'N/A'}
+                                        <td className={`${styles.tableCell} ${styles.centerColumn}`}>
+                                            <span className={styles.workoutMetric}>
+                                                {row.metrics ? Math.round(row.metrics.tss) : 'N/A'}
+                                            </span>
                                         </td>
-                                        <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                            {row.metrics ? row.metrics.intensityFactor.toFixed(2) : 'N/A'}
+                                        <td className={`${styles.tableCell} ${styles.centerColumn}`}>
+                                            <span className={styles.workoutMetric}>
+                                                {row.metrics ? row.metrics.intensityFactor.toFixed(2) : 'N/A'}
+                                            </span>
                                         </td>
-                                        <td style={{ padding: '15px', color: 'white', textAlign: 'center', verticalAlign: 'middle' }}>
-                                            {row.metrics ? Math.round(row.metrics.normalizedPower) + 'W' : 'N/A'}
+                                        <td className={`${styles.tableCell} ${styles.centerColumn}`}>
+                                            <span className={styles.workoutMetric}>
+                                                {row.metrics ? Math.round(row.metrics.normalizedPower) : 'N/A'}
+                                                <span className={styles.metricSuffix}>{row.metrics ? 'W' : ''}</span>
+                                            </span>
                                         </td>
                                     </tr>
                                 );
                             })}
                         </tbody>
-                    </table>
-                </div>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
