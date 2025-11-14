@@ -5,13 +5,15 @@ import {
     LinearScale,
     PointElement,
     LineElement,
+    BarElement,
+    BarController,
     Title,
     Tooltip,
     Legend,
     ChartOptions,
     ChartData
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { getWorkoutData } from '../data/workout-data';
@@ -25,6 +27,8 @@ ChartJS.register(
     LinearScale,
     PointElement,
     LineElement,
+    BarElement,
+    BarController,
     Title,
     Tooltip,
     Legend
@@ -50,6 +54,16 @@ interface ScenarioPowerProfile {
 
 const BUCKET_SIZE_MINUTES = 30;
 const BUCKET_SIZE_SECONDS = BUCKET_SIZE_MINUTES * 60;
+
+// Power zones definition (as % of FTP)
+const POWER_ZONES = [
+    { name: 'Recovery', min: 0, max: 55, color: '#b3c6ff' },
+    { name: 'Endurance', min: 55, max: 75, color: '#a3e1a3' },
+    { name: 'Tempo', min: 75, max: 90, color: '#ffe066' },
+    { name: 'Threshold', min: 90, max: 105, color: '#ffb366' },
+    { name: 'VO2max', min: 105, max: 120, color: '#ff6666' },
+    { name: 'Anaerobic', min: 120, max: 200, color: '#c266ff' }
+];
 
 // Generate distinct colors for each scenario
 const CHART_COLORS = [
@@ -315,6 +329,80 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         }
     };
 
+    // Calculate power zone distribution using raw workout data
+    const zoneDistributions = scenarios.map((scenario: Scenario) => {
+        let allRawPoints: number[] = [];
+        
+        // Gather all raw power values from scenario workouts
+        scenario.workouts.forEach((workout: any) => {
+            const rawData = getWorkoutData(workout.id);
+            if (!rawData) return;
+            const { data } = getBestWorkoutData(rawData);
+            if (!data || !data.value || !data.time) return;
+            
+            // Convert each power value to %FTP (data.value is already in FTP multiples)
+            for (let i = 0; i < data.value.length; i++) {
+                const percentFTP = data.value[i] * 100; // Convert from decimal (0.5 = 50%, 1.0 = 100%)
+                allRawPoints.push(percentFTP);
+            }
+        });
+        
+        // Count time spent in each zone
+        const zoneCounts = POWER_ZONES.map(() => 0);
+        allRawPoints.forEach((power: number) => {
+            for (let i = 0; i < POWER_ZONES.length; i++) {
+                if (power >= POWER_ZONES[i].min && power < POWER_ZONES[i].max) {
+                    zoneCounts[i]++;
+                    break;
+                }
+            }
+        });
+        
+        // Convert to percentages
+        const total = allRawPoints.length;
+        return zoneCounts.map(count => (total > 0 ? (count / total) * 100 : 0));
+    });
+
+    // Prepare zone chart data for grouped bar chart
+    const zoneChartData = {
+        labels: POWER_ZONES.map(zone => zone.name),
+        datasets: scenarios.map((scenario: Scenario, idx: number) => ({
+            label: scenario.name,
+            data: zoneDistributions[idx],
+            backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+            borderColor: CHART_COLORS[idx % CHART_COLORS.length],
+            borderWidth: 1
+        }))
+    };
+
+    const zoneChartOptions = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' as const },
+            title: {
+                display: true,
+                text: 'Power Zone Distribution (%)',
+                font: { size: 16, weight: 'bold' as const }
+            }
+        },
+        scales: {
+            x: { 
+                stacked: false,
+                title: { display: true, text: 'Power Zones' }
+            },
+            y: {
+                beginAtZero: true,
+                max: 100,
+                title: { display: true, text: 'Time in Zone (%)' },
+                ticks: {
+                    callback: function(value: any) {
+                        return `${value}%`;
+                    }
+                }
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className={styles.comparisonSection}>
@@ -370,9 +458,14 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 </button>
             </div>
             
-            {/* Chart Container */}
+            {/* Normalized Power Chart Container */}
             <div className={styles.chartContainer}>
                 <Line data={chartData} options={chartOptions} />
+            </div>
+            
+            {/* Power Zone Distribution Chart Container */}
+            <div className={styles.chartContainer}>
+                <Bar data={zoneChartData} options={zoneChartOptions} />
             </div>
         </div>
     );
