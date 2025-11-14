@@ -35,11 +35,22 @@
 	width: 100%;
 	max-width: 1400px;
 	margin: 0 auto 24px auto;
-	height: 340px;
+	height: 400px;
 	background: #222;
 	border-radius: 8px;
 	box-shadow: 0 1px 8px rgba(0,0,0,0.10);
 	padding: 12px 8px 8px 8px;
+	/* Better touch targets on mobile */
+	touch-action: manipulation;
+}
+
+/* Mobile chart heights and spacing */
+@media (max-width: 768px) {
+	.chartContainer {
+		height: 450px;
+		margin: 0 auto 32px auto; /* More spacing between charts on mobile */
+		padding: 16px 12px 12px 12px; /* More padding for better touch interaction */
+	}
 }
 .summaryContainer {
 	margin-top: 16px;
@@ -116,11 +127,13 @@
 .chartContainerHalf {
 	flex: 1;
 	max-width: 680px;
-	height: 340px;
+	height: 500px; /* Taller for better bar chart visibility */
 	background: #222;
 	border-radius: 8px;
 	box-shadow: 0 1px 8px rgba(0,0,0,0.10);
 	padding: 12px 8px 8px 8px;
+	/* Better touch targets on mobile */
+	touch-action: manipulation;
 }
 
 /* Stack charts on mobile */
@@ -132,6 +145,8 @@
 	
 	.chartContainerHalf {
 		max-width: 100%;
+		min-height: 450px; /* Even taller on mobile for bar charts */
+		padding: 16px 12px 12px 12px; /* More padding for better touch interaction */
 	}
 }
 

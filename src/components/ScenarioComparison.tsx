@@ -402,6 +402,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
     const tssChartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: { position: 'top' as const },
             title: {
@@ -415,6 +416,10 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 title: { 
                     display: true, 
                     text: 'Scenarios' 
+                },
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 0
                 }
             },
             y: {
@@ -480,6 +485,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
     const zoneChartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: { position: 'top' as const },
             title: {
@@ -491,7 +497,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         scales: {
             x: { 
                 stacked: false,
-                title: { display: true, text: 'Power Zones' }
+                title: { display: true, text: 'Power Zones' },
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 0
+                }
             },
             y: {
                 beginAtZero: true,

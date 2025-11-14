@@ -114,6 +114,30 @@
   background-color: #555;
 }
 
+.compareAllButtonMobile {
+  padding: 10px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.compareAllButtonMobile:hover:not(:disabled) {
+  background-color: #1976D2;
+}
+
+.compareAllButtonMobile:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Scenario List Mobile */
 .scenarioListMobile {
   display: flex;
@@ -130,7 +154,19 @@
 
 /* Scenario Card Header */
 .scenarioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 12px;
+}
+
+.scenarioHeaderLeft {
+  flex: 1;
+}
+
+.scenarioHeaderRight {
+  display: flex;
+  align-items: center;
 }
 
 .scenarioTitle {
@@ -142,6 +178,25 @@
 .scenarioDate {
   color: #999;
   font-size: 12px;
+}
+
+/* Comparison Checkbox Mobile */
+.comparisonCheckboxMobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scenarioCheckboxMobile {
+  margin-bottom: 2px;
+  transform: scale(1.2);
+}
+
+.comparisonLabelMobile {
+  color: #999;
+  font-size: 10px;
+  text-align: center;
 }
 
 /* Metrics Grid */
@@ -543,6 +598,28 @@
   border: 1px solid #555;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.compareAllButton {
+  padding: 10px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.compareAllButton:hover:not(:disabled) {
+  background-color: #1976D2;
+}
+
+.compareAllButton:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .selectionInfo {

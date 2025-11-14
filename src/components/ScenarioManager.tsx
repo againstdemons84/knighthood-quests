@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsDynamic } from '../utils/scenarioHelpers';
@@ -26,6 +26,7 @@ interface ScenarioWithMetrics extends Scenario {
 
 const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario, onScenariosChange, userProfile }) => {
     const viewport = useViewport();
+    const comparisonSectionRef = useRef<HTMLDivElement>(null);
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [scenariosWithMetrics, setScenariosWithMetrics] = useState<ScenarioWithMetrics[]>([]);
     const [isLoadingMetrics, setIsLoadingMetrics] = useState(false);
@@ -174,6 +175,21 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         setSelectedScenarios(new Set());
     };
 
+    const compareAll = () => {
+        const allScenarioIds = new Set(scenariosWithMetrics.map(s => s.id));
+        setSelectedScenarios(allScenarioIds);
+        
+        // Scroll to comparison section after a short delay to allow for rendering
+        setTimeout(() => {
+            if (comparisonSectionRef.current) {
+                comparisonSectionRef.current.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start'
+                });
+            }
+        }, 100);
+    };
+
     const sortedScenarios = [...scenariosWithMetrics].sort((a, b) => {
         let aValue, bValue;
         
@@ -267,6 +283,14 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                 </button>
                             ))}
                         </div>
+                        
+                        <button
+                            onClick={compareAll}
+                            className={styles.compareAllButtonMobile}
+                            disabled={scenariosWithMetrics.length === 0}
+                        >
+                            Compare All
+                        </button>
                     </div>
 
                     {/* Scenario Cards */}
@@ -275,11 +299,24 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                             <div key={scenario.id} className={styles.scenarioCardMobile}>
                                 {/* Header */}
                                 <div className={styles.scenarioHeader}>
-                                    <h3 className={styles.scenarioTitle}>
-                                        {scenario.name}
-                                    </h3>
-                                    <div className={styles.scenarioDate}>
-                                        Created: {new Date(scenario.createdAt).toLocaleDateString()}
+                                    <div className={styles.scenarioHeaderLeft}>
+                                        <h3 className={styles.scenarioTitle}>
+                                            {scenario.name}
+                                        </h3>
+                                        <div className={styles.scenarioDate}>
+                                            Created: {new Date(scenario.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <div className={styles.scenarioHeaderRight}>
+                                        <label className={styles.comparisonCheckboxMobile}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedScenarios.has(scenario.id)}
+                                                onChange={() => toggleScenarioSelection(scenario.id)}
+                                                className={styles.scenarioCheckboxMobile}
+                                            />
+                                            <span className={styles.comparisonLabelMobile}>Compare</span>
+                                        </label>
                                     </div>
                                 </div>
 
@@ -361,6 +398,20 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     </div>
                 </>
             )}
+
+            {/* Enhanced Comparison Section with Chart - Mobile */}
+            {selectedScenarios.size > 0 && (
+                <div ref={comparisonSectionRef}>
+                    {/* Chart-based comparison */}
+                    <ScenarioComparison
+                        scenarios={Array.from(selectedScenarios).map(id => 
+                            scenariosWithMetrics.find(s => s.id === id)!
+                        )}
+                        userProfile={userProfile}
+                        onClearSelection={clearSelection}
+                    />
+                </div>
+            )}
             
             {/* Print Modal */}
             {showPrintModal && (
@@ -414,6 +465,14 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                         className={styles.sortOrderButton}
                     >
                         {sortOrder === 'asc' ? '↑' : '↓'}
+                    </button>
+
+                    <button
+                        onClick={compareAll}
+                        className={styles.compareAllButton}
+                        disabled={scenariosWithMetrics.length === 0}
+                    >
+                        Compare All
                     </button>
 
                     {selectedScenarios.size > 0 && (
@@ -583,14 +642,14 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
 
                 {/* Enhanced Comparison Section with Chart */}
                 {selectedScenarios.size > 0 && (
-                    <>
+                    <div ref={comparisonSectionRef}>
                         {/* Chart-based comparison */}
                         <ScenarioComparison
                             scenarios={selectedScenariosList}
                             userProfile={userProfile}
                             onClearSelection={clearSelection}
                         />
-                    </>
+                    </div>
                 )}
             </div>
             
