@@ -419,15 +419,17 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                         {editingScenario ? 'Update Scenario' : 'Save Scenario'}
                                     </button>
                                 )}
-                                {editingScenario && onCancelEdit && (
-                                    <button
-                                        onClick={onCancelEdit}
-                                        className={`${styles.cancelButton} ${styles.cancelButtonMobile}`}
-                                    >
-                                        Cancel Edit
-                                    </button>
-                                )}
                             </>
+                        )}
+                        {editingScenario && onCancelEdit && (
+                            <button
+                                onClick={onCancelEdit}
+                                id="cancel-edit-button"
+                                data-testid="cancel-edit-button"
+                                className={`${styles.cancelButton} ${styles.cancelButtonMobile}`}
+                            >
+                                Cancel Edit
+                            </button>
                         )}
                         {basket.length > 0 && (
                             <button
@@ -587,6 +589,8 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                     {editingScenario && onCancelEdit && (
                         <button
                             onClick={onCancelEdit}
+                            id="cancel-edit-button"
+                            data-testid="cancel-edit-button"
                             className={styles.floatingCancelButton}
                         >
                             Cancel
@@ -733,6 +737,8 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                             {editingScenario && onCancelEdit && (
                                                 <button
                                                     onClick={onCancelEdit}
+                                                    id="cancel-edit-button"
+                                                    data-testid="cancel-edit-button"
                                                     className={styles.cancelButton}
                                                 >
                                                     Cancel Edit

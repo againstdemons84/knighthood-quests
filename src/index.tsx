@@ -310,6 +310,7 @@ const App = () => {
                         onCancelEdit={() => {
                             setEditingScenario(null);
                             setBasketState({ selectedWorkouts: [], isComplete: false });
+                            setPage('scenarios');
                         }}
                     />
                 ) : null;

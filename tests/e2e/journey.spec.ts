@@ -799,4 +799,128 @@ test.describe('Cross-Device Journey Tests', () => {
     // Should correctly show 1 again
     await DeviceHelpers.verifyTabCounter(page, 1);
   });
+
+  test('Scenario editing and cancel edit navigation', async ({ page }) => {
+    // Clear localStorage to ensure clean state
+    await page.evaluate(() => {
+      localStorage.removeItem('knighthood-scenarios');
+    });
+
+    // Navigate to quest tab and create a scenario first
+    const questTab = page.locator('[data-testid="quest-tab"]');
+    await questTab.click();
+    
+    // Select 10 workouts
+    await DeviceHelpers.selectWorkouts(page, 10);
+    
+    // Save the scenario
+    const saveButton = page.locator('[data-testid="save-scenario-button"]');
+    await DeviceHelpers.ensureVisible(page, saveButton);
+    await saveButton.click();
+    
+    const nameInput = page.locator('[data-testid="scenario-name-input"]');
+    const modalSaveButton = page.locator('[data-testid="save-scenario-modal-button"]');
+    
+    await nameInput.fill('Test Scenario for Editing');
+    await DeviceHelpers.ensureVisible(page, modalSaveButton);
+    await modalSaveButton.click();
+    
+    // Verify we're now on scenarios page with 1 scenario
+    await expect(page.locator('[data-testid="scenarios-tab"]')).toHaveClass(/active/);
+    await DeviceHelpers.verifyTabCounter(page, 1);
+    
+    // Find and click the edit button for our scenario (use regex to match any edit button)
+    const editButton = page.locator('[data-testid^="edit-scenario-"]').first();
+    await DeviceHelpers.ensureVisible(page, editButton);
+    await editButton.click();
+    
+    // Should navigate to quest tab in edit mode
+    await expect(page.locator('[data-testid="quest-tab"]')).toHaveClass(/active/);
+    
+    // Verify we're in edit mode by checking for cancel edit button
+    const cancelEditButton = page.locator('[data-testid="cancel-edit-button"]');
+    await expect(cancelEditButton).toBeVisible();
+    
+    // Verify that workouts are pre-selected (should have 10 selected)
+    if (DeviceHelpers.isMobile(page)) {
+      // On mobile, count by CSS class
+      await expect(page.locator('[data-testid^="workout-checkbox-"][class*="workoutCheckboxSelected"]')).toHaveCount(10, { timeout: 2000 });
+    } else {
+      // On desktop, count by checked state
+      await expect(page.locator('[data-testid^="workout-checkbox-"]:checked')).toHaveCount(10);
+    }
+    
+    // Verify quest tab shows (10/10) indicating edit mode
+    const questTabText = await questTab.textContent();
+    expect(questTabText).toContain('(10/10)');
+    
+    // Test modifying the selection (unselect one workout)
+    const firstSelectedWorkout = DeviceHelpers.isMobile(page) 
+      ? page.locator('[data-testid^="workout-checkbox-"][class*="workoutCheckboxSelected"]').first()
+      : page.locator('[data-testid^="workout-checkbox-"]:checked').first();
+    
+    await DeviceHelpers.ensureVisible(page, firstSelectedWorkout);
+    await firstSelectedWorkout.click();
+    
+    // Verify selection changed to 9
+    await page.waitForTimeout(100);
+    const updatedQuestTabText = await questTab.textContent();
+    expect(updatedQuestTabText).toContain('(9/10)');
+    
+    // Now test the cancel edit functionality
+    await DeviceHelpers.ensureVisible(page, cancelEditButton);
+    await cancelEditButton.click();
+    
+    // Should navigate back to Enterpainment (scenarios) tab
+    await expect(page.locator('[data-testid="scenarios-tab"]')).toHaveClass(/active/);
+    
+    // Verify we're back on scenarios page and can see our scenario
+    const scenarioItem = page.locator('[data-testid^="view-scenario-"]').first();
+    await expect(scenarioItem).toBeVisible();
+    
+    // Verify tab counter is still 1 (scenario wasn't modified/saved)
+    await DeviceHelpers.verifyTabCounter(page, 1);
+    
+    // Verify quest tab counter is reset to (0/10) after cancel
+    const finalQuestTabText = await questTab.textContent();
+    expect(finalQuestTabText).toContain('(0/10)');
+    
+    // Test that we can successfully edit and save a scenario
+    await editButton.click(); // Edit again
+    
+    // Should be back in edit mode
+    await expect(page.locator('[data-testid="quest-tab"]')).toHaveClass(/active/);
+    await expect(cancelEditButton).toBeVisible();
+    
+    // Make a change - select a different workout count
+    const currentSelected = DeviceHelpers.isMobile(page) 
+      ? await page.locator('.workoutCheckboxSelected').count()
+      : await page.locator('[data-testid^="workout-checkbox-"]:checked').count();
+    
+    for(let i = currentSelected; i < 10; i++) {
+      // Add one more workout if we have less than 10
+      const unselectedWorkout = DeviceHelpers.isMobile(page)
+        ? page.locator('[data-testid^="workout-checkbox-"]:not(.workoutCheckboxSelected)').first()
+        : page.locator('[data-testid^="workout-checkbox-"]:not(:checked)').first();
+      
+      await DeviceHelpers.ensureVisible(page, unselectedWorkout);
+      await unselectedWorkout.click();
+    }
+    
+    // Save the edited scenario
+    const saveButtonInEdit = page.locator('[data-testid="save-scenario-button"]');
+    await DeviceHelpers.ensureVisible(page, saveButtonInEdit);
+    await saveButtonInEdit.click();
+    
+    // Should show the existing scenario name in edit mode
+    await expect(nameInput).toHaveValue('Test Scenario for Editing');
+    await modalSaveButton.click();
+    
+    // Should navigate back to scenarios page after successful save
+    await expect(page.locator('[data-testid="scenarios-tab"]')).toHaveClass(/active/);
+    
+    // Verify scenario is still there (updated, not duplicated)
+    await DeviceHelpers.verifyTabCounter(page, 1);
+    await expect(scenarioItem).toBeVisible();
+  });
 });
