@@ -82,9 +82,12 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
 
     const handlePrint = () => {
         const schedule = calculateSchedule();
+        const intensityScaleFactor = userProfile.targetIntensity / 100;
         const totalTSS = scenario.workouts.reduce((sum, w) => sum + (w.metrics?.tss || 0), 0);
+        const scaledTotalTSS = totalTSS * intensityScaleFactor;
         const totalDuration = scenario.workouts.reduce((sum, w) => sum + (w.metrics?.duration || 0), 0);
         const avgIF = scenario.workouts.reduce((sum, w) => sum + (w.metrics?.intensityFactor || 0), 0) / scenario.workouts.length;
+        const scaledAvgIF = avgIF * intensityScaleFactor;
         
         const printContent = `
             <!DOCTYPE html>
@@ -111,15 +114,15 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                         <span class="summary-value">${formatDuration(totalDuration + (scenario.workouts.length - 1) * 10 * 60)} (including breaks)</span>
                     </div>
                     <div class="summary-row">
-                        <span class="summary-label"><strong>Total TSS®:</strong></span>
-                        <span class="summary-value">${Math.round(totalTSS)}</span>
+                        <span class="summary-label"><strong>Total TSS® (${userProfile.targetIntensity}% intensity):</strong></span>
+                        <span class="summary-value">${Math.round(scaledTotalTSS)}</span>
                     </div>
                     <div class="summary-row">
-                        <span class="summary-label"><strong>Average IF®:</strong></span>
-                        <span class="summary-value">${avgIF.toFixed(2)}</span>
+                        <span class="summary-label"><strong>Average IF® (${userProfile.targetIntensity}% intensity):</strong></span>
+                        <span class="summary-value">${scaledAvgIF.toFixed(2)}</span>
                     </div>
                     <div class="summary-row">
-                        <span class="summary-label"><strong>Power Profile:</strong></span>
+                        <span class="summary-label"><strong>100% Power Profile:</strong></span>
                         <span class="summary-value">FTP: ${userProfile.ftp}W, AC: ${userProfile.ac}W, NM: ${userProfile.nm}W, MAP: ${userProfile.map}W</span>
                     </div>
                 </div>
@@ -132,9 +135,9 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                             <th class="th-end">End</th>
                             <th class="th-workout">Workout / Break</th>
                             <th class="th-duration">Duration</th>
-                            <th class="th-tss">TSS®</th>
-                            <th class="th-if">IF®</th>
-                            <th class="th-np">NP®</th>
+                            <th class="th-tss">TSS® (${userProfile.targetIntensity}%)</th>
+                            <th class="th-if">IF® (${userProfile.targetIntensity}%)</th>
+                            <th class="th-np">NP® (${userProfile.targetIntensity}%)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -147,9 +150,9 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                                         <td class="center">${item.endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                                         <td><strong>${item.name}</strong></td>
                                         <td class="center">${item.duration}min</td>
-                                        <td class="center">${Math.round(item.tss || 0)}</td>
-                                        <td class="center">${(item.intensityFactor || 0).toFixed(2)}</td>
-                                        <td class="center">${Math.round(item.normalizedPower || 0)}W</td>
+                                        <td class="center">${Math.round((item.tss || 0) * intensityScaleFactor)}</td>
+                                        <td class="center">${((item.intensityFactor || 0) * intensityScaleFactor).toFixed(2)}</td>
+                                        <td class="center">${Math.round((item.normalizedPower || 0) * intensityScaleFactor)}W</td>
                                     </tr>
                                 `;
                             } else {
@@ -158,7 +161,7 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                                         <td class="center">-</td>
                                         <td class="center">${item.startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                                         <td class="center">${item.endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                                        <td>🛑 Rest Break (Max 10 minutes allowed)</td>
+                                        <td class="center">~~ Rest Break ~~</td>
                                         <td class="center">${item.duration}min</td>
                                         <td class="center">-</td>
                                         <td class="center">-</td>

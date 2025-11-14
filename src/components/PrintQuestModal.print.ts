@@ -65,6 +65,9 @@ export const printStyles = `
     th, td { 
         border: 1px solid #ddd; 
         padding: 8px; 
+    }
+
+    td { 
         text-align: left; 
     }
     
@@ -72,12 +75,13 @@ export const printStyles = `
         background-color: #f2f2f2; 
         font-weight: bold; 
         font-size: 11px; 
+        text-align: center;
     }
     
     .th-number { width: 8%; }
     .th-start { width: 10%; }
     .th-end { width: 10%; }
-    .th-workout { width: 32%; }
+    .th-workout { width: 32%; text-align: left; }
     .th-duration { width: 8%; }
     .th-tss { width: 8%; }
     .th-if { width: 8%; }
