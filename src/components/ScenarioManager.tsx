@@ -5,6 +5,7 @@ import { loadScenarios, saveScenarios, formatDuration, calculateCombinedMetricsD
 import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
 import styles from './ScenarioManager.module.css';
+import ScenarioComparison from './ScenarioComparison';
 
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
@@ -393,21 +394,16 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     </div>
                 )}
 
-                {/* Comparison Section */}
+                {/* Enhanced Comparison Section with Chart */}
                 {selectedScenarios.size > 0 && (
-                    <div className={styles.comparisonSection}>
-                        <div className={styles.comparisonHeader}>
-                            <h3 className={styles.comparisonTitle}>
-                                Comparing {selectedScenarios.size} Scenario{selectedScenarios.size > 1 ? 's' : ''}
-                            </h3>
-                            <button
-                                onClick={clearSelection}
-                                className={styles.clearSelectionButton}
-                            >
-                                Clear Selection
-                            </button>
-                        </div>
-                        
+                    <>
+                        {/* Chart-based comparison */}
+                        <ScenarioComparison
+                            scenarios={selectedScenariosList}
+                            userProfile={userProfile}
+                            onClearSelection={clearSelection}
+                        />
+                        {/* Legacy table comparison for reference (optional, can remove later) */}
                         <div className={styles.comparisonTableContainer}>
                             <table className={styles.comparisonTable}>
                                 <thead>
@@ -447,7 +443,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Controls */}

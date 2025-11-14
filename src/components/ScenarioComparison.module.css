@@ -1,0 +1,108 @@
+/* Chart and comparison section styles */
+.comparisonSection {
+	background: #181818;
+	border-radius: 12px;
+	padding: 24px 16px 32px 16px;
+	margin-bottom: 32px;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+.comparisonHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+.comparisonTitle {
+	font-size: 1.4rem;
+	font-weight: 700;
+	color: #eaeaea;
+	margin: 0;
+}
+.clearSelectionButton {
+	background: #fff;
+	color: #222;
+	border: 1px solid #888;
+	border-radius: 6px;
+	padding: 4px 12px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+.clearSelectionButton:hover {
+	background: #eee;
+}
+.chartContainer {
+	width: 100%;
+	max-width: 700px;
+	margin: 0 auto 24px auto;
+	height: 340px;
+	background: #222;
+	border-radius: 8px;
+	box-shadow: 0 1px 8px rgba(0,0,0,0.10);
+	padding: 12px 8px 8px 8px;
+}
+.summaryContainer {
+	margin-top: 16px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	justify-content: center;
+}
+.summaryCard {
+	background: #232323;
+	border-radius: 8px;
+	box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+	padding: 12px 18px;
+	min-width: 180px;
+	border-left: 6px solid #888;
+}
+.summaryCardHeader {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+.scenarioName {
+	color: #eaeaea;
+}
+.summaryStats {
+	font-size: 0.98rem;
+	color: #ccc;
+}
+.stat {
+	margin-bottom: 4px;
+}
+.statLabel {
+	font-weight: 500;
+	color: #aaa;
+	margin-right: 6px;
+}
+.statValue {
+	color: #eaeaea;
+}
+.loadingContainer {
+	text-align: center;
+	color: #ccc;
+	margin: 32px 0;
+}
+.loadingText {
+	font-size: 1.2rem;
+	margin-bottom: 8px;
+}
+.loadingSubtext {
+	font-size: 1rem;
+	color: #888;
+}
+.errorContainer {
+	text-align: center;
+	color: #e57373;
+	margin: 32px 0;
+}
+.errorText {
+	font-size: 1.2rem;
+	margin-bottom: 8px;
+}
+.errorSubtext {
+	font-size: 1rem;
+	color: #888;
+}
+
