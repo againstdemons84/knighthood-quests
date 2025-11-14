@@ -329,6 +329,109 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         }
     };
 
+    // Calculate cumulative TSS over time for each scenario
+    const cumulativeTSSData = scenarios.map((scenario: Scenario, scenarioIndex: number) => {
+        let cumulativeTSS = 0;
+        let currentTime = 0;
+        const tssPoints: { time: number; tss: number }[] = [];
+        
+        scenario.workouts.forEach((workout: any) => {
+            const rawData = getWorkoutData(workout.id);
+            if (!rawData) return;
+            const { data } = getBestWorkoutData(rawData);
+            if (!data || !data.value || !data.time) return;
+            
+            // Calculate TSS for this workout
+            let workoutTSS = 0;
+            const duration = data.time[data.time.length - 1]; // workout duration in seconds
+            
+            // Calculate normalized power for the workout
+            const powers = data.value.map((v: number) => v * userProfile.ftp); // Convert to watts
+            let totalNP4 = 0;
+            let count = 0;
+            
+            // Rolling 30s NP calculation
+            for (let i = 0; i < powers.length; i++) {
+                const startIdx = Math.max(0, i - 29);
+                const window = powers.slice(startIdx, i + 1);
+                const mean4th = window.reduce((sum: number, p: number) => sum + Math.pow(p, 4), 0) / window.length;
+                const np = Math.pow(mean4th, 0.25);
+                totalNP4 += Math.pow(np, 4);
+                count++;
+            }
+            
+            const workoutNP = count > 0 ? Math.pow(totalNP4 / count, 0.25) : 0;
+            const intensityFactor = workoutNP / userProfile.ftp;
+            
+            // TSS = (duration in hours) × (IF^2) × 100
+            workoutTSS = (duration / 3600) * Math.pow(intensityFactor, 2) * 100;
+            cumulativeTSS += workoutTSS;
+            
+            // Add data points throughout the workout for smooth curve
+            const timeStep = Math.max(1, Math.floor(duration / 20)); // 20 points per workout
+            for (let t = 0; t <= duration; t += timeStep) {
+                const progressTSS = cumulativeTSS - workoutTSS + (workoutTSS * t / duration);
+                tssPoints.push({
+                    time: (currentTime + t) / 60, // Convert to minutes
+                    tss: progressTSS
+                });
+            }
+            
+            currentTime += duration;
+        });
+        
+        return {
+            scenario,
+            data: tssPoints,
+            color: CHART_COLORS[scenarioIndex % CHART_COLORS.length],
+            finalTSS: cumulativeTSS
+        };
+    });
+
+    // Prepare cumulative TSS chart data as bar chart
+    const tssChartData = {
+        labels: cumulativeTSSData.map(profile => profile.scenario.name),
+        datasets: [{
+            label: 'Total TSS',
+            data: cumulativeTSSData.map(profile => Math.round(profile.finalTSS)),
+            backgroundColor: cumulativeTSSData.map(profile => profile.color),
+            borderColor: cumulativeTSSData.map(profile => profile.color),
+            borderWidth: 1
+        }]
+    };
+
+    const tssChartOptions = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' as const },
+            title: {
+                display: true,
+                text: 'Total Training Stress Score (TSS) Comparison',
+                font: { size: 16, weight: 'bold' as const }
+            }
+        },
+        scales: {
+            x: {
+                title: { 
+                    display: true, 
+                    text: 'Scenarios' 
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: { 
+                    display: true, 
+                    text: 'Total TSS' 
+                },
+                ticks: {
+                    callback: function(value: any) {
+                        return Math.round(value);
+                    }
+                }
+            }
+        }
+    };
+
     // Calculate power zone distribution using raw workout data
     const zoneDistributions = scenarios.map((scenario: Scenario) => {
         let allRawPoints: number[] = [];
@@ -463,9 +566,17 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 <Line data={chartData} options={chartOptions} />
             </div>
             
-            {/* Power Zone Distribution Chart Container */}
-            <div className={styles.chartContainer}>
-                <Bar data={zoneChartData} options={zoneChartOptions} />
+            {/* TSS and Power Zone Charts Side by Side */}
+            <div className={styles.chartsRow}>
+                {/* Total TSS Chart Container */}
+                <div className={styles.chartContainerHalf}>
+                    <Bar data={tssChartData} options={tssChartOptions} />
+                </div>
+                
+                {/* Power Zone Distribution Chart Container */}
+                <div className={styles.chartContainerHalf}>
+                    <Bar data={zoneChartData} options={zoneChartOptions} />
+                </div>
             </div>
         </div>
     );

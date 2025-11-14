@@ -394,58 +394,6 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                     </div>
                 )}
 
-                {/* Enhanced Comparison Section with Chart */}
-                {selectedScenarios.size > 0 && (
-                    <>
-                        {/* Chart-based comparison */}
-                        <ScenarioComparison
-                            scenarios={selectedScenariosList}
-                            userProfile={userProfile}
-                            onClearSelection={clearSelection}
-                        />
-                        {/* Legacy table comparison for reference (optional, can remove later) */}
-                        <div className={styles.comparisonTableContainer}>
-                            <table className={styles.comparisonTable}>
-                                <thead>
-                                    <tr className={styles.comparisonTableHeader}>
-                                        <th className={styles.comparisonTableHeaderCell}>Scenario</th>
-                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Duration</th>
-                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>TSS®</th>
-                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Avg IF®</th>
-                                        <th className={`${styles.comparisonTableHeaderCell} ${styles.comparisonTableHeaderCellCenter}`}>Avg NP®</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedScenariosList.map((scenario, index) => (
-                                        <tr 
-                                            key={scenario.id}
-                                            className={`${styles.comparisonTableRow} ${
-                                                index % 2 === 0 ? styles.comparisonTableRowEven : styles.comparisonTableRowOdd
-                                            }`}
-                                        >
-                                            <td className={styles.comparisonTableCell}>
-                                                <strong>{scenario.name}</strong>
-                                            </td>
-                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
-                                                {formatDuration(scenario.dynamicMetrics.totalDuration)}
-                                            </td>
-                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
-                                                {Math.round(scenario.dynamicMetrics.totalTSS)}
-                                            </td>
-                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
-                                                {scenario.dynamicMetrics.averageIF.toFixed(2)}
-                                            </td>
-                                            <td className={`${styles.comparisonTableCell} ${styles.comparisonTableCellCenter}`}>
-                                                {Math.round(scenario.dynamicMetrics.totalNP)}W
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </>
-                )}
-
                 {/* Controls */}
                 <div className={styles.controlsSection}>
                     <select
@@ -631,6 +579,18 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
                             </tbody>
                         </table>
                     </div>
+                )}
+
+                {/* Enhanced Comparison Section with Chart */}
+                {selectedScenarios.size > 0 && (
+                    <>
+                        {/* Chart-based comparison */}
+                        <ScenarioComparison
+                            scenarios={selectedScenariosList}
+                            userProfile={userProfile}
+                            onClearSelection={clearSelection}
+                        />
+                    </>
                 )}
             </div>
             

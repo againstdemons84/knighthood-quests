@@ -106,3 +106,32 @@
 	color: #888;
 }
 
+/* Side-by-side chart layout for desktop */
+.chartsRow {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.chartContainerHalf {
+	flex: 1;
+	max-width: 680px;
+	height: 340px;
+	background: #222;
+	border-radius: 8px;
+	box-shadow: 0 1px 8px rgba(0,0,0,0.10);
+	padding: 12px 8px 8px 8px;
+}
+
+/* Stack charts on mobile */
+@media (max-width: 768px) {
+	.chartsRow {
+		flex-direction: column;
+		gap: 16px;
+	}
+	
+	.chartContainerHalf {
+		max-width: 100%;
+	}
+}
+
