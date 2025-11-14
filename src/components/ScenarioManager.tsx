@@ -9,6 +9,7 @@ import styles from './ScenarioManager.module.css';
 interface ScenarioManagerProps {
     onEditScenario: (scenario: Scenario) => void;
     onViewScenario?: (scenario: Scenario) => void;
+    onScenariosChange?: (scenarios: Scenario[]) => void;
     userProfile: UserPowerProfile;
 }
 
@@ -22,7 +23,7 @@ interface ScenarioWithMetrics extends Scenario {
     };
 }
 
-const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario, userProfile }) => {
+const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onViewScenario, onScenariosChange, userProfile }) => {
     const viewport = useViewport();
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
     const [scenariosWithMetrics, setScenariosWithMetrics] = useState<ScenarioWithMetrics[]>([]);
@@ -93,6 +94,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
             setScenarios(updatedScenarios);
             setScenariosWithMetrics(updatedScenariosWithMetrics);
             saveScenarios(updatedScenarios);
+            onScenariosChange?.(updatedScenarios);
             setSelectedScenarios(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(scenarioId);
@@ -113,6 +115,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({ onEditScenario, onVie
         const updatedScenarios = [...scenarios, duplicatedScenario];
         setScenarios(updatedScenarios);
         saveScenarios(updatedScenarios);
+        onScenariosChange?.(updatedScenarios);
         
         // Also calculate metrics for the duplicated scenario and update the metrics state
         try {

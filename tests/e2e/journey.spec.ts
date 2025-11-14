@@ -76,6 +76,20 @@ const DeviceHelpers = {
         await DeviceHelpers.selectCheckbox(page, checkbox);
       }
     }
+  },
+
+  // Extract scenario count from tab text (e.g., "Enterpainment (5)" -> 5)
+  async getScenarioCountFromTab(page: Page): Promise<number> {
+    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
+    const tabText = await scenariosTab.textContent();
+    const match = tabText?.match(/\((\d+)\)/);
+    return match ? parseInt(match[1], 10) : 0;
+  },
+
+  // Verify tab counter matches expected value
+  async verifyTabCounter(page: Page, expectedCount: number): Promise<void> {
+    const actualCount = await DeviceHelpers.getScenarioCountFromTab(page);
+    expect(actualCount).toBe(expectedCount);
   }
 };
 
@@ -90,6 +104,9 @@ test.describe('Cross-Device Journey Tests', () => {
     await page.evaluate(() => {
       localStorage.removeItem('knighthood-scenarios');
     });
+    
+    // Verify initial tab counter shows 0 scenarios
+    await DeviceHelpers.verifyTabCounter(page, 0);
     
     // Step 1: Start from intro page and begin quest
     const beginButton = page.locator('[data-testid="begin-quest-button"]');
@@ -128,6 +145,9 @@ test.describe('Cross-Device Journey Tests', () => {
     await DeviceHelpers.validateTouchTarget(page, modalSaveButton, 44, false); // Non-critical validation
     await modalSaveButton.click();
     
+    // Verify tab counter shows 1 scenario after creation
+    await DeviceHelpers.verifyTabCounter(page, 1);
+    
     // Step 7: Test scenario management functionality
     const firstViewButton = page.locator('[data-testid^="view-scenario-"]').first();
     expect(firstViewButton).toBeVisible({timeout: 5000 });
@@ -153,8 +173,9 @@ test.describe('Cross-Device Journey Tests', () => {
     const initialScenarioCount = await page.locator('[data-testid^="view-scenario-"]').count();
     await duplicateButton.click();
     
-    // Verify duplication worked
+    // Verify duplication worked in both list and tab counter
     await expect(page.locator('[data-testid^="view-scenario-"]')).toHaveCount(initialScenarioCount + 1);
+    await DeviceHelpers.verifyTabCounter(page, 2);
     
     // Test delete scenario
     const deleteButton = page.locator('[data-testid^="delete-scenario-"]').first();
@@ -169,8 +190,9 @@ test.describe('Cross-Device Journey Tests', () => {
     
     await deleteButton.click();
         
-    // Verify deletion worked
+    // Verify deletion worked in both list and tab counter
     await expect(page.locator('[data-testid^="view-scenario-"]')).toHaveCount(initialScenarioCount, {timeout: 1000});
+    await DeviceHelpers.verifyTabCounter(page, 1);
   });
 
   test('Workout search and filtering journey', async ({ page }) => {
@@ -599,5 +621,182 @@ test.describe('Cross-Device Journey Tests', () => {
     await expect(page.locator('a:has-text("4DP Power Profile")')).toBeVisible();
     await expect(page.locator('a:has-text("Raise an Issue")')).toBeVisible();
     await expect(page.locator('a:has-text("Contribute on GitHub")')).toBeVisible();
+  });
+
+  test('Tab counter accuracy with scenario operations', async ({ page }) => {
+    // Clear any existing scenarios to start fresh
+    await page.evaluate(() => {
+      localStorage.removeItem('knighthood-scenarios');
+    });
+    
+    // Verify initial state: 0 scenarios
+    await DeviceHelpers.verifyTabCounter(page, 0);
+    
+    // Navigate to quest planning to create scenarios
+    const beginButton = page.locator('[data-testid="begin-quest-button"]');
+    await beginButton.click();
+    
+    // Create first scenario
+    await DeviceHelpers.selectWorkouts(page, 10);
+    const saveButton = page.locator('[data-testid="save-scenario-button"]');
+    await saveButton.click();
+    
+    const nameInput = page.locator('[data-testid="scenario-name-input"]');
+    await nameInput.fill('Test Scenario 1');
+    
+    const modalSaveButton = page.locator('[data-testid="save-scenario-modal-button"]');
+    await modalSaveButton.click();
+    await page.waitForTimeout(500); // Wait for save to complete
+    
+    // Verify tab counter: 1 scenario
+    await DeviceHelpers.verifyTabCounter(page, 1);
+    
+    // Create second scenario by going back to selector
+    const questTab = page.locator('[data-testid="quest-tab"]');
+    await questTab.click();
+    
+    // Select different workouts for variety
+  
+    const clearButton = await page.locator('[data-testid="clear-basket-button"]');
+    if(await clearButton.isVisible()) {
+      await clearButton.click();
+    }
+    await DeviceHelpers.selectWorkouts(page, 10);
+    
+    await saveButton.click();
+    await nameInput.fill('Test Scenario 2');
+    await modalSaveButton.click();
+    
+    // Verify tab counter: 2 scenarios
+    await DeviceHelpers.verifyTabCounter(page, 2);
+    
+    // Test duplication increases counter
+    const duplicateButton = page.locator('[data-testid^="duplicate-scenario-"]').first();
+    await duplicateButton.click();
+    
+    // Verify tab counter: 3 scenarios (2 original + 1 duplicate)
+    await DeviceHelpers.verifyTabCounter(page, 3);
+    
+    // Test multiple duplications
+    await page.locator('[data-testid^="duplicate-scenario-"]').first().click();
+    await DeviceHelpers.verifyTabCounter(page, 4);
+    
+    await page.locator('[data-testid^="duplicate-scenario-"]').first().click();
+    await DeviceHelpers.verifyTabCounter(page, 5);
+    
+    // Test deletion decreases counter
+    page.on('dialog', async dialog => {
+      await dialog.accept();
+    });
+    
+    const deleteButton = page.locator('[data-testid^="delete-scenario-"]').first();
+    await deleteButton.click();
+    await DeviceHelpers.verifyTabCounter(page, 4);
+    
+    // Test multiple deletions
+    await page.locator('[data-testid^="delete-scenario-"]').first().click();
+    await DeviceHelpers.verifyTabCounter(page, 3);
+    
+    await page.locator('[data-testid^="delete-scenario-"]').first().click();
+    await DeviceHelpers.verifyTabCounter(page, 2);
+    
+    // Verify consistency between tab counter and actual scenario list
+    const scenarioListCount = await page.locator('[data-testid^="view-scenario-"]').count();
+    const tabCounter = await DeviceHelpers.getScenarioCountFromTab(page);
+    expect(tabCounter).toBe(scenarioListCount);
+    
+    // Test clearing all scenarios
+    const remainingDeleteButtons = page.locator('[data-testid^="delete-scenario-"]');
+    const remainingCount = await remainingDeleteButtons.count();
+    
+    for (let i = 0; i < remainingCount; i++) {
+      await remainingDeleteButtons.first().click();
+      await DeviceHelpers.verifyTabCounter(page, remainingCount - i - 1);
+    }
+    
+    // Final verification: back to 0 scenarios
+    await DeviceHelpers.verifyTabCounter(page, 0);
+  });
+
+  test('Tab counter resilience with rapid scenario operations', async ({ page }) => {
+    // Clear scenarios and start fresh
+    await page.evaluate(() => {
+      localStorage.removeItem('knighthood-scenarios');
+    });
+    
+    // Create a base scenario to work with
+    const beginButton = page.locator('[data-testid="begin-quest-button"]');
+    await beginButton.click();
+    
+    await DeviceHelpers.selectWorkouts(page, 10);
+    const saveButton = page.locator('[data-testid="save-scenario-button"]');
+    await saveButton.click();
+    
+    const nameInput = page.locator('[data-testid="scenario-name-input"]');
+    await nameInput.fill('Rapid Test Scenario');
+    
+    const modalSaveButton = page.locator('[data-testid="save-scenario-modal-button"]');
+    await modalSaveButton.click();
+    
+    // Navigate to scenarios tab for rapid operations
+    const scenariosTab = page.locator('[data-testid="scenarios-tab"]');
+    await scenariosTab.click();
+    
+    // Test rapid duplication (create multiple scenarios quickly)
+    let expectedCount = 1;
+    await DeviceHelpers.verifyTabCounter(page, expectedCount);
+    
+    // Rapid duplications
+    for (let i = 0; i < 3; i++) {
+      const duplicateBtn = page.locator('[data-testid^="duplicate-scenario-"]').first();
+      await duplicateBtn.click();
+      expectedCount++;
+      await DeviceHelpers.verifyTabCounter(page, expectedCount);
+    }
+    
+    // Test navigation away and back (state persistence)
+    const homeTab = page.locator('[data-testid="home-tab"]');
+    await homeTab.click();
+    await page.waitForTimeout(100);
+    
+    await scenariosTab.click();
+    await page.waitForTimeout(100);
+    
+    // Counter should persist after navigation
+    await DeviceHelpers.verifyTabCounter(page, expectedCount);
+    
+    // Rapid deletions with dialog handling
+    page.on('dialog', async dialog => {
+      await dialog.accept();
+    });
+    
+    // Delete scenarios one by one and verify counter updates
+    while (expectedCount > 0) {
+      const deleteBtn = page.locator('[data-testid^="delete-scenario-"]').first();
+      await deleteBtn.click();
+      expectedCount--;
+      
+      if (expectedCount > 0) {
+        await DeviceHelpers.verifyTabCounter(page, expectedCount);
+      }
+    }
+    
+    // Final state: should be back to 0
+    await DeviceHelpers.verifyTabCounter(page, 0);
+    
+    // Verify empty state is properly handled
+    await expect(page.locator('[data-testid^="view-scenario-"]')).toHaveCount(0);
+    
+    // Test that creating a new scenario after complete deletion works
+    const questTab = page.locator('[data-testid="quest-tab"]');
+    await questTab.click();
+    
+    await DeviceHelpers.selectWorkouts(page, 10);
+    await saveButton.click();
+    await nameInput.fill('Post-Cleanup Scenario');
+    await modalSaveButton.click();
+    
+    // Should correctly show 1 again
+    await DeviceHelpers.verifyTabCounter(page, 1);
   });
 });

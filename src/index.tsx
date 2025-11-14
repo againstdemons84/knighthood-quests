@@ -203,6 +203,10 @@ const App = () => {
         }, 200);
     };
 
+    const handleScenariosChange = (updatedScenarios: Scenario[]) => {
+        setScenarios(updatedScenarios);
+    };
+
     const handleEditScenario = (scenario: Scenario) => {
         setEditingScenario(scenario);
         setBasketState({
@@ -317,6 +321,7 @@ const App = () => {
                         onViewScenario={(scenario) => {
                             setPage('scenario-detail', scenario.id);
                         }}
+                        onScenariosChange={handleScenariosChange}
                         userProfile={userProfile}
                     />
                 ) : null;

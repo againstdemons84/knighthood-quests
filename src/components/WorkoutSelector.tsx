@@ -433,6 +433,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                             <button
                                 onClick={clearBasket}
                                 className={styles.clearAllButton}
+                                id="clear-basket-button"
                             >
                                 Clear All ({basket.length})
                             </button>
@@ -718,6 +719,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                             <button
                                                 onClick={clearBasket}
                                                 className={`${styles.clearBasketButton}`}
+                                                id="clear-basket-button"
                                             >
                                                 Clear All
                                             </button>
