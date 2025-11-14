@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/knighthood-quests/static/css/main.d3e2fc99.css",
-    "main.js": "/knighthood-quests/static/js/main.fc16b010.js",
+    "main.css": "/knighthood-quests/static/css/main.37e87e73.css",
+    "main.js": "/knighthood-quests/static/js/main.b33fcce2.js",
     "index.html": "/knighthood-quests/index.html",
-    "main.d3e2fc99.css.map": "/knighthood-quests/static/css/main.d3e2fc99.css.map",
-    "main.fc16b010.js.map": "/knighthood-quests/static/js/main.fc16b010.js.map"
+    "main.37e87e73.css.map": "/knighthood-quests/static/css/main.37e87e73.css.map",
+    "main.b33fcce2.js.map": "/knighthood-quests/static/js/main.b33fcce2.js.map"
   },
   "entrypoints": [
-    "static/css/main.d3e2fc99.css",
-    "static/js/main.fc16b010.js"
+    "static/css/main.37e87e73.css",
+    "static/js/main.b33fcce2.js"
   ]
 }
