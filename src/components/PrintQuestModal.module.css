@@ -1,0 +1,152 @@
+/* PrintQuestModal Component Styles */
+
+/* === MODAL OVERLAY === */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    padding: 10px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* === MODAL CONTAINER === */
+.modalContainer {
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 95vw;
+    width: 100%;
+    max-height: 95vh;
+    overflow: auto;
+    border: 2px solid #4CAF50;
+    box-sizing: border-box;
+    position: relative;
+    margin: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* === MODAL HEADER === */
+.modalTitle {
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* === MODAL CONTENT === */
+.modalContent {
+    margin-bottom: 20px;
+}
+
+.modalDescription {
+    color: #ccc;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modalDescription strong {
+    color: white;
+}
+
+/* === TIME INPUT SECTION === */
+.timeInputSection {
+    margin-bottom: 15px;
+}
+
+.timeInputLabel {
+    color: white;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.timeInput {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* === INFO BOX === */
+.infoBox {
+    background-color: #1a3d1a;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.infoText {
+    color: #4CAF50;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* === BUTTON SECTION === */
+.buttonSection {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cancelButton {
+    padding: 12px 24px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 120px;
+}
+
+.cancelButton:hover {
+    background-color: #666;
+}
+
+.printButton {
+    padding: 12px 24px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 160px;
+}
+
+.printButton:hover {
+    background-color: #45a049;
+}
+
+/* === PRINT STYLES === */
+/* Print-specific CSS will be dynamically injected via JavaScript */
+
+/* Print-specific styles for when this component is printed */
+@media print {
+    .modalOverlay,
+    .modalContainer {
+        all: initial;
+        display: block;
+    }
+    
+    .modalTitle,
+    .modalContent,
+    .buttonSection {
+        display: none;
+    }
+}

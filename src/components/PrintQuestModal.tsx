@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { formatDuration } from '../utils/scenarioHelpers';
+import styles from './PrintQuestModal.module.css';
+import { printStyles } from './PrintQuestModal.print';
 
 interface PrintQuestModalProps {
     scenario: Scenario;
@@ -89,85 +91,7 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
             <html>
             <head>
                 <title>Knight of Sufferlandria Quest Plan - ${scenario.name}</title>
-                <style>
-                    @page { margin: 1in; }
-                    body { 
-                        font-family: Arial, sans-serif; 
-                        font-size: 12px; 
-                        line-height: 1.4; 
-                        color: #333;
-                    }
-                    .header { 
-                        text-align: center; 
-                        border-bottom: 2px solid #333; 
-                        padding-bottom: 10px; 
-                        margin-bottom: 20px; 
-                    }
-                    .title { 
-                        font-size: 18px; 
-                        font-weight: bold; 
-                        margin: 0 0 5px 0; 
-                    }
-                    .subtitle { 
-                        font-size: 14px; 
-                        color: #666; 
-                        margin: 0 0 10px 0; 
-                    }
-                    .summary { 
-                        background: #f5f5f5; 
-                        padding: 10px; 
-                        margin-bottom: 20px; 
-                        border-radius: 5px; 
-                    }
-                    .summary-row { 
-                        display: flex; 
-                        justify-content: flex-end; 
-                        margin: 3px 0; 
-                        gap: 10px;
-                    }
-                    .summary-label {
-                        min-width: 160px;
-                        text-align: right;
-                    }
-                    .summary-value {
-                        font-weight: bold;
-                        min-width: 300px;
-                        text-align: right;
-                    }
-                    table { 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        margin-bottom: 20px; 
-                    }
-                    th, td { 
-                        border: 1px solid #ddd; 
-                        padding: 8px; 
-                        text-align: left; 
-                    }
-                    th { 
-                        background-color: #f2f2f2; 
-                        font-weight: bold; 
-                        font-size: 11px; 
-                    }
-                    .workout-row { 
-                        background-color: #fff; 
-                    }
-                    .break-row { 
-                        background-color: #f9f9f9; 
-                        font-style: italic; 
-                    }
-                    .center { 
-                        text-align: center; 
-                    }
-                    .bold { 
-                        font-weight: bold; 
-                    }
-                    .notes { 
-                        margin-top: 20px; 
-                        font-size: 11px; 
-                        color: #666; 
-                    }
-                </style>
+                <style>${printStyles}</style>
             </head>
             <body>
                 <div class="header">
@@ -203,14 +127,14 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 8%">#</th>
-                            <th style="width: 10%">Start</th>
-                            <th style="width: 10%">End</th>
-                            <th style="width: 32%">Workout / Break</th>
-                            <th style="width: 8%">Duration</th>
-                            <th style="width: 8%">TSS®</th>
-                            <th style="width: 8%">IF®</th>
-                            <th style="width: 8%">NP®</th>
+                            <th class="th-number">#</th>
+                            <th class="th-start">Start</th>
+                            <th class="th-end">End</th>
+                            <th class="th-workout">Workout / Break</th>
+                            <th class="th-duration">Duration</th>
+                            <th class="th-tss">TSS®</th>
+                            <th class="th-if">IF®</th>
+                            <th class="th-np">NP®</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -285,140 +209,68 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
     return (
         <>
             <div 
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 999999,
-                    padding: '10px',
-                    boxSizing: 'border-box',
-                    WebkitOverflowScrolling: 'touch'
-                }}
+                className={styles.modalOverlay}
                 onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         onClose();
                     }
                 }}
             >
-            <div 
-                style={{
-                    backgroundColor: '#2a2a2a',
-                    borderRadius: '8px',
-                    padding: '15px',
-                    maxWidth: '95vw',
-                    width: '100%',
-                    maxHeight: '95vh',
-                    overflow: 'auto',
-                    border: '2px solid #4CAF50',
-                    boxSizing: 'border-box',
-                    position: 'relative',
-                    margin: 'auto',
-                    WebkitOverflowScrolling: 'touch'
-                }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <h2 style={{ color: 'white', marginBottom: '20px', textAlign: 'center' }}>
-                    🖨️ Print Quest Schedule
-                </h2>
-                
-                <div style={{ marginBottom: '20px' }}>
-                    <p style={{ color: '#ccc', marginBottom: '15px', textAlign: 'center' }}>
-                        Generate a print-friendly assault plan for "<strong style={{ color: 'white' }}>{scenario.name}</strong>"
-                    </p>
+                <div 
+                    className={styles.modalContainer}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <h2 className={styles.modalTitle}>
+                        🖨️ Print Quest Schedule
+                    </h2>
                     
-                    <div style={{ marginBottom: '15px' }}>
-                        <label style={{ 
-                            color: 'white', 
-                            display: 'block', 
-                            marginBottom: '8px',
-                            fontSize: '14px',
-                            fontWeight: 'bold'
-                        }}>
-                            Quest Start Time:
-                        </label>
-                        <input
-                            type="time"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                backgroundColor: '#333',
-                                color: 'white',
-                                border: '1px solid #555',
-                                borderRadius: '4px',
-                                fontSize: '16px'
-                            }}
-                        />
-                    </div>
-                    
-                    <div style={{ 
-                        backgroundColor: '#1a3d1a', 
-                        padding: '12px', 
-                        borderRadius: '4px',
-                        marginBottom: '20px'
-                    }}>
-                        <p style={{ color: '#4CAF50', margin: 0, fontSize: '13px' }}>
-                            📋 <strong>Your quest plan will include:</strong><br />
-                            • Complete schedule with start/end times<br />
-                            • 10-minute breaks between workouts<br />
-                            • Workout metrics (TSS®, IF®, NP®)<br />
-                            • Official rules from the Ministry of Madness
+                    <div className={styles.modalContent}>
+                        <p className={styles.modalDescription}>
+                            Generate a print-friendly assault plan for "<strong>{scenario.name}</strong>"
                         </p>
+                    
+                        <div className={styles.timeInputSection}>
+                            <label className={styles.timeInputLabel}>
+                                Quest Start Time:
+                            </label>
+                            <input
+                                type="time"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                                className={styles.timeInput}
+                            />
+                        </div>
+                    
+                        <div className={styles.infoBox}>
+                            <p className={styles.infoText}>
+                                📋 <strong>Your quest plan will include:</strong><br />
+                                • Complete schedule with start/end times<br />
+                                • 10-minute breaks between workouts<br />
+                                • Workout metrics (TSS®, IF®, NP®)<br />
+                                • Official rules from the Ministry of Madness
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '15px', 
-                    justifyContent: 'center',
-                    flexWrap: 'wrap'
-                }}>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#555',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            minWidth: '120px'
-                        }}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={() => {
-                            handlePrint();
-                            onClose();
-                        }}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            minWidth: '160px'
-                        }}
-                    >
-                        🖨️ Print Quest Plan
-                    </button>
+                    <div className={styles.buttonSection}>
+                        <button
+                            onClick={onClose}
+                            className={styles.cancelButton}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                handlePrint();
+                                onClose();
+                            }}
+                            className={styles.printButton}
+                        >
+                            🖨️ Print Quest Plan
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
         </>
     );
 };
