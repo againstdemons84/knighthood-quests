@@ -85,6 +85,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [useTargetIntensity, setUseTargetIntensity] = useState(false);
 
     useEffect(() => {
         const calculatePowerProfiles = async () => {
@@ -98,7 +99,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     const scenario = scenarios[i];
                     const color = CHART_COLORS[i % CHART_COLORS.length];
                     
-                    const powerProfile = await calculateScenarioPowerProfile(scenario, userProfile);
+                    const powerProfile = await calculateScenarioPowerProfile(scenario, userProfile, useTargetIntensity);
                     profiles.push({
                         scenario,
                         powerData: powerProfile.powerData,
@@ -117,9 +118,9 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         };
 
         calculatePowerProfiles();
-    }, [scenarios, userProfile]);
+    }, [scenarios, userProfile, useTargetIntensity]);
 
-    const calculateScenarioPowerProfile = async (scenario: Scenario, profile: UserPowerProfile) => {
+    const calculateScenarioPowerProfile = async (scenario: Scenario, profile: UserPowerProfile, useTargetIntensity: boolean) => {
         const allPowerData: PowerDataPoint[] = [];
         let currentTime = 0;
 
@@ -131,7 +132,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 const { data } = getBestWorkoutData(rawData);
                 if (!data) continue;
 
-                const workoutPowerData = extractNormalizedPowerData(data, profile, currentTime);
+                const workoutPowerData = extractNormalizedPowerData(data, profile, currentTime, useTargetIntensity);
                 allPowerData.push(...workoutPowerData.powerData);
                 currentTime += workoutPowerData.duration;
             } catch (error) {
@@ -149,7 +150,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         };
     };
 
-    const extractNormalizedPowerData = (workoutData: WorkoutData, profile: UserPowerProfile, startTime: number) => {
+    const extractNormalizedPowerData = (workoutData: WorkoutData, profile: UserPowerProfile, startTime: number, useTargetIntensity: boolean) => {
         // Interpolate to a regular 1-second time series
         let totalDuration = 0;
         const regularPower: number[] = [];
@@ -166,12 +167,19 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     lastValue = valueArr[nextIdx];
                     nextIdx++;
                 }
-                regularPower.push(lastValue * profile.ftp); // convert to watts
+                // Apply target intensity adjustment when calculating absolute power
+                const adjustedPower = useTargetIntensity ? 
+                    lastValue * profile.ftp * (profile.targetIntensity / 100) : 
+                    lastValue * profile.ftp;
+                regularPower.push(adjustedPower);
             }
         } else {
             totalDuration = 3600;
             for (let t = 0; t <= totalDuration; t++) {
-                regularPower.push(0.5 * profile.ftp);
+                const adjustedPower = useTargetIntensity ? 
+                    0.5 * profile.ftp * (profile.targetIntensity / 100) : 
+                    0.5 * profile.ftp;
+                regularPower.push(adjustedPower);
             }
         }
 
@@ -346,7 +354,14 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             const duration = data.time[data.time.length - 1]; // workout duration in seconds
             
             // Calculate normalized power for the workout
-            const powers = data.value.map((v: number) => v * userProfile.ftp); // Convert to watts
+            const powers = data.value.map((v: number) => {
+                let adjustedPower = v * userProfile.ftp; // Convert to watts
+                // Apply target intensity adjustment when enabled
+                if (useTargetIntensity) {
+                    adjustedPower = adjustedPower * (userProfile.targetIntensity / 100);
+                }
+                return adjustedPower;
+            });
             let totalNP4 = 0;
             let count = 0;
             
@@ -450,7 +465,14 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             
             // Convert each power value to %FTP (data.value is already in FTP multiples)
             for (let i = 0; i < data.value.length; i++) {
-                const percentFTP = data.value[i] * 100; // Convert from decimal (0.5 = 50%, 1.0 = 100%)
+                let percentFTP = data.value[i] * 100; // Convert from decimal (0.5 = 50%, 1.0 = 100%)
+                
+                // When using target intensity, adjust the effective power percentage
+                // This makes efforts appear easier relative to original FTP zones
+                if (useTargetIntensity) {
+                    percentFTP = percentFTP * (userProfile.targetIntensity / 100);
+                }
+                
                 allRawPoints.push(percentFTP);
             }
         });
@@ -566,9 +588,17 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 <h3 className={styles.comparisonTitle}>
                     Power Profile Analysis - {scenarios.length} Scenario{scenarios.length > 1 ? 's' : ''}
                 </h3>
-                <button onClick={onClearSelection} className={styles.clearSelectionButton}>
-                    Clear Selection
-                </button>
+                <div className={styles.headerControls}>
+                    <button 
+                        onClick={() => setUseTargetIntensity(!useTargetIntensity)}
+                        className={`${styles.intensityToggleButton} ${useTargetIntensity ? styles.active : ''}`}
+                    >
+                        Use Target Intensity ({userProfile.targetIntensity}%)
+                    </button>
+                    <button onClick={onClearSelection} className={styles.clearSelectionButton}>
+                        Clear Selection
+                    </button>
+                </div>
             </div>
             
             {/* Normalized Power Chart Container */}
