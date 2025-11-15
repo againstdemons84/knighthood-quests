@@ -456,40 +456,45 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
     // Calculate power zone distribution using raw workout data
     const zoneDistributions = scenarios.map((scenario: Scenario) => {
-        let allRawPoints: number[] = [];
+        // Track time (in seconds) spent in each zone
+        const zoneTimes = POWER_ZONES.map(() => 0);
         
-        // Gather all raw power values from scenario workouts
+        // Gather all raw power values with their time intervals from scenario workouts
         scenario.workouts.forEach((workout: any) => {
             const rawData = getWorkoutData(workout.id);
             if (!rawData) return;
             const { data } = getBestWorkoutData(rawData);
             if (!data || !data.value || !data.time) return;
             
-            // Convert each power value to %FTP (data.value is already in FTP multiples)
-            for (let i = 0; i < data.value.length; i++) {
+            // Process each power value with its actual time interval
+            for (let i = 0; i < data.value.length && i < data.time.length; i++) {
                 let percentFTP = data.value[i] * 100; // Convert from decimal (0.5 = 50%, 1.0 = 100%)
                 
                 // Apply intensity adjustment - makes efforts appear easier relative to original FTP zones
                 percentFTP = percentFTP * (effectiveIntensity / 100);
                 
-                allRawPoints.push(percentFTP);
-            }
-        });
-        
-        // Count time spent in each zone
-        const zoneCounts = POWER_ZONES.map(() => 0);
-        allRawPoints.forEach((power: number) => {
-            for (let i = 0; i < POWER_ZONES.length; i++) {
-                if (power >= POWER_ZONES[i].min && power < POWER_ZONES[i].max) {
-                    zoneCounts[i]++;
-                    break;
+                // Calculate the duration of this interval
+                let intervalDuration = 0;
+                if (i < data.time.length - 1) {
+                    // Duration is the difference between this time and the next
+                    intervalDuration = data.time[i + 1] - data.time[i];
+                } else {
+                    // For the last interval, assume 1 second duration
+                    intervalDuration = 1;
+                }
+                
+                // Find which zone this power value belongs to and add the time interval
+                for (let j = 0; j < POWER_ZONES.length; j++) {
+                    if (percentFTP >= POWER_ZONES[j].min && percentFTP < POWER_ZONES[j].max) {
+                        zoneTimes[j] += intervalDuration;
+                        break;
+                    }
                 }
             }
         });
         
-        // Convert to percentages
-        const total = allRawPoints.length;
-        return zoneCounts.map(count => (total > 0 ? (count / total) * 100 : 0));
+        // Convert seconds to minutes
+        return zoneTimes.map(seconds => seconds / 60);
     });
 
     // Prepare zone chart data for grouped bar chart
@@ -511,7 +516,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             legend: { position: 'top' as const },
             title: {
                 display: true,
-                text: 'Power Zone Distribution (%)',
+                text: 'Power Zone Distribution (Minutes)',
                 font: { size: 16, weight: 'bold' as const }
             }
         },
@@ -526,11 +531,10 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             },
             y: {
                 beginAtZero: true,
-                max: 100,
-                title: { display: true, text: 'Time in Zone (%)' },
+                title: { display: true, text: 'Time in Zone (minutes)' },
                 ticks: {
                     callback: function(value: any) {
-                        return `${value}%`;
+                        return `${Math.round(value * 10) / 10}m`;
                     }
                 }
             }
