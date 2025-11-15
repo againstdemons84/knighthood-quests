@@ -263,4 +263,11 @@
   color: #673AB7;
 }
 
+/* Charts Section */
+.chartsSection {
+  margin: 24px auto;
+  max-width: 1400px;
+  background-color: #1a1a1a;
+}
+
 /* Desktop Only Elements - handled via conditional rendering in React */

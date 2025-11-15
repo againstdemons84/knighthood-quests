@@ -137,7 +137,7 @@
 /* Mobile chart heights and spacing */
 @media (max-width: 768px) {
 	.chartContainer {
-		height: 450px;
+		height: 350px;
 		margin: 0 auto 32px auto; /* More spacing between charts on mobile */
 		padding: 16px 12px 12px 12px; /* More padding for better touch interaction */
 	}
@@ -258,7 +258,7 @@
 	
 	.chartContainerHalf {
 		max-width: 100%;
-		min-height: 450px; /* Even taller on mobile for bar charts */
+		min-height: 350px; /* Even taller on mobile for bar charts */
 		padding: 16px 12px 12px 12px; /* More padding for better touch interaction */
 	}
 }

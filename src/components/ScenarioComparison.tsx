@@ -37,7 +37,8 @@ ChartJS.register(
 interface ScenarioComparisonProps {
     scenarios: Scenario[];
     userProfile: UserPowerProfile;
-    onClearSelection: () => void;
+    onClearSelection?: () => void;
+    showTSS?: boolean; // If true, shows TSS chart. If false, shows only power zones
 }
 
 interface PowerDataPoint {
@@ -80,7 +81,8 @@ const CHART_COLORS = [
 const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     scenarios,
     userProfile,
-    onClearSelection
+    onClearSelection,
+    showTSS = true // Default to true for backward compatibility (comparison page behavior)
 }) => {
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -548,9 +550,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     <h3 className={styles.comparisonTitle}>
                         Power Profile Analysis
                     </h3>
-                    <button onClick={onClearSelection} className={styles.clearSelectionButton}>
-                        Clear Selection
-                    </button>
+                    {onClearSelection && (
+                        <button onClick={onClearSelection} className={styles.clearSelectionButton}>
+                            Clear Selection
+                        </button>
+                    )}
                 </div>
                 <div className={styles.loadingContainer}>
                     <div className={styles.loadingText}>
@@ -571,9 +575,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     <h3 className={styles.comparisonTitle}>
                         Power Profile Analysis
                     </h3>
-                    <button onClick={onClearSelection} className={styles.clearSelectionButton}>
-                        Clear Selection
-                    </button>
+                    {onClearSelection && (
+                        <button onClick={onClearSelection} className={styles.clearSelectionButton}>
+                            Clear Selection
+                        </button>
+                    )}
                 </div>
                 <div className={styles.errorContainer}>
                     <div className={styles.errorText}>❌ {error}</div>
@@ -607,9 +613,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                         />
                     </div>
                     
-                    <button onClick={onClearSelection} className={styles.clearSelectionButton}>
-                        Clear Selection
-                    </button>
+                    {onClearSelection && (
+                        <button onClick={onClearSelection} className={styles.clearSelectionButton}>
+                            Clear Selection
+                        </button>
+                    )}
                 </div>
             </div>
             
@@ -618,18 +626,26 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 <Line data={chartData} options={chartOptions} />
             </div>
             
-            {/* TSS and Power Zone Charts Side by Side */}
-            <div className={styles.chartsRow}>
-                {/* Total TSS Chart Container */}
-                <div className={styles.chartContainerHalf}>
-                    <Bar data={tssChartData} options={tssChartOptions} />
+            {/* Conditional Chart Display */}
+            {showTSS ? (
+                // Comparison page: Show both TSS and Power Zone charts side by side
+                <div className={styles.chartsRow}>
+                    {/* Total TSS Chart Container */}
+                    <div className={styles.chartContainerHalf}>
+                        <Bar data={tssChartData} options={tssChartOptions} />
+                    </div>
+                    
+                    {/* Power Zone Distribution Chart Container */}
+                    <div className={styles.chartContainerHalf}>
+                        <Bar data={zoneChartData} options={zoneChartOptions} />
+                    </div>
                 </div>
-                
-                {/* Power Zone Distribution Chart Container */}
-                <div className={styles.chartContainerHalf}>
+            ) : (
+                // View scenario page: Show only Power Zone chart (full width)
+                <div className={styles.chartContainer}>
                     <Bar data={zoneChartData} options={zoneChartOptions} />
                 </div>
-            </div>
+            )}
         </div>
     );
 };

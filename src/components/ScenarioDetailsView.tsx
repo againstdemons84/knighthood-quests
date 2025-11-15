@@ -3,6 +3,7 @@ import { Scenario, WorkoutSelection } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { formatDuration, calculateCombinedMetricsDynamic, loadScenarios, saveScenarios } from '../utils/scenarioHelpers';
 import ReorderableWorkoutList from './ReorderableWorkoutList';
+import ScenarioComparison from './ScenarioComparison';
 import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
 import styles from './ScenarioDetailsView.module.css';
@@ -24,6 +25,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 }) => {
     const viewport = useViewport();
     const [loading, setLoading] = useState(true);
+    const [currentScenario, setCurrentScenario] = useState<Scenario>(scenario);
     const [dynamicMetrics, setDynamicMetrics] = useState({
         totalDuration: 0,
         totalElapsedDuration: 0,
@@ -46,6 +48,9 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
             workouts: reorderedWorkouts
         };
 
+        // Update current scenario state for charts
+        setCurrentScenario(updatedScenario);
+
         // Save to localStorage
         const allScenarios = loadScenarios();
         const scenarioIndex = allScenarios.findIndex(s => s.id === scenario.id);
@@ -60,6 +65,10 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
             }
         }
     };
+
+    useEffect(() => {
+        setCurrentScenario(scenario);
+    }, [scenario]);
 
     useEffect(() => {
         const loadScenarioMetrics = async () => {
@@ -183,6 +192,15 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Scenario Analysis Charts */}
+            <div className={styles.chartsSection}>
+                <ScenarioComparison
+                    scenarios={[currentScenario]}
+                    userProfile={userProfile}
+                    showTSS={false}
+                />
             </div>
 
             {/* Reorderable Workout List */}
