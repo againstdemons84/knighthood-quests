@@ -7,13 +7,14 @@ import {
     LineElement,
     BarElement,
     BarController,
+    ArcElement,
     Title,
     Tooltip,
     Legend,
     ChartOptions,
     ChartData
 } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line, Bar, Pie } from 'react-chartjs-2';
 import { Scenario } from '../types/scenario';
 import { UserPowerProfile } from '../types/userProfile';
 import { getWorkoutData } from '../data/workout-data';
@@ -29,6 +30,7 @@ ChartJS.register(
     LineElement,
     BarElement,
     BarController,
+    ArcElement,
     Title,
     Tooltip,
     Legend
@@ -38,7 +40,7 @@ interface ScenarioComparisonProps {
     scenarios: Scenario[];
     userProfile: UserPowerProfile;
     onClearSelection?: () => void;
-    showTSS?: boolean; // If true, shows TSS chart. If false, shows only power zones
+    singleScenarioView?: boolean; // When true, shows reduced height charts and pie chart for power zones
 }
 
 interface PowerDataPoint {
@@ -82,7 +84,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     scenarios,
     userProfile,
     onClearSelection,
-    showTSS = true // Default to true for backward compatibility (comparison page behavior)
+    singleScenarioView = false
 }) => {
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -543,6 +545,70 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         }
     };
 
+    // Prepare pie chart data for single scenario view
+    const zonePieChartData = singleScenarioView && scenarios.length === 1 ? {
+        labels: POWER_ZONES.map(zone => zone.name),
+        datasets: [{
+            label: 'Time in Zone',
+            data: zoneDistributions[0], // Only first scenario for single view
+            backgroundColor: [
+                '#22c55e', // Recovery - green
+                '#3b82f6', // Endurance - blue  
+                '#f59e0b', // Tempo - orange
+                '#ef4444', // Threshold - red
+                '#8b5cf6', // VO2max - purple
+                '#ec4899'  // Anaerobic - pink
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    } : null;
+
+    const zonePieChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { 
+                position: 'right' as const,
+                labels: {
+                    generateLabels: function(chart: any) {
+                        const data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label: string, i: number) => {
+                                const value = data.datasets[0].data[i];
+                                return {
+                                    text: `${label}: ${Math.round(value * 10) / 10}m`,
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    strokeStyle: data.datasets[0].borderColor,
+                                    lineWidth: data.datasets[0].borderWidth,
+                                    fontColor: '#eaeaea',
+                                    index: i
+                                };
+                            });
+                        }
+                        return [];
+                    }
+                }
+            },
+            title: {
+                display: true,
+                text: 'Power Zone Distribution',
+                font: { size: 16, weight: 'bold' as const }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context: any) {
+                        const label = context.label || '';
+                        const value = Math.round(context.raw * 10) / 10;
+                        const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+                        const percentage = Math.round((context.raw / total) * 100);
+                        return `${label}: ${value}m (${percentage}%)`;
+                    }
+                }
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className={styles.comparisonSection}>
@@ -621,30 +687,47 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 </div>
             </div>
             
-            {/* Normalized Power Chart Container */}
-            <div className={styles.chartContainer}>
-                <Line data={chartData} options={chartOptions} />
-            </div>
-            
-            {/* Conditional Chart Display */}
-            {showTSS ? (
-                // Comparison page: Show both TSS and Power Zone charts side by side
-                <div className={styles.chartsRow}>
-                    {/* Total TSS Chart Container */}
-                    <div className={styles.chartContainerHalf}>
-                        <Bar data={tssChartData} options={tssChartOptions} />
+            {singleScenarioView ? (
+                // View Scenario Layout
+                <>
+                    {/* Row 1: Normalized Power and Power Zone side by side */}
+                    <div className={styles.chartsRow}>
+                        {/* First Half: Normalized Power Profile */}
+                        <div className={`${styles.chartContainerHalf} ${styles.chartContainerHalfReduced}`}>
+                            <Line data={chartData} options={chartOptions} />
+                        </div>
+                        
+                        {/* Second Half: Power Zone Distribution */}
+                        <div className={`${styles.chartContainerHalf} ${styles.chartContainerHalfReduced}`}>
+                            {zonePieChartData ? (
+                                <Pie data={zonePieChartData} options={zonePieChartOptions} />
+                            ) : (
+                                <Bar data={zoneChartData} options={zoneChartOptions} />
+                            )}
+                        </div>
+                    </div>
+                </>
+            ) : (
+                // Scenario Comparison Layout
+                <>
+                    {/* Row 1: Full width Normalized Power Profile */}
+                    <div className={styles.chartContainer}>
+                        <Line data={chartData} options={chartOptions} />
                     </div>
                     
-                    {/* Power Zone Distribution Chart Container */}
-                    <div className={styles.chartContainerHalf}>
-                        <Bar data={zoneChartData} options={zoneChartOptions} />
+                    {/* Row 2: TSS and Power Zone side by side */}
+                    <div className={styles.chartsRow}>
+                        {/* First Half: TSS comparison */}
+                        <div className={styles.chartContainerHalf}>
+                            <Bar data={tssChartData} options={tssChartOptions} />
+                        </div>
+                        
+                        {/* Second Half: Power Zone Distribution */}
+                        <div className={styles.chartContainerHalf}>
+                            <Bar data={zoneChartData} options={zoneChartOptions} />
+                        </div>
                     </div>
-                </div>
-            ) : (
-                // View scenario page: Show only Power Zone chart (full width)
-                <div className={styles.chartContainer}>
-                    <Bar data={zoneChartData} options={zoneChartOptions} />
-                </div>
+                </>
             )}
         </div>
     );

@@ -199,7 +199,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 <ScenarioComparison
                     scenarios={[currentScenario]}
                     userProfile={userProfile}
-                    showTSS={false}
+                    singleScenarioView={true}
                 />
             </div>
 

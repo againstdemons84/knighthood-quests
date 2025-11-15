@@ -263,3 +263,23 @@
 	}
 }
 
+/* Reduced height charts for single scenario view (50% reduction) */
+.chartContainerReduced {
+	height: 200px; /* 50% of original 400px height */
+}
+
+.chartContainerHalfReduced {
+	height: 250px; /* 50% of original 500px height */
+}
+
+/* Mobile reduced heights */
+@media (max-width: 768px) {
+	.chartContainerReduced {
+		height: 220px; /* Increased from 175px to provide more room for titles */
+	}
+	
+	.chartContainerHalfReduced {
+		min-height: 220px; /* Increased from 175px to provide more room for titles */
+	}
+}
+
