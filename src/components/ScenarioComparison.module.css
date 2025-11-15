@@ -64,6 +64,63 @@
 .intensityToggleButton.active:hover {
 	background: #1976D2;
 }
+
+.intensitySliderContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	align-items: center;
+	min-width: 140px;
+}
+
+.sliderLabel {
+	font-size: 0.8rem;
+	color: #ccc;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.intensitySlider {
+	width: 100%;
+	height: 4px;
+	background: #444;
+	border-radius: 2px;
+	outline: none;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.intensitySlider::-webkit-slider-thumb {
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	background: #2196F3;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.intensitySlider::-webkit-slider-thumb:hover {
+	background: #1976D2;
+	transform: scale(1.1);
+}
+
+.intensitySlider::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	background: #2196F3;
+	border-radius: 50%;
+	cursor: pointer;
+	border: none;
+	transition: all 0.2s;
+}
+
+.intensitySlider::-moz-range-thumb:hover {
+	background: #1976D2;
+	transform: scale(1.1);
+}
+
+
 .chartContainer {
 	width: 100%;
 	max-width: 1400px;
@@ -94,6 +151,18 @@
 	.intensityToggleButton {
 		text-align: center;
 		padding: 8px 12px;
+	}
+	
+	.intensitySliderContainer {
+		min-width: 100%;
+		padding: 8px 16px;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 4px;
+	}
+	
+	.sliderLabel {
+		font-size: 0.9rem;
+		text-align: center;
 	}
 }
 .summaryContainer {

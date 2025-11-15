@@ -85,7 +85,12 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [useTargetIntensity, setUseTargetIntensity] = useState(false);
+    const [customIntensity, setCustomIntensity] = useState(userProfile.targetIntensity);
+
+    // Reset custom intensity when user profile changes
+    useEffect(() => {
+        setCustomIntensity(userProfile.targetIntensity);
+    }, [userProfile.targetIntensity]);
 
     useEffect(() => {
         const calculatePowerProfiles = async () => {
@@ -94,12 +99,13 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             
             try {
                 const profiles: ScenarioPowerProfile[] = [];
+                const effectiveIntensity = customIntensity;
                 
                 for (let i = 0; i < scenarios.length; i++) {
                     const scenario = scenarios[i];
                     const color = CHART_COLORS[i % CHART_COLORS.length];
                     
-                    const powerProfile = await calculateScenarioPowerProfile(scenario, userProfile, useTargetIntensity);
+                    const powerProfile = await calculateScenarioPowerProfile(scenario, userProfile, effectiveIntensity);
                     profiles.push({
                         scenario,
                         powerData: powerProfile.powerData,
@@ -118,9 +124,9 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         };
 
         calculatePowerProfiles();
-    }, [scenarios, userProfile, useTargetIntensity]);
+    }, [scenarios, userProfile, customIntensity]);
 
-    const calculateScenarioPowerProfile = async (scenario: Scenario, profile: UserPowerProfile, useTargetIntensity: boolean) => {
+    const calculateScenarioPowerProfile = async (scenario: Scenario, profile: UserPowerProfile, effectiveIntensity: number) => {
         const allPowerData: PowerDataPoint[] = [];
         let currentTime = 0;
 
@@ -132,7 +138,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 const { data } = getBestWorkoutData(rawData);
                 if (!data) continue;
 
-                const workoutPowerData = extractNormalizedPowerData(data, profile, currentTime, useTargetIntensity);
+                const workoutPowerData = extractNormalizedPowerData(data, profile, currentTime, effectiveIntensity);
                 allPowerData.push(...workoutPowerData.powerData);
                 currentTime += workoutPowerData.duration;
             } catch (error) {
@@ -150,7 +156,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         };
     };
 
-    const extractNormalizedPowerData = (workoutData: WorkoutData, profile: UserPowerProfile, startTime: number, useTargetIntensity: boolean) => {
+    const extractNormalizedPowerData = (workoutData: WorkoutData, profile: UserPowerProfile, startTime: number, effectiveIntensity: number) => {
         // Interpolate to a regular 1-second time series
         let totalDuration = 0;
         const regularPower: number[] = [];
@@ -167,18 +173,14 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     lastValue = valueArr[nextIdx];
                     nextIdx++;
                 }
-                // Apply target intensity adjustment when calculating absolute power
-                const adjustedPower = useTargetIntensity ? 
-                    lastValue * profile.ftp * (profile.targetIntensity / 100) : 
-                    lastValue * profile.ftp;
+                // Apply intensity adjustment when calculating absolute power
+                const adjustedPower = lastValue * profile.ftp * (effectiveIntensity / 100);
                 regularPower.push(adjustedPower);
             }
         } else {
             totalDuration = 3600;
             for (let t = 0; t <= totalDuration; t++) {
-                const adjustedPower = useTargetIntensity ? 
-                    0.5 * profile.ftp * (profile.targetIntensity / 100) : 
-                    0.5 * profile.ftp;
+                const adjustedPower = 0.5 * profile.ftp * (effectiveIntensity / 100);
                 regularPower.push(adjustedPower);
             }
         }
@@ -355,11 +357,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             
             // Calculate normalized power for the workout
             const powers = data.value.map((v: number) => {
-                let adjustedPower = v * userProfile.ftp; // Convert to watts
-                // Apply target intensity adjustment when enabled
-                if (useTargetIntensity) {
-                    adjustedPower = adjustedPower * (userProfile.targetIntensity / 100);
-                }
+                // Apply intensity adjustment when calculating absolute power
+                const adjustedPower = v * userProfile.ftp * (customIntensity / 100);
                 return adjustedPower;
             });
             let totalNP4 = 0;
@@ -452,6 +451,9 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         }
     };
 
+    // Calculate effective intensity for zone calculations
+    const effectiveIntensity = customIntensity;
+
     // Calculate power zone distribution using raw workout data
     const zoneDistributions = scenarios.map((scenario: Scenario) => {
         let allRawPoints: number[] = [];
@@ -467,11 +469,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             for (let i = 0; i < data.value.length; i++) {
                 let percentFTP = data.value[i] * 100; // Convert from decimal (0.5 = 50%, 1.0 = 100%)
                 
-                // When using target intensity, adjust the effective power percentage
-                // This makes efforts appear easier relative to original FTP zones
-                if (useTargetIntensity) {
-                    percentFTP = percentFTP * (userProfile.targetIntensity / 100);
-                }
+                // Apply intensity adjustment - makes efforts appear easier relative to original FTP zones
+                percentFTP = percentFTP * (effectiveIntensity / 100);
                 
                 allRawPoints.push(percentFTP);
             }
@@ -589,12 +588,21 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     Power Profile Analysis - {scenarios.length} Scenario{scenarios.length > 1 ? 's' : ''}
                 </h3>
                 <div className={styles.headerControls}>
-                    <button 
-                        onClick={() => setUseTargetIntensity(!useTargetIntensity)}
-                        className={`${styles.intensityToggleButton} ${useTargetIntensity ? styles.active : ''}`}
-                    >
-                        Use Target Intensity ({userProfile.targetIntensity}%)
-                    </button>
+                    <div className={styles.intensitySliderContainer}>
+                        <label className={styles.sliderLabel}>
+                            Training Intensity: {customIntensity}%
+                        </label>
+                        <input
+                            type="range"
+                            min="50"
+                            max="120"
+                            step="1"
+                            value={customIntensity}
+                            onChange={(e) => setCustomIntensity(Number(e.target.value))}
+                            className={styles.intensitySlider}
+                        />
+                    </div>
+                    
                     <button onClick={onClearSelection} className={styles.clearSelectionButton}>
                         Clear Selection
                     </button>
