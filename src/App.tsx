@@ -164,15 +164,9 @@ const AppContent = () => {
 
     // Load user profile and scenarios on mount
     useEffect(() => {
-        // Load user profile - always use defaults if no profile exists
-        const profile = getUserProfile();
-        if (profile) {
-            setUserProfile(profile.powerProfile);
-        } else {
-            // Use default profile for new users instead of forcing profile setup
-            const defaultProfile = getUserProfileWithDefaults();
-            setUserProfile(defaultProfile);
-        }
+        // Always use getUserProfileWithDefaults to ensure proper migration and fallbacks
+        const profile = getUserProfileWithDefaults();
+        setUserProfile(profile);
 
         // Load saved scenarios
         const savedScenarios = loadScenarios();

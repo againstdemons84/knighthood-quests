@@ -77,7 +77,7 @@ export const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?:
     // Step 5: Take the 4th root to get Normalized Power
     const normalizedPower = Math.pow(averageOfFourthPowers, 1/4);
     
-    return Math.round(normalizedPower);
+    return isNaN(normalizedPower) ? 0 : Math.round(normalizedPower);
 };
 
 /**
@@ -85,15 +85,15 @@ export const calculateNormalizedPower = (workoutData: WorkoutData, userProfile?:
  * Formula: IF = NP ÷ FTP
  */
 export const calculateIntensityFactor = (normalizedPower: number, userProfile?: UserProfile | UserPowerProfile): number => {
-    if (!userProfile || userProfile.ftp === 0) {
+    if (!userProfile || userProfile.ftp === 0 || isNaN(userProfile.ftp) || isNaN(normalizedPower)) {
         return 0; // Can't calculate without user profile or valid FTP
     }
     
     // IF = NP ÷ FTP
     const intensityFactor = normalizedPower / userProfile.ftp;
     
-    // Return rounded to 2 decimal places
-    return Math.round(intensityFactor * 100) / 100;
+    // Return rounded to 2 decimal places, but check for NaN first
+    return isNaN(intensityFactor) ? 0 : Math.round(intensityFactor * 100) / 100;
 };
 
 /**
@@ -101,7 +101,7 @@ export const calculateIntensityFactor = (normalizedPower: number, userProfile?: 
  * Formula: TSS = IF² × Duration in Hours × 100
  */
 export const calculateTrainingStressScore = (intensityFactor: number, durationInSeconds: number): number => {
-    if (intensityFactor === 0 || durationInSeconds === 0) {
+    if (intensityFactor === 0 || durationInSeconds === 0 || isNaN(intensityFactor) || isNaN(durationInSeconds)) {
         return 0; // Can't calculate without valid inputs
     }
     
@@ -111,8 +111,8 @@ export const calculateTrainingStressScore = (intensityFactor: number, durationIn
     // TSS = IF² × Duration in Hours × 100
     const tss = Math.pow(intensityFactor, 2) * durationInHours * 100;
     
-    // Return rounded to nearest whole number
-    return Math.round(tss);
+    // Return rounded to nearest whole number, but check for NaN first
+    return isNaN(tss) ? 0 : Math.round(tss);
 };
 
 /**

@@ -25,10 +25,10 @@ export const loadWorkoutMetrics = async (workoutId: string, userProfile?: any) =
         const metrics = calculateAllTrainingMetrics(result.data, userProfile);
         
         return {
-            duration: metrics.duration,
-            tss: metrics.trainingStressScore,
-            intensityFactor: metrics.intensityFactor,
-            normalizedPower: metrics.normalizedPower
+            duration: (isNaN(metrics.duration) || !isFinite(metrics.duration)) ? 0 : metrics.duration,
+            tss: (isNaN(metrics.trainingStressScore) || !isFinite(metrics.trainingStressScore)) ? 0 : metrics.trainingStressScore,
+            intensityFactor: (isNaN(metrics.intensityFactor) || !isFinite(metrics.intensityFactor)) ? 0 : metrics.intensityFactor,
+            normalizedPower: (isNaN(metrics.normalizedPower) || !isFinite(metrics.normalizedPower)) ? 0 : metrics.normalizedPower
         };
     } catch (error) {
         console.error(`Error loading workout metrics for ${workoutId}:`, error);
@@ -96,17 +96,19 @@ export const calculateCombinedMetricsDynamic = async (workouts: WorkoutSelection
     const totalIFDuration = validMetrics.reduce((sum, m) => {
         const ifValue = m?.intensityFactor || 0;
         const duration = m?.duration || 0;
-        return sum + (ifValue * duration);
+        const product = ifValue * duration;
+        return sum + (isNaN(product) ? 0 : product);
     }, 0);
-    const averageIF = totalDuration > 0 ? totalIFDuration / totalDuration : 0;
+    const averageIF = totalDuration > 0 ? (isNaN(totalIFDuration / totalDuration) ? 0 : totalIFDuration / totalDuration) : 0;
     
     // Calculate average NP weighted by duration  
     const totalNPDuration = validMetrics.reduce((sum, m) => {
         const npValue = m?.normalizedPower || 0;
         const duration = m?.duration || 0;
-        return sum + (npValue * duration);
+        const product = npValue * duration;
+        return sum + (isNaN(product) ? 0 : product);
     }, 0);
-    const totalNP = totalDuration > 0 ? totalNPDuration / totalDuration : 0;
+    const totalNP = totalDuration > 0 ? (isNaN(totalNPDuration / totalDuration) ? 0 : totalNPDuration / totalDuration) : 0;
 
     return {
         totalDuration,
@@ -135,12 +137,12 @@ export const calculateCombinedMetrics = (workouts: WorkoutSelection[]) => {
 
     const totalDuration = validWorkouts.reduce((sum, w) => {
         const duration = w.metrics?.duration || 0;
-        return sum + (isNaN(duration) ? 0 : duration);
+        return sum + (isNaN(duration) || !isFinite(duration) ? 0 : duration);
     }, 0);
     
     const totalTSS = validWorkouts.reduce((sum, w) => {
         const tss = w.metrics?.tss || 0;
-        return sum + (isNaN(tss) ? 0 : tss);
+        return sum + (isNaN(tss) || !isFinite(tss) ? 0 : tss);
     }, 0);
     
     // Calculate elapsed duration: total workout time + 10 minutes rest between workouts
@@ -153,7 +155,7 @@ export const calculateCombinedMetrics = (workouts: WorkoutSelection[]) => {
         const ifValue = w.metrics?.intensityFactor || 0;
         const duration = w.metrics?.duration || 0;
         const product = ifValue * duration;
-        return sum + (isNaN(product) ? 0 : product);
+        return sum + (isNaN(product) || !isFinite(product) ? 0 : product);
     }, 0);
     const averageIF = totalDuration > 0 ? totalIFDuration / totalDuration : 0;
     
@@ -162,7 +164,7 @@ export const calculateCombinedMetrics = (workouts: WorkoutSelection[]) => {
         const npValue = w.metrics?.normalizedPower || 0;
         const duration = w.metrics?.duration || 0;
         const product = npValue * duration;
-        return sum + (isNaN(product) ? 0 : product);
+        return sum + (isNaN(product) || !isFinite(product) ? 0 : product);
     }, 0);
     const totalNP = totalDuration > 0 ? totalNPDuration / totalDuration : 0;
 

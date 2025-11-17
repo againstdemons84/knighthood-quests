@@ -5,6 +5,7 @@ import ReorderableWorkoutList from './ReorderableWorkoutList';
 import { calculateCombinedMetricsDynamic, formatDuration, generateScenarioId } from '../utils/scenarioHelpers';
 import allWorkouts from '../data/workouts.json';
 import styles from './SharedScenarioView.module.css';
+import { getTargetIntensity } from '../utils/targetIntensityUtils';
 
 interface SharedScenarioViewProps {
     workoutIds: string[];
@@ -44,6 +45,7 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
     useEffect(() => {
         const loadSharedScenario = async () => {
             try {
+                console.log('Loading shared scenario with workout IDs:', workoutIds);
                 // Convert workout IDs to WorkoutSelection format
                 const workoutSelections: WorkoutSelection[] = workoutIds.map(id => ({
                     id,
@@ -57,14 +59,18 @@ const SharedScenarioView: React.FC<SharedScenarioViewProps> = ({
                 const metrics = await calculateCombinedMetricsDynamic(workoutSelections, userProfile);
                 setDynamicMetrics(metrics);
 
-                // Calculate target metrics based on user's target intensity
-                const targetIntensity = userProfile.targetIntensity / 100; // Convert percentage to decimal
-                const totalTargetTSS = metrics.totalTSS * targetIntensity;
-                const averageTargetIF = metrics.averageIF * targetIntensity;
+                // Calculate target metrics using centralized utility
+                const targetIntensityValue = getTargetIntensity(userProfile);
+                const targetIntensity = targetIntensityValue / 100;
+                const baseTSS = isNaN(metrics.totalTSS) ? 0 : metrics.totalTSS;
+                const baseIF = isNaN(metrics.averageIF) ? 0 : metrics.averageIF;
+                
+                const totalTargetTSS = baseTSS * targetIntensity;
+                const averageTargetIF = baseIF * targetIntensity;
 
                 setTargetMetrics({
-                    totalTargetTSS,
-                    averageTargetIF
+                    totalTargetTSS: isNaN(totalTargetTSS) ? 0 : totalTargetTSS,
+                    averageTargetIF: isNaN(averageTargetIF) ? 0 : averageTargetIF
                 });
 
                 setLoading(false);

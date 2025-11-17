@@ -8,6 +8,8 @@ import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
 import WorkoutSchedulingModal from './WorkoutSchedulingModal';
 import styles from './ScenarioDetailsView.module.css';
+import { getTargetIntensity } from '../utils/targetIntensityUtils';
+(window as any).DEBUG_TEST = 'ScenarioDetailsView loaded at ' + new Date().toISOString();
 
 interface ScenarioDetailsViewProps {
     scenario: Scenario;
@@ -44,7 +46,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     const [honourStage, setHonourStage] = useState(0); // 0: Honour, 1: Glory, 2: Victory, 3: trigger form
     
     // Computed value for target intensity display
-    const targetIntensityValue = userProfile.targetIntensity || 70;
+    const targetIntensityValue = getTargetIntensity(userProfile);
 
     const handleHonourClick = () => {
         if (honourStage < 2) {
@@ -95,27 +97,43 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
     useEffect(() => {
         const loadScenarioMetrics = async () => {
+            // Don't calculate metrics if userProfile isn't properly loaded yet
+            if (!userProfile || !userProfile.ftp) {
+                setLoading(false);
+                return;
+            }
+            
             // Calculate dynamic metrics for the scenario
             try {
                 const calculatedMetrics = await calculateCombinedMetricsDynamic(scenario.workouts, userProfile);
+                
+
+                
                 setDynamicMetrics(calculatedMetrics);
 
-                // Calculate target metrics based on user's target intensity
-                // Target intensity should affect the power calculations, not just multiply the results
-                const targetIntensityValue = userProfile.targetIntensity || 70; // Fallback to 70% if undefined/NaN
-                const targetIntensityDecimal = targetIntensityValue / 100; // Convert percentage to decimal
+                // Calculate target metrics using centralized utility
+                const targetIntensityValue = getTargetIntensity(userProfile);
+                const targetIntensityDecimal = targetIntensityValue / 100;
+                
+
                 
                 // For target metrics, we need to recalculate with adjusted intensity
                 // TSS = IF² × duration_hours × 100, so with target intensity:
                 // Target IF = base IF × target intensity ratio
-                const targetIF = calculatedMetrics.averageIF * targetIntensityDecimal;
-                const targetNP = calculatedMetrics.totalNP * targetIntensityDecimal;
-                const durationHours = calculatedMetrics.totalDuration / 3600;
+                const baseIF = isNaN(calculatedMetrics.averageIF) ? 0 : calculatedMetrics.averageIF;
+                const baseNP = isNaN(calculatedMetrics.totalNP) ? 0 : calculatedMetrics.totalNP;
+                const baseDuration = isNaN(calculatedMetrics.totalDuration) ? 0 : calculatedMetrics.totalDuration;
+                
+                const targetIF = baseIF * targetIntensityDecimal;
+                const targetNP = baseNP * targetIntensityDecimal;
+                const durationHours = baseDuration / 3600;
                 const targetTSS = Math.pow(targetIF, 2) * durationHours * 100;
 
-                const totalTargetTSS = Math.round(targetTSS);
-                const averageTargetIF = Math.round(targetIF * 100) / 100;
-                const totalTargetNP = Math.round(targetNP);
+                const totalTargetTSS = !isFinite(targetTSS) ? 0 : Math.round(targetTSS);
+                const averageTargetIF = !isFinite(targetIF) ? 0 : Math.round(targetIF * 100) / 100;
+                const totalTargetNP = !isFinite(targetNP) ? 0 : Math.round(targetNP);
+                
+
 
                 setTargetMetrics({
                     totalTargetTSS,

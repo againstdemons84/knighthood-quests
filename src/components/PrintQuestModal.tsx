@@ -4,6 +4,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import { formatDuration } from '../utils/scenarioHelpers';
 import styles from './PrintQuestModal.module.css';
 import { printStyles } from './PrintQuestModal.print';
+import { getTargetIntensity, formatTargetIntensity } from '../utils/targetIntensityUtils';
 
 interface PrintQuestModalProps {
     scenario: Scenario;
@@ -82,7 +83,7 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
 
     const handlePrint = () => {
         const schedule = calculateSchedule();
-        const intensityScaleFactor = (userProfile.targetIntensity || 70) / 100;
+        const intensityScaleFactor = getTargetIntensity(userProfile) / 100;
         const totalTSS = scenario.workouts.reduce((sum, w) => sum + (w.metrics?.tss || 0), 0);
         const scaledTotalTSS = totalTSS * intensityScaleFactor;
         const totalDuration = scenario.workouts.reduce((sum, w) => sum + (w.metrics?.duration || 0), 0);
@@ -114,11 +115,11 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                         <span class="summary-value">${formatDuration(totalDuration + (scenario.workouts.length - 1) * 10 * 60)} (including breaks)</span>
                     </div>
                     <div class="summary-row">
-                        <span class="summary-label"><strong>Total TSS® (${userProfile.targetIntensity || 70}% intensity):</strong></span>
+                        <span class="summary-label"><strong>Total TSS® (${formatTargetIntensity(userProfile)} intensity):</strong></span>
                         <span class="summary-value">${Math.round(scaledTotalTSS)}</span>
                     </div>
                     <div class="summary-row">
-                        <span class="summary-label"><strong>Average IF® (${userProfile.targetIntensity || 70}% intensity):</strong></span>
+                        <span class="summary-label"><strong>Average IF® (${formatTargetIntensity(userProfile)} intensity):</strong></span>
                         <span class="summary-value">${scaledAvgIF.toFixed(2)}</span>
                     </div>
                     <div class="summary-row">
@@ -135,9 +136,9 @@ const PrintQuestModal: React.FC<PrintQuestModalProps> = ({ scenario, userProfile
                             <th class="th-end">End</th>
                             <th class="th-workout">Workout / Break</th>
                             <th class="th-duration">Duration</th>
-                            <th class="th-tss">TSS® (${userProfile.targetIntensity || 70}%)</th>
-                            <th class="th-if">IF® (${userProfile.targetIntensity || 70}%)</th>
-                            <th class="th-np">NP® (${userProfile.targetIntensity || 70}%)</th>
+                            <th class="th-tss">TSS® (${formatTargetIntensity(userProfile)})</th>
+                            <th class="th-if">IF® (${formatTargetIntensity(userProfile)})</th>
+                            <th class="th-np">NP® (${formatTargetIntensity(userProfile)})</th>
                         </tr>
                     </thead>
                     <tbody>

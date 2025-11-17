@@ -8,6 +8,7 @@ import { calculateAllTrainingMetrics } from '../utils/trainingMetrics';
 import { getWorkoutData } from '../data/workout-data';
 import { WorkoutData } from '../types/workout';
 import { UserPowerProfile } from '../types/userProfile';
+import { getTargetIntensity } from '../utils/targetIntensityUtils';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import { useViewport } from '../hooks/useViewport';
 import WorkoutChart from './WorkoutChart';
@@ -283,13 +284,17 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
 
     const combinedMetrics = calculateCombinedMetrics(basket);
     
-    // Calculate target intensity metrics
-    const targetIntensityValue = userProfile.targetIntensity || 70; // Fallback to 70% if undefined/NaN
+    // Calculate target intensity metrics using centralized utility
+    const targetIntensityValue = getTargetIntensity(userProfile);
     const targetIntensity = targetIntensityValue / 100;
+    const baseTSS = isNaN(combinedMetrics.totalTSS) ? 0 : combinedMetrics.totalTSS;
+    const baseIF = isNaN(combinedMetrics.averageIF) ? 0 : combinedMetrics.averageIF;
+    const baseNP = isNaN(combinedMetrics.totalNP) ? 0 : combinedMetrics.totalNP;
+    
     const targetMetrics = {
-        totalTargetTSS: combinedMetrics.totalTSS * targetIntensity,
-        averageTargetIF: combinedMetrics.averageIF * targetIntensity,
-        totalTargetNP: combinedMetrics.totalNP * targetIntensity
+        totalTargetTSS: isNaN(baseTSS * targetIntensity) ? 0 : baseTSS * targetIntensity,
+        averageTargetIF: isNaN(baseIF * targetIntensity) ? 0 : baseIF * targetIntensity,
+        totalTargetNP: isNaN(baseNP * targetIntensity) ? 0 : baseNP * targetIntensity
     };
 
     if (loading) {

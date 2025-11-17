@@ -21,6 +21,7 @@ import { getWorkoutData } from '../data/workout-data';
 import { getBestWorkoutData } from '../utils/workoutDataHelpers';
 import { WorkoutData } from '../types/workout';
 import styles from './ScenarioComparison.module.css';
+import { getTargetIntensity } from '../utils/targetIntensityUtils';
 
 // Register Chart.js components
 ChartJS.register(
@@ -89,12 +90,12 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [customIntensity, setCustomIntensity] = useState(userProfile.targetIntensity || 70);
+    const [customIntensity, setCustomIntensity] = useState(getTargetIntensity(userProfile));
 
     // Reset custom intensity when user profile changes
     useEffect(() => {
-        setCustomIntensity(userProfile.targetIntensity || 70);
-    }, [userProfile.targetIntensity]);
+        setCustomIntensity(getTargetIntensity(userProfile));
+    }, [userProfile]);
 
     useEffect(() => {
         const calculatePowerProfiles = async () => {

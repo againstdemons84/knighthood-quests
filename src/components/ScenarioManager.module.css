@@ -527,53 +527,6 @@
   cursor: pointer;
 }
 
-.comparisonTableContainer {
-  overflow-x: auto;
-}
-
-.comparisonTable {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #333;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.comparisonTableHeader {
-  background-color: #444;
-}
-
-.comparisonTableHeaderCell {
-  padding: 12px;
-  color: white;
-  text-align: left;
-}
-
-.comparisonTableHeaderCellCenter {
-  text-align: center;
-}
-
-.comparisonTableRow {
-  /* Base table row - styling applied through even/odd variants */
-}
-
-.comparisonTableRowEven {
-  background-color: #333;
-}
-
-.comparisonTableRowOdd {
-  background-color: #3a3a3a;
-}
-
-.comparisonTableCell {
-  padding: 12px;
-  color: white;
-}
-
-.comparisonTableCellCenter {
-  text-align: center;
-}
-
 /* Controls Section */
 .controlsSection {
   display: flex;

@@ -3,6 +3,7 @@ import { UserPowerProfile } from '../types/userProfile';
 import { getUserProfile, clearUserProfile, isUsingDefaultProfile } from '../utils/userProfileHelpers';
 import UserProfileSetup from './UserProfileSetup';
 import styles from './UserProfileManager.module.css';
+import { formatTargetIntensity } from '../utils/targetIntensityUtils';
 
 interface UserProfileManagerProps {
     currentProfile: UserPowerProfile;
@@ -105,7 +106,7 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({
                                 Target Intensity
                             </div>
                             <div className={styles.powerCardValue}>
-                                {currentProfile.targetIntensity || 70}%
+                                {formatTargetIntensity(currentProfile)}
                             </div>
                             <div className={styles.powerCardUnit}>Training Level</div>
                         </div>
