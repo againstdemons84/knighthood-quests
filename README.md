@@ -209,11 +209,36 @@ npm run deploy
 - **TypeScript Config**: Strict type checking and modern ES features
 - **Playwright Config**: Cross-browser and cross-device testing setup
 
+## 🛠️ Development
+
+### Getting Started
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
+4. Open [http://localhost:5173](http://localhost:5173)
+
+### Available Scripts
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build production bundle
+- `npm run preview` - Preview production build locally
+- `npm test` - Run tests in watch mode (stays running, watches for changes)
+- `npm run test:run` - **Run tests once and exit** (recommended for CI/validation)
+- `npm run test:e2e` - Run end-to-end tests with Playwright
+- `npm run test:all` - Run all tests (unit + e2e)
+
+### Testing Commands
+> **⚠️ Important**: Use `npm run test:run` instead of `npm test` when you want tests to run once and exit cleanly. The `npm test` command runs in watch mode and keeps running indefinitely, which can be confusing in automated workflows.
+
+- **One-time test run**: `npm run test:run` ✅
+- **Watch mode**: `npm test` (stays running, watches files)
+- **E2E tests**: `npm run test:e2e`
+- **Full test suite**: `npm run test:all`
+
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Run tests (`npm run test:all`)
+3. Run tests (`npm run test:run`)
 4. Commit your changes (`git commit -m 'Add amazing feature'`)
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
