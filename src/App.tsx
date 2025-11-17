@@ -361,7 +361,7 @@ const AppContent = () => {
                     </>
                 } />
                 
-                <Route path="/share/:shareId" element={
+                <Route path="/share/" element={
                     sharedScenarioData && userProfile ? (
                         <SharedScenarioView
                             workoutIds={sharedScenarioData.workoutIds}
