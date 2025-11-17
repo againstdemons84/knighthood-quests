@@ -137,7 +137,7 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
 
                         {/* Target Intensity Input */}
                         <div className={styles.inputGroup}>
-                            <label className={`${styles.label} ${styles.labelTarget}`}>
+                            <label className={`${styles.label} ${styles.labelTargetIntensity}`}>
                                 Target Intensity (%)
                             </label>
                             <input
@@ -147,7 +147,7 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
                                 value={profile.targetIntensity || ''}
                                 onChange={(e) => handleInputChange('targetIntensity', e.target.value)}
                                 placeholder="e.g. 70"
-                                className={`${styles.input} ${styles.inputTarget}`}
+                                className={`${styles.input} ${styles.inputTargetIntensity}`}
                             />
                             <p className={styles.helpText}>
                                 Your preferred training intensity level (30-100%)
@@ -183,12 +183,12 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className={styles.actionButtons}>
+                    <div className={styles.buttonContainer}>
                         {!isFirstTime && (
                             <button
                                 type="button"
                                 onClick={() => window.location.reload()}
-                                className={styles.cancelButton}
+                                className={`${styles.button} ${styles.cancelButton}`}
                             >
                                 Cancel
                             </button>
@@ -196,7 +196,7 @@ const UserProfileSetup: React.FC<UserProfileSetupProps> = ({
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`${styles.submitButton} ${isSubmitting ? styles.submitButtonDisabled : ''}`}
+                            className={`${styles.button} ${styles.submitButton} ${isSubmitting ? styles.submitButtonDisabled : styles.submitButtonEnabled}`}
                         >
                             {isSubmitting ? 'Saving...' : (isFirstTime ? 'Start Challenge Planning' : 'Update Profile')}
                         </button>

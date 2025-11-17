@@ -284,7 +284,8 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
     const combinedMetrics = calculateCombinedMetrics(basket);
     
     // Calculate target intensity metrics
-    const targetIntensity = userProfile.targetIntensity / 100;
+    const targetIntensityValue = userProfile.targetIntensity || 70; // Fallback to 70% if undefined/NaN
+    const targetIntensity = targetIntensityValue / 100;
     const targetMetrics = {
         totalTargetTSS: combinedMetrics.totalTSS * targetIntensity,
         averageTargetIF: combinedMetrics.averageIF * targetIntensity,
@@ -767,7 +768,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 </div>
                                 <div className={`${styles.metricCard} ${styles.metricCardTss}`}>
                                     <div className={`${styles.metricLabel} ${styles.colorTss}`}>
-                                        TSS® ({userProfile.targetIntensity}%)
+                                        TSS® ({targetIntensityValue}%)
                                     </div>
                                     <div className={styles.metricValue}>
                                         {Math.round(combinedMetrics.totalTSS)} ({Math.round(targetMetrics.totalTargetTSS)})
@@ -775,7 +776,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 </div>
                                 <div className={`${styles.metricCard} ${styles.metricCardIf}`}>
                                     <div className={`${styles.metricLabel} ${styles.colorIf}`}>
-                                        Avg IF® ({userProfile.targetIntensity}%)
+                                        Avg IF® ({targetIntensityValue}%)
                                     </div>
                                     <div className={styles.metricValue}>
                                         {combinedMetrics.averageIF.toFixed(2)} ({targetMetrics.averageTargetIF.toFixed(2)})
@@ -783,7 +784,7 @@ const WorkoutSelector: React.FC<WorkoutSelectorProps> = ({
                                 </div>
                                 <div className={`${styles.metricCard} ${styles.metricCardNp}`}>
                                     <div className={`${styles.metricLabel} ${styles.colorNp}`}>
-                                        Avg NP® ({userProfile.targetIntensity}%)
+                                        Avg NP® ({targetIntensityValue}%)
                                     </div>
                                     <div className={styles.metricValue}>
                                         {Math.round(combinedMetrics.totalNP)}W ({Math.round(targetMetrics.totalTargetNP)}W)

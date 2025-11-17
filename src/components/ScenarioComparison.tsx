@@ -89,11 +89,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
     const [scenarioPowerProfiles, setScenarioPowerProfiles] = useState<ScenarioPowerProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [customIntensity, setCustomIntensity] = useState(userProfile.targetIntensity);
+    const [customIntensity, setCustomIntensity] = useState(userProfile.targetIntensity || 70);
 
     // Reset custom intensity when user profile changes
     useEffect(() => {
-        setCustomIntensity(userProfile.targetIntensity);
+        setCustomIntensity(userProfile.targetIntensity || 70);
     }, [userProfile.targetIntensity]);
 
     useEffect(() => {
@@ -276,6 +276,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             };
         })
     };
+
+
 
     const chartOptions: ChartOptions<'line'> = {
         responsive: true,
@@ -694,7 +696,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                     <div className={styles.chartsRow}>
                         {/* First Half: Normalized Power Profile */}
                         <div className={`${styles.chartContainerHalf} ${styles.chartContainerHalfReduced}`}>
-                            <Line data={chartData} options={chartOptions} />
+                            <Line 
+                                key={`chart-half-${scenarios.length}-${scenarioPowerProfiles.length}`}
+                                data={chartData} 
+                                options={chartOptions} 
+                            />
                         </div>
                         
                         {/* Second Half: Power Zone Distribution */}
@@ -712,7 +718,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                 <>
                     {/* Row 1: Full width Normalized Power Profile */}
                     <div className={styles.chartContainer}>
-                        <Line data={chartData} options={chartOptions} />
+                        <Line 
+                            key={`chart-${scenarios.length}-${scenarioPowerProfiles.length}`}
+                            data={chartData} 
+                            options={chartOptions} 
+                        />
                     </div>
                     
                     {/* Row 2: TSS and Power Zone side by side */}

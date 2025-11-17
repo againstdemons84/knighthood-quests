@@ -1,6 +1,7 @@
 import { UserProfileData, UserPowerProfile } from '../types/userProfile';
 
 const USER_PROFILE_STORAGE_KEY = 'user_power_profile';
+export const DEFAULT_TARGET_INTENSITY = 70;
 
 export const saveUserProfile = (profile: UserPowerProfile): void => {
     try {
@@ -50,7 +51,7 @@ export const getDefaultPowerProfile = (): UserPowerProfile => {
         map: 260,   // Maximum Aerobic Power (typically ~30% higher than FTP)
         ac: 340,    // Anaerobic Capacity (typically ~30% higher than MAP)
         nm: 450,    // Neuromuscular Power (typically ~30% higher than AC)
-        targetIntensity: 70  // Target training intensity percentage
+        targetIntensity: DEFAULT_TARGET_INTENSITY  // Target training intensity percentage
     };
 };
 
@@ -61,9 +62,14 @@ export const getUserProfileWithDefaults = (): UserPowerProfile => {
     }
     
     // Migrate existing profiles that might not have targetIntensity
-    const powerProfile = profile.powerProfile;
-    if (powerProfile.targetIntensity === undefined) {
-        powerProfile.targetIntensity = 70; // Default to 70% for existing profiles
+    const powerProfile = { ...profile.powerProfile };
+    
+    // Ensure targetIntensity is always a valid number
+    if (!powerProfile.targetIntensity || 
+        isNaN(powerProfile.targetIntensity) || 
+        powerProfile.targetIntensity <= 0 || 
+        powerProfile.targetIntensity > 100) {
+        powerProfile.targetIntensity = DEFAULT_TARGET_INTENSITY; // Default to 70% for invalid values
     }
     
     return powerProfile;

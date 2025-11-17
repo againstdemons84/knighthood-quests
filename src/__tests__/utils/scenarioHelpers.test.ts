@@ -5,24 +5,25 @@ import {
     loadWorkoutMetrics
 } from '../../utils/scenarioHelpers';
 import { WorkoutSelection } from '../../types/scenario';
+import { vi } from 'vitest';
 
 // Mock getWorkoutData instead of fetch
-jest.mock('../../data/workout-data', () => ({
-    getWorkoutData: jest.fn()
+vi.mock('../../data/workout-data', () => ({
+    getWorkoutData: vi.fn()
 }));
 
 import { getWorkoutData } from '../../data/workout-data';
 
 describe('scenarioHelpers', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         // Mock localStorage
         Object.defineProperty(window, 'localStorage', {
             value: {
-                getItem: jest.fn(),
-                setItem: jest.fn(),
-                removeItem: jest.fn(),
-                clear: jest.fn(),
+                getItem: vi.fn(),
+                setItem: vi.fn(),
+                removeItem: vi.fn(),
+                clear: vi.fn(),
             },
             writable: true,
         });
@@ -188,7 +189,7 @@ describe('scenarioHelpers', () => {
         };
 
         it('should load and calculate workout metrics successfully', async () => {
-            (getWorkoutData as jest.Mock).mockReturnValue(mockWorkoutResponse);
+            (getWorkoutData as any).mockReturnValue(mockWorkoutResponse);
 
             const result = await loadWorkoutMetrics('test-workout', mockUserProfile);
 
@@ -205,7 +206,7 @@ describe('scenarioHelpers', () => {
         });
 
         it('should handle missing workout data', async () => {
-            (getWorkoutData as jest.Mock).mockReturnValue(null);
+            (getWorkoutData as any).mockReturnValue(null);
 
             const result = await loadWorkoutMetrics('non-existent-workout', mockUserProfile);
 
@@ -213,7 +214,7 @@ describe('scenarioHelpers', () => {
         });
 
         it('should handle data loading error', async () => {
-            (getWorkoutData as jest.Mock).mockImplementation(() => {
+            (getWorkoutData as any).mockImplementation(() => {
                 throw new Error('Data loading error');
             });
 
@@ -223,7 +224,7 @@ describe('scenarioHelpers', () => {
         });
 
         it('should work without user profile', async () => {
-            (getWorkoutData as jest.Mock).mockReturnValue(mockWorkoutResponse);
+            (getWorkoutData as any).mockReturnValue(mockWorkoutResponse);
 
             const result = await loadWorkoutMetrics('test-workout');
 

@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
 };
 
 Object.defineProperty(window, 'localStorage', {
@@ -13,7 +14,7 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 // Mock IntersectionObserver
 Object.defineProperty(window, 'IntersectionObserver', {

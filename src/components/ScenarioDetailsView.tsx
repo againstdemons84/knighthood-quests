@@ -42,6 +42,9 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [showSchedulingModal, setShowSchedulingModal] = useState(false);
     const [honourStage, setHonourStage] = useState(0); // 0: Honour, 1: Glory, 2: Victory, 3: trigger form
+    
+    // Computed value for target intensity display
+    const targetIntensityValue = userProfile.targetIntensity || 70;
 
     const handleHonourClick = () => {
         if (honourStage < 2) {
@@ -98,10 +101,21 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                 setDynamicMetrics(calculatedMetrics);
 
                 // Calculate target metrics based on user's target intensity
-                const targetIntensity = userProfile.targetIntensity / 100; // Convert percentage to decimal
-                const totalTargetTSS = calculatedMetrics.totalTSS * targetIntensity;
-                const averageTargetIF = calculatedMetrics.averageIF * targetIntensity;
-                const totalTargetNP = calculatedMetrics.totalNP * targetIntensity;
+                // Target intensity should affect the power calculations, not just multiply the results
+                const targetIntensityValue = userProfile.targetIntensity || 70; // Fallback to 70% if undefined/NaN
+                const targetIntensityDecimal = targetIntensityValue / 100; // Convert percentage to decimal
+                
+                // For target metrics, we need to recalculate with adjusted intensity
+                // TSS = IF² × duration_hours × 100, so with target intensity:
+                // Target IF = base IF × target intensity ratio
+                const targetIF = calculatedMetrics.averageIF * targetIntensityDecimal;
+                const targetNP = calculatedMetrics.totalNP * targetIntensityDecimal;
+                const durationHours = calculatedMetrics.totalDuration / 3600;
+                const targetTSS = Math.pow(targetIF, 2) * durationHours * 100;
+
+                const totalTargetTSS = Math.round(targetTSS);
+                const averageTargetIF = Math.round(targetIF * 100) / 100;
+                const totalTargetNP = Math.round(targetNP);
 
                 setTargetMetrics({
                     totalTargetTSS,
@@ -193,7 +207,7 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
                     <div className={`${styles.metricCard} ${styles.metricCardTss} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorTss} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            TSS® ({userProfile.targetIntensity}%)
+                            TSS® ({targetIntensityValue}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {Math.round(dynamicMetrics.totalTSS)} ({Math.round(targetMetrics.totalTargetTSS)})
@@ -202,16 +216,16 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
 
                     <div className={`${styles.metricCard} ${styles.metricCardIf} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorIf} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Avg IF® ({userProfile.targetIntensity}%)
+                            Avg IF® ({targetIntensityValue}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
-                            {dynamicMetrics.averageIF.toFixed(2)} {targetMetrics.averageTargetIF.toFixed(2)}
+                            {dynamicMetrics.averageIF.toFixed(2)} ({targetMetrics.averageTargetIF.toFixed(2)})
                         </div>
                     </div>
 
                     <div className={`${styles.metricCard} ${styles.metricCardNp} ${viewport.isMobile ? styles.metricCardMobile : styles.metricCardDesktop}`}>
                         <div className={`${styles.metricLabel} ${styles.colorNp} ${viewport.isMobile ? styles.metricLabelMobile : styles.metricLabelDesktop}`}>
-                            Avg NP® ({userProfile.targetIntensity}%)
+                            Avg NP® ({targetIntensityValue}%)
                         </div>
                         <div className={`${styles.metricValue} ${viewport.isMobile ? styles.metricValueMobile : styles.metricValueDesktop}`}>
                             {Math.round(dynamicMetrics.totalNP)}W ({Math.round(targetMetrics.totalTargetNP)}W)
