@@ -52,3 +52,20 @@
 .footerLink:hover {
   text-decoration: underline;
 }
+
+/* Privacy Policy Button */
+.privacyButton {
+  background: none;
+  border: none;
+  color: #4CAF50;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: text-decoration 0.2s;
+}
+
+.privacyButton:hover {
+  text-decoration: underline;
+}

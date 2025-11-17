@@ -100,6 +100,17 @@
   background-color: #607D8B;
 }
 
+.honourButton {
+  background-color: #8B5A2B; /* Bronze/gold color for honour theme */
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.honourButton:hover {
+  background-color: #A0652F; /* Slightly lighter on hover */
+  transform: scale(1.05);
+}
+
 /* Title Section */
 .titleSectionMobile {
   margin-bottom: 16px;

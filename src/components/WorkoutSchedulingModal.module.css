@@ -1,0 +1,416 @@
+/* Workout Scheduling Modal Styles */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #444;
+}
+
+.title {
+    color: #eaeaea;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: #eaeaea;
+}
+
+.content {
+    padding: 24px;
+}
+
+/* Form Styles */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.description {
+    color: #ccc;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+}
+
+.error {
+    background-color: #441111;
+    border: 1px solid #cc4444;
+    color: #ffaaaa;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    color: #eaeaea;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.input {
+    background-color: #1a1a1a;
+    border: 2px solid #444;
+    color: #eaeaea;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #8B5A2B;
+}
+
+.fieldNote {
+    color: #999;
+    font-size: 0.8rem;
+    margin: 4px 0 0 0;
+    line-height: 1.3;
+}
+
+/* Privacy Notice */
+.privacyNotice {
+    background-color: #1a3d1a;
+    border: 1px solid #2d5a2d;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.privacyText {
+    color: #a8d8a8;
+    font-size: 0.9rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.privacyLink {
+    background: none;
+    border: none;
+    color: #70c470;
+    text-decoration: underline;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.privacyLink:hover {
+    color: #90e490;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.cancelButton {
+    background-color: #555;
+    color: #eaeaea;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+    background-color: #666;
+}
+
+.submitButton {
+    background-color: #8B5A2B;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+    background-color: #A0652F;
+}
+
+.confirmButton {
+    background-color: #2D5A2B;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.confirmButton:hover {
+    background-color: #3A6B38;
+}
+
+.doneButton {
+    background-color: #607D8B;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.doneButton:hover {
+    background-color: #708B99;
+}
+
+/* Loading States */
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #ccc;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #444;
+    border-top: 4px solid #8B5A2B;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loadingNote {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 8px;
+}
+
+/* Confirmation Step */
+.confirmation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.confirmation h3 {
+    color: #eaeaea;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.confirmDescription {
+    color: #ccc;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.scheduleList {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.scheduleItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+}
+
+.scheduleItem:last-child {
+    border-bottom: none;
+}
+
+.workoutName {
+    color: #eaeaea;
+    font-weight: 500;
+}
+
+.scheduledTime {
+    color: #8B5A2B;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Results Step */
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.results h3 {
+    color: #eaeaea;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.successMessage {
+    background-color: #1a3d1a;
+    border: 1px solid #4CAF50;
+    color: #81C784;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.partialMessage {
+    background-color: #3d3d1a;
+    border: 1px solid #FFC107;
+    color: #FFD54F;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.resultsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resultItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background-color: #1a1a1a;
+}
+
+.resultSuccess {
+    border-left: 4px solid #4CAF50;
+}
+
+.resultError {
+    border-left: 4px solid #F44336;
+}
+
+.resultWorkout {
+    flex: 1;
+    color: #eaeaea;
+    font-weight: 500;
+}
+
+.resultStatus {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.resultError {
+    color: #ff9999;
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .overlay {
+        padding: 16px;
+    }
+    
+    .modal {
+        max-width: none;
+        width: 100%;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .title {
+        font-size: 1.3rem;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .cancelButton,
+    .submitButton,
+    .confirmButton,
+    .doneButton {
+        width: 100%;
+    }
+    
+    .scheduleItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .scheduledTime {
+        align-self: flex-end;
+    }
+}

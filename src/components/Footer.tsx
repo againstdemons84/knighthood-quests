@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useViewport } from '../hooks/useViewport';
+import PrivacyPolicyModal from './PrivacyPolicyModal';
 import styles from './Footer.module.css';
 
 const Footer: React.FC = () => {
     const viewport = useViewport();
+    const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
     return (
         <div className={styles.footer}>
@@ -51,7 +53,18 @@ const Footer: React.FC = () => {
                 >
                     Contribute on GitHub
                 </a>
+                <button
+                    onClick={() => setShowPrivacyPolicy(true)}
+                    className={styles.privacyButton}
+                >
+                    Privacy Policy
+                </button>
             </div>
+
+            <PrivacyPolicyModal 
+                isOpen={showPrivacyPolicy} 
+                onClose={() => setShowPrivacyPolicy(false)} 
+            />
         </div>
     );
 };

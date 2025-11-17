@@ -6,6 +6,7 @@ import ReorderableWorkoutList from './ReorderableWorkoutList';
 import ScenarioComparison from './ScenarioComparison';
 import { useViewport } from '../hooks/useViewport';
 import PrintQuestModal from './PrintQuestModal';
+import WorkoutSchedulingModal from './WorkoutSchedulingModal';
 import styles from './ScenarioDetailsView.module.css';
 
 interface ScenarioDetailsViewProps {
@@ -39,8 +40,27 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
         totalTargetNP: 0
     });
     const [showPrintModal, setShowPrintModal] = useState(false);
+    const [showSchedulingModal, setShowSchedulingModal] = useState(false);
+    const [honourStage, setHonourStage] = useState(0); // 0: Honour, 1: Glory, 2: Victory, 3: trigger form
 
+    const handleHonourClick = () => {
+        if (honourStage < 2) {
+            setHonourStage(honourStage + 1);
+        } else {
+            // Stage 2 (Victory) -> trigger the form
+            setShowSchedulingModal(true);
+            setHonourStage(0); // Reset for next time
+        }
+    };
 
+    const getHonourButtonText = () => {
+        switch (honourStage) {
+            case 0: return 'Honour!';
+            case 1: return 'Glory!';
+            case 2: return 'Victory!';
+            default: return 'Honour!';
+        }
+    };
 
     const handleWorkoutReorder = (reorderedWorkouts: WorkoutSelection[]) => {
         const updatedScenario: Scenario = {
@@ -127,6 +147,12 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                         className={`${styles.button} ${styles.printButton} ${viewport.isMobile ? styles.buttonMobile : styles.buttonDesktop}`}
                     >
                         🖨️ Print Quest Plan
+                    </button>
+                    <button
+                        onClick={handleHonourClick}
+                        className={`${styles.button} ${styles.honourButton} ${viewport.isMobile ? styles.buttonMobile : styles.buttonDesktop}`}
+                    >
+                        ⚔️ {getHonourButtonText()}
                     </button>
                 </div>
 
@@ -220,6 +246,13 @@ const ScenarioDetailsView: React.FC<ScenarioDetailsViewProps> = ({
                     onClose={() => setShowPrintModal(false)}
                 />
             )}
+
+            {/* Workout Scheduling Modal */}
+            <WorkoutSchedulingModal
+                scenario={currentScenario}
+                isOpen={showSchedulingModal}
+                onClose={() => setShowSchedulingModal(false)}
+            />
         </div>
     );
 };
