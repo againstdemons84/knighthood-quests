@@ -25,6 +25,8 @@ import { getUserProfile, saveUserProfile, hasUserProfile, getUserProfileWithDefa
 import { useViewport } from './hooks/useViewport';
 import { useAppRouting } from './hooks/useAppRouting';
 import ScenarioDetailRoute from './routes/ScenarioDetailRoute';
+import { Capacitor } from '@capacitor/core';
+import { testPlatformDetection, getRouterBasename } from './utils/platformTest';
 
 // Global CSS styles that need to be injected for dynamic classes
 const globalStyles = `
@@ -398,8 +400,18 @@ const AppContent = () => {
 };
 
 const App = () => {
+    console.log('🚀 App component is rendering!');
+    
+    // Run platform detection tests
+    testPlatformDetection();
+    
+    // Get the correct router basename
+    const basename = getRouterBasename();
+    
+    console.log('🎯 Using basename:', basename);
+    
     return (
-        <Router basename="/knighthood-quests">
+        <Router basename={basename}>
             <AppContent />
         </Router>
     );

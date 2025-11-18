@@ -7,8 +7,8 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   
-  // Configure for GitHub Pages deployment
-  base: '/knighthood-quests/',
+  // Configure base path - use root for Capacitor, GitHub Pages path for web deployment
+  base: process.env.CAPACITOR_BUILD ? '/' : '/knighthood-quests/',
   
   // Build configuration
   build: {
